@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+echo "🔍 commit 이전에 lint 규칙을 적용합니다..."
+if lint-staged; then
+  echo "✅ 모든 lint 규칙이 성공적으로 적용되었습니다."
+  exit 0
+else
+  echo "❌ lint 규칙 검사에서 오류가 발생했습니다."
+  exit 1
+fi

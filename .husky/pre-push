@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+if eslint --fix .; then
+  echo "✅ 모든 lint 규칙이 성공적으로 적용되었습니다."
+else
+  echo "❌ lint 규칙 검사에서 오류가 발생했습니다."
+  exit 1
+fi
+
+if tsc -b; then
+  echo "✅ Type 검사를 통과하였습니다."
+else
+  echo "❌ Type 검사에서 오류가 발생했습니다."
+  exit 1
+fi
