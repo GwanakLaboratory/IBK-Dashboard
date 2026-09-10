@@ -36,7 +36,14 @@ export default {
         },
       },
       fontFamily: {
-        pretendard: ['Pretendard Variable', 'Pretendard', 'sans-serif'],
+        sans: [
+          'Pretendard Variable',
+          'Pretendard',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'system-ui',
+          'sans-serif',
+        ],
       },
       borderRadius: {
         lg: 'var(--radius)',
