@@ -16,7 +16,7 @@ export function StatCard({
   iconColorClassName = 'bg-gray-100 text-gray-500',
 }: StatCardProps) {
   return (
-    <div className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+    <div className="flex items-center gap-4 rounded-xl border border-border p-5 shadow-sm">
       {Icon && (
         <div
           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${iconColorClassName}`}

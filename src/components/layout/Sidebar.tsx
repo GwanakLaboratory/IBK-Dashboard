@@ -68,8 +68,8 @@ export function Sidebar() {
       </aside>
 
       {!isCollapsed && (
-        <aside className="flex h-full w-44 shrink-0 flex-col rounded-l-3xl border-r border-slate-100 bg-gray-50 py-2">
-          <div className="mx-4 my-2 flex flex-row items-center gap-2 border-b border-slate-800 bg-slate-50 p-2">
+        <aside className="flex h-full w-44 shrink-0 flex-col rounded-l-3xl border-r border-slate-100 bg-white py-2">
+          <div className="mx-4 my-2 flex flex-row items-center gap-2 border-b border-slate-800 p-2">
             <activeGroup.icon className="h-5 w-5 shrink-0 text-primary" />
             <p className="text-base font-semibold text-primary">
               {activeGroup.label}

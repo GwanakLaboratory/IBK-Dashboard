@@ -6,9 +6,9 @@ export function DashboardLayout() {
   return (
     <div className="flex h-dvh flex-col gap-0.5 bg-slate-900">
       <Header />
-      <div className="flex min-w-0 flex-1 flex-row overflow-hidden bg-gray-50">
+      <div className="flex min-w-0 flex-1 flex-row overflow-hidden bg-white">
         <Sidebar />
-        <main className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden p-8">
+        <main className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden px-10 py-8">
           <Outlet />
         </main>
       </div>

@@ -3,6 +3,7 @@ import { Search } from 'lucide-react';
 import { Input } from '@/components/atoms/Input';
 import { Select } from '@/components/molecules/Select';
 import { Card } from '@/components/molecules/Card';
+import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
 import { Pagination } from '@/components/molecules/Pagination';
 import {
@@ -98,7 +99,7 @@ export function CustomerDetailPage() {
         description="회원을 클릭하면 개인별 상세 분석 화면으로 이동합니다."
       />
 
-      <div className="mt-6">
+      <CardGrid columns={1}>
         <Card
           title="회원 목록"
           description={`${filteredCustomers.length}명 / 총 ${customers.length}명`}
@@ -150,7 +151,7 @@ export function CustomerDetailPage() {
             </p>
           )}
         </Card>
-      </div>
+      </CardGrid>
     </div>
   );
 }

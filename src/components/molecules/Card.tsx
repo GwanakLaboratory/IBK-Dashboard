@@ -1,21 +1,40 @@
+import { ChevronsRight, Square } from 'lucide-react';
 import { type ReactNode } from 'react';
+import { Link } from 'react-router';
 
 type CardProps = {
   title: string;
   description?: string;
+  seeMoreHref?: string;
   children: ReactNode;
 };
 
-export function Card({ title, description, children }: CardProps) {
+export function Card({ title, description, seeMoreHref, children }: CardProps) {
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-      <header className="mb-4">
-        <h2 className="text-base font-semibold text-gray-900">{title}</h2>
-        {description && (
-          <p className="mt-1 text-sm text-gray-500">{description}</p>
+    <section>
+      <header className="mb-4 flex items-start justify-between gap-4">
+        <div>
+          <h2 className="flex items-center gap-3 text-base font-semibold text-gray-900">
+            <Square className="h-2 w-2 bg-gray-900" />
+            {title}
+          </h2>
+          {description && (
+            <p className="mt-1 pl-5 text-sm text-gray-500">{description}</p>
+          )}
+        </div>
+        {seeMoreHref && (
+          <Link
+            to={seeMoreHref}
+            className="flex shrink-0 items-center gap-1 text-xs font-medium text-gray-400 hover:text-gray-600"
+          >
+            더보기
+            <ChevronsRight className="h-4 w-4" />
+          </Link>
         )}
       </header>
-      {children}
+      <div className="rounded-lg border border-border p-6 shadow-sm">
+        {children}
+      </div>
     </section>
   );
 }

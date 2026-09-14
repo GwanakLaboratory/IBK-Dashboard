@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Card } from '@/components/molecules/Card';
+import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
 import { ReasonImpactChart } from '@/features/reason-analysis/ReasonImpactChart';
 import { ScoreDistributionChart } from '@/features/reason-analysis/ScoreDistributionChart';
@@ -23,23 +24,23 @@ export function ReasonAnalysisPage() {
         description="이탈 이유별 평균 영향도 및 예측점수 분포를 분석합니다."
       />
 
-      <div className="mt-6">
+      <CardGrid columns={1}>
         <Card
           title="이유별 평균 영향도"
           description="전체 회원 기준 이탈 이유별 평균 기여 점수 (높은 순)"
         >
           <ReasonImpactChart reasonImpacts={reasonImpacts} />
         </Card>
-      </div>
+      </CardGrid>
 
-      <div className="mt-6">
+      <CardGrid columns={1}>
         <Card
           title="예측점수 분포 (히스토그램)"
           description="10점 구간별 회원 인원수 — 저위험(녹색) / 중위험(주황) / 위험(빨강)"
         >
           <ScoreDistributionChart buckets={scoreHistogramBuckets} />
         </Card>
-      </div>
+      </CardGrid>
     </div>
   );
 }

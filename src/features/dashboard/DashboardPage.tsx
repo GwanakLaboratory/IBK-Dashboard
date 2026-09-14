@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Card } from '@/components/molecules/Card';
+import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
 import { StatCard } from '@/components/molecules/StatCard';
 import { QuarterlyUsageChart } from '@/features/dashboard/QuarterlyUsageChart';
@@ -42,14 +43,14 @@ export function DashboardPage() {
         description="카드 회원 이탈 위험 현황을 한눈에 확인합니다."
       />
 
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-4">
+      <CardGrid columns={4}>
         <StatCard label="전체 회원" value={`${customers.length}명`} />
         <StatCard label="위험 회원" value={`${countsByRiskLevel.high}명`} />
         <StatCard label="중위험 회원" value={`${countsByRiskLevel.medium}명`} />
         <StatCard label="평균 예측점수" value={`${averagePredictionScore}점`} />
-      </div>
+      </CardGrid>
 
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <CardGrid columns={2} breakpoint="lg">
         <Card
           title="분기별 전체 카드 사용액 추이"
           description="단위: 만원 (점선=예측)"
@@ -62,16 +63,17 @@ export function DashboardPage() {
         >
           <RiskRatioTrendChart quarterlyOverall={quarterlyOverall} />
         </Card>
-      </div>
+      </CardGrid>
 
-      <div className="mt-6">
+      <CardGrid columns={1}>
         <Card
           title="이탈 위험 상위 회원"
           description="예측점수 기준 위험 회원 Top 5"
+          seeMoreHref="/customer-detail"
         >
           <TopRiskCustomersTable customers={topRiskCustomers} />
         </Card>
-      </div>
+      </CardGrid>
     </div>
   );
 }

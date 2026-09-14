@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { AlertTriangle, TrendingUp, Users } from 'lucide-react';
 import { Card } from '@/components/molecules/Card';
+import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
 import { StatCard } from '@/components/molecules/StatCard';
 import { RiskDistributionChart } from '@/features/risk-summary/RiskDistributionChart';
@@ -31,7 +32,7 @@ export function RiskSummaryPage() {
         description="전체 회원의 이탈 위험도 분포를 확인합니다."
       />
 
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <CardGrid columns={3}>
         <StatCard
           label="위험"
           value={`${countsByRiskLevel.high}명`}
@@ -53,9 +54,9 @@ export function RiskSummaryPage() {
           icon={Users}
           iconColorClassName="bg-emerald-50 text-emerald-500"
         />
-      </div>
+      </CardGrid>
 
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <CardGrid columns={2} breakpoint="lg">
         <Card title="위험도 분포" description="전체 회원의 위험도별 구성비">
           <RiskDistributionChart
             countsByRiskLevel={countsByRiskLevel}
@@ -68,7 +69,7 @@ export function RiskSummaryPage() {
             totalCustomerCount={totalCustomerCount}
           />
         </Card>
-      </div>
+      </CardGrid>
     </div>
   );
 }
