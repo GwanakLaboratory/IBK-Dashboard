@@ -32,15 +32,15 @@ npm run dev
 
 ## 스크립트
 
-| 명령 | 설명 |
-| --- | --- |
-| `npm run dev` | 개발 서버 (포트 5173, `--host`) |
-| `npm run build` | 프로덕션 빌드 |
-| `npm run build:development` | development 모드 빌드 |
-| `npm run preview` | 빌드 결과 미리보기 |
-| `npm run lint` | ESLint |
-| `npm run format` | Prettier |
-| `npm run typecheck` | TypeScript 검사 |
+| 명령                        | 설명                            |
+| --------------------------- | ------------------------------- |
+| `npm run dev`               | 개발 서버 (포트 5173, `--host`) |
+| `npm run build`             | 프로덕션 빌드                   |
+| `npm run build:development` | development 모드 빌드           |
+| `npm run preview`           | 빌드 결과 미리보기              |
+| `npm run lint`              | ESLint                          |
+| `npm run format`            | Prettier                        |
+| `npm run typecheck`         | TypeScript 검사                 |
 
 ## Git hooks
 
