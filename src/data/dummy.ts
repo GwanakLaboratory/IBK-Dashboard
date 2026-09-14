@@ -256,7 +256,16 @@ const LOW_TXN: Transaction[] = [
 ];
 
 /* ── 30명 더미 데이터 ────────────────────────────────────────── */
-export const customers: Customer[] = [
+const RAW_CUSTOMERS: Omit<
+  Customer,
+  | 'name'
+  | 'residentNumber'
+  | 'phoneNumber'
+  | 'cardProduct'
+  | 'joinedAt'
+  | 'gender'
+  | 'age'
+>[] = [
   {
     id: 'CUS-10000',
     predictionScore: 81,
@@ -969,3 +978,89 @@ export const customers: Customer[] = [
     })),
   },
 ];
+
+const GENDERS: Customer['gender'][] = ['남', '여'];
+
+const CARD_PRODUCTS = [
+  'IBK 드림 체크카드',
+  'IBK 알뜰 신용카드',
+  'IBK 탄탄대로 카드',
+  'IBK 참! 좋은 카드',
+  'IBK 오하필 체크카드',
+];
+
+const NAMES = [
+  '김민준',
+  '이서연',
+  '박도윤',
+  '최지우',
+  '정하준',
+  '강서윤',
+  '조은우',
+  '윤지호',
+  '장하은',
+  '임도현',
+  '한소율',
+  '오준서',
+  '서지안',
+  '신다은',
+  '권민재',
+  '황서준',
+  '안수아',
+  '송예준',
+  '류지훈',
+  '전서현',
+  '홍시우',
+  '문가은',
+  '손우진',
+  '배은서',
+  '노준영',
+  '남지원',
+  '심하윤',
+  '허준혁',
+  '주다인',
+  '구민서',
+];
+
+function buildJoinedAt(index: number) {
+  const year = 2016 + (index % 8);
+  const month = String(1 + ((index * 3) % 12)).padStart(2, '0');
+  const day = String(1 + ((index * 5) % 28)).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function buildResidentNumber(
+  index: number,
+  age: number,
+  gender: Customer['gender'],
+) {
+  const birthYear = new Date().getFullYear() - age;
+  const yy = String(birthYear % 100).padStart(2, '0');
+  const month = String(1 + (index % 12)).padStart(2, '0');
+  const day = String(1 + (index % 28)).padStart(2, '0');
+  const genderDigit =
+    birthYear >= 2000 ? (gender === '남' ? 3 : 4) : gender === '남' ? 1 : 2;
+  return `${yy}${month}${day}-${genderDigit}******`;
+}
+
+function buildPhoneNumber(index: number) {
+  const middle = String(1000 + ((index * 37) % 9000));
+  const last = String(1000 + ((index * 53) % 9000));
+  return `010-${middle}-${last}`;
+}
+
+export const customers: Customer[] = RAW_CUSTOMERS.map((customer, index) => {
+  const age = 24 + ((index * 13) % 42);
+  const gender = GENDERS[index % 2];
+
+  return {
+    ...customer,
+    name: NAMES[index % NAMES.length],
+    residentNumber: buildResidentNumber(index, age, gender),
+    phoneNumber: buildPhoneNumber(index),
+    cardProduct: CARD_PRODUCTS[index % CARD_PRODUCTS.length],
+    joinedAt: buildJoinedAt(index),
+    gender,
+    age,
+  };
+});

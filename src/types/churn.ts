@@ -29,6 +29,13 @@ export type QuarterUsage = {
 
 export type Customer = {
   id: string;
+  name: string;
+  residentNumber: string;
+  phoneNumber: string;
+  cardProduct: string;
+  joinedAt: string;
+  gender: '남' | '여';
+  age: number;
   predictionScore: number;
   riskLevel: RiskLevel;
   primaryReason: string;
