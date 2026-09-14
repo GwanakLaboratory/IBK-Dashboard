@@ -1,6 +1,6 @@
 import { ArrowDown, ArrowUp, ArrowUpDown, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router';
-import { RiskBadge } from '@/components/domain/RiskBadge';
+import { RiskIndicator } from '@/components/domain/RiskIndicator';
 import { getTopReason } from '@/utils/risk';
 import type { Customer } from '@/types/churn';
 
@@ -97,7 +97,7 @@ export function CustomerTable({
                   {customer.predictionScore}
                 </td>
                 <td className="py-3 text-center">
-                  <RiskBadge riskLevel={customer.riskLevel} />
+                  <RiskIndicator riskLevel={customer.riskLevel} />
                 </td>
                 <td
                   className="truncate py-3 text-gray-500"

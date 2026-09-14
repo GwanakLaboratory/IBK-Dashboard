@@ -1,5 +1,5 @@
-import { RiskBadge } from '@/components/domain/RiskBadge';
-import { RISK_LEVEL_ORDER } from '@/utils/risk';
+import { RiskIndicator } from '@/components/domain/RiskIndicator';
+import { RISK_LEVEL_DISPLAY_ORDER, RISK_LEVEL_META } from '@/utils/risk';
 import type { RiskLevel } from '@/types/churn';
 
 type RiskSummaryTableProps = {
@@ -22,7 +22,7 @@ export function RiskSummaryTable({
           </tr>
         </thead>
         <tbody>
-          {RISK_LEVEL_ORDER.map((riskLevel) => {
+          {RISK_LEVEL_DISPLAY_ORDER.map((riskLevel) => {
             const customerCount = countsByRiskLevel[riskLevel];
             const customerRatio =
               totalCustomerCount === 0
@@ -35,7 +35,12 @@ export function RiskSummaryTable({
                 className="border-b border-gray-100 last:border-b-0"
               >
                 <td className="py-3">
-                  <RiskBadge riskLevel={riskLevel} />
+                  <span className="flex items-center gap-2">
+                    <RiskIndicator riskLevel={riskLevel} />
+                    <span className="text-gray-700">
+                      {RISK_LEVEL_META[riskLevel].label}
+                    </span>
+                  </span>
                 </td>
                 <td className="py-3 text-right text-base font-semibold text-gray-900">
                   {customerCount}

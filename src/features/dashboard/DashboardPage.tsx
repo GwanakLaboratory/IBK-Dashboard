@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { RiskIndicator } from '@/components/domain/RiskIndicator';
 import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
@@ -45,8 +46,16 @@ export function DashboardPage() {
 
       <CardGrid columns={4}>
         <StatCard label="전체 회원" value={`${customers.length}명`} />
-        <StatCard label="위험 회원" value={`${countsByRiskLevel.high}명`} />
-        <StatCard label="중위험 회원" value={`${countsByRiskLevel.medium}명`} />
+        <StatCard
+          label="위험 회원"
+          value={`${countsByRiskLevel.high}명`}
+          indicator={<RiskIndicator riskLevel="high" />}
+        />
+        <StatCard
+          label="중위험 회원"
+          value={`${countsByRiskLevel.medium}명`}
+          indicator={<RiskIndicator riskLevel="medium" />}
+        />
         <StatCard label="평균 예측점수" value={`${averagePredictionScore}점`} />
       </CardGrid>
 

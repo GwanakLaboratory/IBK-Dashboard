@@ -1,5 +1,7 @@
 import { ChevronLeft } from 'lucide-react';
 import { Link, Navigate, useParams } from 'react-router';
+import { Divider } from '@/components/atoms/Divider';
+import { RiskIndicator } from '@/components/domain/RiskIndicator';
 import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { StatCard } from '@/components/molecules/StatCard';
@@ -47,7 +49,8 @@ export function CustomerProfilePage() {
 
       <div className="mt-3 flex items-center gap-3">
         <h2 className="text-xl font-bold text-gray-900">{customer.id}</h2>
-        <RiskBadge riskLevel={customer.riskLevel} />
+        <RiskIndicator riskLevel={customer.riskLevel} />
+        <Divider />
         <span className="text-sm text-gray-500">
           예측점수 {customer.predictionScore}
         </span>

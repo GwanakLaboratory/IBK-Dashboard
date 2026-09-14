@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { AlertTriangle, TrendingUp, Users } from 'lucide-react';
+import { RiskIndicator } from '@/components/domain/RiskIndicator';
 import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
@@ -37,22 +37,19 @@ export function RiskSummaryPage() {
           label="위험"
           value={`${countsByRiskLevel.high}명`}
           helperText={formatShare(countsByRiskLevel.high)}
-          icon={AlertTriangle}
-          iconColorClassName="bg-red-50 text-red-500"
+          indicator={<RiskIndicator riskLevel="high" />}
         />
         <StatCard
           label="중위험"
           value={`${countsByRiskLevel.medium}명`}
           helperText={formatShare(countsByRiskLevel.medium)}
-          icon={TrendingUp}
-          iconColorClassName="bg-amber-50 text-amber-500"
+          indicator={<RiskIndicator riskLevel="medium" />}
         />
         <StatCard
           label="저위험"
           value={`${countsByRiskLevel.low}명`}
           helperText={formatShare(countsByRiskLevel.low)}
-          icon={Users}
-          iconColorClassName="bg-emerald-50 text-emerald-500"
+          indicator={<RiskIndicator riskLevel="low" />}
         />
       </CardGrid>
 

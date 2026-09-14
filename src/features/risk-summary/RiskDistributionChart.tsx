@@ -1,5 +1,5 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
-import { RISK_LEVEL_META, RISK_LEVEL_ORDER } from '@/utils/risk';
+import { RISK_LEVEL_DISPLAY_ORDER, RISK_LEVEL_META } from '@/utils/risk';
 import type { RiskLevel } from '@/types/churn';
 
 type RiskDistributionChartProps = {
@@ -17,11 +17,13 @@ export function RiskDistributionChart({
   countsByRiskLevel,
   totalCustomerCount,
 }: RiskDistributionChartProps) {
-  const chartSlices: ChartSlice[] = RISK_LEVEL_ORDER.map((riskLevel) => ({
-    riskLevel,
-    label: RISK_LEVEL_META[riskLevel].label,
-    count: countsByRiskLevel[riskLevel],
-  }));
+  const chartSlices: ChartSlice[] = RISK_LEVEL_DISPLAY_ORDER.map(
+    (riskLevel) => ({
+      riskLevel,
+      label: RISK_LEVEL_META[riskLevel].label,
+      count: countsByRiskLevel[riskLevel],
+    }),
+  );
 
   return (
     <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-center">

@@ -14,7 +14,7 @@ import {
 import { customers } from '@/data/customers';
 import {
   RISK_LEVEL_META,
-  RISK_LEVEL_ORDER,
+  RISK_LEVEL_DISPLAY_ORDER,
   getRiskLevelRank,
 } from '@/utils/risk';
 import type { RiskLevel } from '@/types/churn';
@@ -122,7 +122,7 @@ export function CustomerDetailPage() {
               }
             >
               <option value="all">전체 위험도</option>
-              {RISK_LEVEL_ORDER.map((riskLevel) => (
+              {RISK_LEVEL_DISPLAY_ORDER.map((riskLevel) => (
                 <option key={riskLevel} value={riskLevel}>
                   {RISK_LEVEL_META[riskLevel].label}
                 </option>
