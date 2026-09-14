@@ -15,12 +15,12 @@ export function TopRiskCustomersTable({
     <table className="w-full text-sm">
       <thead>
         <tr className="border-b border-gray-200 text-left text-xs text-gray-500">
-          <th className="pb-2 font-medium" />
-          <th className="pb-2 font-medium">회원번호</th>
-          <th className="pb-2 text-center font-medium">예측점수</th>
-          <th className="pb-2 text-center font-medium">위험도</th>
-          <th className="pb-2 font-medium">주요 이유</th>
-          <th className="pb-2 text-right font-medium" />
+          <th className="px-3 pb-2 font-medium" />
+          <th className="px-3 pb-2 font-medium">회원번호</th>
+          <th className="px-3 pb-2 text-center font-medium">예측점수</th>
+          <th className="px-3 pb-2 text-center font-medium">위험도</th>
+          <th className="px-3 pb-2 font-medium">주요 이유</th>
+          <th className="px-3 pb-2 text-right font-medium" />
         </tr>
       </thead>
       <tbody>
@@ -32,12 +32,12 @@ export function TopRiskCustomersTable({
               key={customer.id}
               className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50"
             >
-              <td className="py-3">
+              <td className="px-3 py-3">
                 <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-50 text-xs font-semibold text-red-600">
                   {customerIndex + 1}
                 </span>
               </td>
-              <td className="py-3 font-medium">
+              <td className="px-3 py-3 font-medium">
                 <Link
                   to={`/customer-detail/${customer.id}`}
                   className="text-primary hover:underline"
@@ -45,19 +45,19 @@ export function TopRiskCustomersTable({
                   {customer.id}
                 </Link>
               </td>
-              <td className="py-3 text-center font-semibold text-gray-900">
+              <td className="px-3 py-3 text-center font-semibold text-gray-900">
                 {customer.predictionScore}
               </td>
-              <td className="py-3 text-center">
+              <td className="px-3 py-3 text-center">
                 <RiskIndicator riskLevel={customer.riskLevel} />
               </td>
               <td
-                className="truncate py-3 text-gray-500"
+                className="truncate px-3 py-3 text-gray-500"
                 title={topReason.label}
               >
                 {topReason.label}
               </td>
-              <td className="py-3 text-right">
+              <td className="px-3 py-3 text-right">
                 <Link
                   to={`/customer-detail/${customer.id}`}
                   className="inline-flex items-center gap-0.5 text-xs font-medium text-gray-400 hover:text-gray-600"

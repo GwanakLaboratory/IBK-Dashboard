@@ -51,12 +51,15 @@ export function CustomerTable({
         </colgroup>
         <thead>
           <tr className="border-b border-gray-200 text-left text-xs text-gray-500">
-            <th className="pb-2 font-medium">회원번호</th>
+            <th className="px-3 pb-2 font-medium">회원번호</th>
             {SORTABLE_COLUMNS.map((column) => {
               const isActiveColumn = sortColumnKey === column.key;
 
               return (
-                <th key={column.key} className="pb-2 text-center font-medium">
+                <th
+                  key={column.key}
+                  className="px-3 pb-2 text-center font-medium"
+                >
                   <button
                     type="button"
                     onClick={() => onSortColumnClick(column.key)}
@@ -72,8 +75,8 @@ export function CustomerTable({
                 </th>
               );
             })}
-            <th className="pb-2 font-medium">주요 이유</th>
-            <th className="pb-2 text-right font-medium" />
+            <th className="px-3 pb-2 font-medium">주요 이유</th>
+            <th className="px-3 pb-2 text-right font-medium" />
           </tr>
         </thead>
         <tbody>
@@ -85,7 +88,7 @@ export function CustomerTable({
                 key={customer.id}
                 className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50"
               >
-                <td className="truncate py-3 font-medium">
+                <td className="truncate px-3 py-3 font-medium">
                   <Link
                     to={`/customer-detail/${customer.id}`}
                     className="text-primary hover:underline"
@@ -93,19 +96,19 @@ export function CustomerTable({
                     {customer.id}
                   </Link>
                 </td>
-                <td className="py-3 text-center text-gray-700">
+                <td className="px-3 py-3 text-center text-gray-700">
                   {customer.predictionScore}
                 </td>
-                <td className="py-3 text-center">
+                <td className="px-3 py-3 text-center">
                   <RiskIndicator riskLevel={customer.riskLevel} />
                 </td>
                 <td
-                  className="truncate py-3 text-gray-500"
+                  className="truncate px-3 py-3 text-gray-500"
                   title={topReason.label}
                 >
                   {topReason.label}
                 </td>
-                <td className="py-3 text-right">
+                <td className="px-3 py-3 text-right">
                   <Link
                     to={`/customer-detail/${customer.id}`}
                     className="inline-flex items-center gap-0.5 text-xs font-medium text-gray-400 hover:text-gray-600"

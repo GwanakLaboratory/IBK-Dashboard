@@ -16,9 +16,9 @@ export function RiskSummaryTable({
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-gray-200 text-left text-xs text-gray-500">
-            <th className="pb-2 font-medium">위험도</th>
-            <th className="pb-2 text-right font-medium">인원수</th>
-            <th className="pb-2 text-right font-medium">비율</th>
+            <th className="px-3 pb-2 font-medium">위험도</th>
+            <th className="px-3 pb-2 text-right font-medium">인원수</th>
+            <th className="px-3 pb-2 text-right font-medium">비율</th>
           </tr>
         </thead>
         <tbody>
@@ -34,7 +34,7 @@ export function RiskSummaryTable({
                 key={riskLevel}
                 className="border-b border-gray-100 last:border-b-0"
               >
-                <td className="py-3">
+                <td className="px-3 py-3">
                   <span className="flex items-center gap-2">
                     <RiskIndicator riskLevel={riskLevel} />
                     <span className="text-gray-700">
@@ -42,10 +42,10 @@ export function RiskSummaryTable({
                     </span>
                   </span>
                 </td>
-                <td className="py-3 text-right text-base font-semibold text-gray-900">
+                <td className="px-3 py-3 text-right text-base font-semibold text-gray-900">
                   {customerCount}
                 </td>
-                <td className="py-3 text-right text-gray-500">
+                <td className="px-3 py-3 text-right text-gray-500">
                   {customerRatio.toFixed(1)}%
                 </td>
               </tr>
