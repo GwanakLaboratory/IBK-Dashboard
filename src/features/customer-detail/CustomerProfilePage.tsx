@@ -1,13 +1,16 @@
-import { ChevronLeft } from 'lucide-react';
-import { Link, Navigate, useParams } from 'react-router';
-import { Divider } from '@/components/atoms/Divider';
+import { useEffect, useState, type ReactNode } from 'react';
+import { Navigate, useParams } from 'react-router';
 import { RiskIndicator } from '@/components/domain/RiskIndicator';
 import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
+import { PageHeading } from '@/components/molecules/PageHeading';
 import { StatCard } from '@/components/molecules/StatCard';
+import { CustomerSearchBar } from '@/features/customer-detail/CustomerSearchBar';
 import { CustomerReasonRadar } from '@/features/customer-detail/CustomerReasonRadar';
 import { CustomerTrendChart } from '@/features/customer-detail/CustomerTrendChart';
 import { customers } from '@/data/customers';
+import { maskName } from '@/utils/format';
+import { RISK_LEVEL_META } from '@/utils/risk';
 
 function formatAmount(amount: number) {
   return `${amount.toLocaleString('ko-KR')}원`;
@@ -16,6 +19,11 @@ function formatAmount(amount: number) {
 export function CustomerProfilePage() {
   const { customerId } = useParams<{ customerId: string }>();
   const customer = customers.find((item) => item.id === customerId);
+  const [lookupValue, setLookupValue] = useState(customerId ?? '');
+
+  useEffect(() => {
+    setLookupValue(customerId ?? '');
+  }, [customerId]);
 
   if (!customer) {
     return <Navigate to="/customer-detail" replace />;
@@ -37,24 +45,59 @@ export function CustomerProfilePage() {
       ? latestQuarter.riskScore - previousQuarter.riskScore
       : 0;
 
+  const mostRecentUsedAt = customer.transactions.reduce(
+    (latestDate, transaction) =>
+      transaction.date > latestDate ? transaction.date : latestDate,
+    customer.transactions[0]?.date ?? '-',
+  );
+
+  const memberInfoItems: { label: string; value?: string; node?: ReactNode }[] =
+    [
+      { label: '이름', value: maskName(customer.name) },
+      { label: '회원 고유번호', value: customer.id },
+      { label: '주민번호', value: customer.residentNumber },
+      { label: '전화번호', value: customer.phoneNumber },
+      { label: '예측점수', value: `${customer.predictionScore}점` },
+      {
+        label: '위험도',
+        node: (
+          <span className="mt-1 flex items-center gap-1.5">
+            <RiskIndicator riskLevel={customer.riskLevel} />
+            <span className="text-sm font-medium text-gray-900">
+              {RISK_LEVEL_META[customer.riskLevel].label}
+            </span>
+          </span>
+        ),
+      },
+      { label: '카드 상품', value: customer.cardProduct },
+      { label: '가입일', value: customer.joinedAt },
+      { label: '최근 이용일', value: mostRecentUsedAt },
+      { label: '성별', value: customer.gender },
+      { label: '나이', value: `${customer.age}세` },
+    ];
+
   return (
     <div>
-      <Link
-        to="/customer-detail"
-        className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
-      >
-        <ChevronLeft className="h-4 w-4" />
-        목록으로
-      </Link>
+      <PageHeading title="회원 상세 정보" />
 
-      <div className="mt-3 flex items-center gap-3">
-        <h2 className="text-xl font-bold text-gray-900">{customer.id}</h2>
-        <RiskIndicator riskLevel={customer.riskLevel} />
-        <Divider />
-        <span className="text-sm text-gray-500">
-          예측점수 {customer.predictionScore}
-        </span>
-      </div>
+      <CustomerSearchBar value={lookupValue} onValueChange={setLookupValue} />
+
+      <CardGrid columns={1}>
+        <Card title="회원 정보">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4">
+            {memberInfoItems.map((item) => (
+              <div key={item.label}>
+                <p className="text-xs text-gray-500">{item.label}</p>
+                {item.node ?? (
+                  <p className="mt-1 text-sm font-medium text-gray-900">
+                    {item.value}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </Card>
+      </CardGrid>
 
       {latestQuarter && (
         <CardGrid columns={4}>
