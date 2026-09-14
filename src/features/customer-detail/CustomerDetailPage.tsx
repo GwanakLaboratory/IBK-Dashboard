@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/atoms/Input';
-import { Select } from '@/components/atoms/Select';
+import { Select } from '@/components/molecules/Select';
 import { Card } from '@/components/molecules/Card';
 import { PageHeading } from '@/components/molecules/PageHeading';
 import { Pagination } from '@/components/molecules/Pagination';
