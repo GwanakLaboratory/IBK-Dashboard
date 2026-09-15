@@ -2,7 +2,7 @@ import { Button } from '@/components/atoms/Button';
 import { Divider } from '@/components/atoms/Divider';
 import { LogOut } from 'lucide-react';
 
-const DASHBOARD_TITLE = '카드 고객 이탈 방지 예측 대시보드';
+const DASHBOARD_TITLE = 'IBK 대시보드';
 const CURRENT_USER_DEPARTMENT = '카드사업부';
 const CURRENT_USER_NAME = 'IBK';
 
