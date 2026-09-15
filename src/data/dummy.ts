@@ -3,7 +3,6 @@ import type {
   MonthlyMemberActivityPoint,
   MonthlyPoint,
   QuarterlyOverallPoint,
-  QuarterUsage,
   Transaction,
 } from '@/types/churn';
 
@@ -96,47 +95,6 @@ function mkMonthly(
         ),
       ),
       predicted: predicted[i],
-    };
-  });
-}
-
-function mkQuarterly(
-  baseUsage: number,
-  baseRisk: number,
-  trend: 'declining' | 'stable' | 'growing',
-): QuarterUsage[] {
-  const quarters = [
-    'Q1 2024',
-    'Q2 2024',
-    'Q3 2024',
-    'Q4 2024(예)',
-    'Q1 2025(예)',
-  ];
-  const preds = [false, false, false, true, true];
-  return quarters.map((q, i) => {
-    const usageMult =
-      trend === 'declining'
-        ? 1 - i * 0.07
-        : trend === 'growing'
-          ? 1 + i * 0.05
-          : 1;
-    const riskMult =
-      trend === 'declining'
-        ? 1 + i * 0.08
-        : trend === 'growing'
-          ? 1 - i * 0.05
-          : 1;
-    return {
-      quarter: q,
-      usage: Math.round(baseUsage * usageMult * (0.9 + Math.random() * 0.2)),
-      riskScore: Math.min(
-        99,
-        Math.max(
-          5,
-          Math.round(baseRisk * riskMult * (0.92 + Math.random() * 0.16)),
-        ),
-      ),
-      predicted: preds[i],
     };
   });
 }
@@ -305,7 +263,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '실적 조건 미충족', score: 3 },
     ],
     monthly: mkMonthly(320, 81, 'declining'),
-    quarterly: mkQuarterly(980, 81, 'declining'),
     transactions: HIGH_TXN,
   },
   {
@@ -326,7 +283,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '실적 조건 미충족', score: 6 },
     ],
     monthly: mkMonthly(280, 94, 'declining'),
-    quarterly: mkQuarterly(870, 94, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.7),
@@ -350,7 +306,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '실적 조건 미충족', score: 8 },
     ],
     monthly: mkMonthly(190, 77, 'declining'),
-    quarterly: mkQuarterly(590, 77, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.5),
@@ -374,7 +329,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '실적 조건 미충족', score: 4 },
     ],
     monthly: mkMonthly(240, 75, 'declining'),
-    quarterly: mkQuarterly(740, 75, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       date: t.date.replace('10', '09'),
@@ -398,7 +352,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '실적 조건 미충족', score: 7 },
     ],
     monthly: mkMonthly(90, 97, 'declining'),
-    quarterly: mkQuarterly(290, 97, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.3),
@@ -422,7 +375,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '실적 조건 미충족', score: 5 },
     ],
     monthly: mkMonthly(150, 93, 'declining'),
-    quarterly: mkQuarterly(470, 93, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.45),
@@ -446,7 +398,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '실적 조건 미충족', score: 5 },
     ],
     monthly: mkMonthly(210, 85, 'declining'),
-    quarterly: mkQuarterly(660, 85, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.6),
@@ -470,7 +421,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '실적 조건 미충족', score: 3 },
     ],
     monthly: mkMonthly(170, 79, 'declining'),
-    quarterly: mkQuarterly(530, 79, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.55),
@@ -494,7 +444,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '실적 조건 미충족', score: 4 },
     ],
     monthly: mkMonthly(260, 83, 'declining'),
-    quarterly: mkQuarterly(800, 83, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.65),
@@ -518,7 +467,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '실적 조건 미충족', score: 3 },
     ],
     monthly: mkMonthly(300, 76, 'declining'),
-    quarterly: mkQuarterly(920, 76, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.8),
@@ -542,7 +490,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '실적 조건 미충족', score: 4 },
     ],
     monthly: mkMonthly(140, 88, 'declining'),
-    quarterly: mkQuarterly(440, 88, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.4),
@@ -566,7 +513,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '실적 조건 미충족', score: 2 },
     ],
     monthly: mkMonthly(220, 78, 'declining'),
-    quarterly: mkQuarterly(680, 78, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.58),
@@ -590,7 +536,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '실적 조건 미충족', score: 4 },
     ],
     monthly: mkMonthly(110, 91, 'declining'),
-    quarterly: mkQuarterly(350, 91, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.35),
@@ -614,7 +559,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '실적 조건 미충족', score: 2 },
     ],
     monthly: mkMonthly(380, 55, 'stable'),
-    quarterly: mkQuarterly(1160, 55, 'stable'),
     transactions: MID_TXN,
   },
   {
@@ -635,7 +579,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '실적 조건 미충족', score: 1 },
     ],
     monthly: mkMonthly(420, 62, 'stable'),
-    quarterly: mkQuarterly(1280, 62, 'stable'),
     transactions: MID_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.1),
@@ -659,7 +602,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '실적 조건 미충족', score: 1 },
     ],
     monthly: mkMonthly(290, 58, 'stable'),
-    quarterly: mkQuarterly(890, 58, 'stable'),
     transactions: MID_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.9),
@@ -683,7 +625,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '실적 조건 미충족', score: 2 },
     ],
     monthly: mkMonthly(340, 67, 'stable'),
-    quarterly: mkQuarterly(1040, 67, 'stable'),
     transactions: MID_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.05),
@@ -707,7 +648,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '실적 조건 미충족', score: 1 },
     ],
     monthly: mkMonthly(460, 51, 'stable'),
-    quarterly: mkQuarterly(1400, 51, 'stable'),
     transactions: MID_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.15),
@@ -731,7 +671,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '실적 조건 미충족', score: 1 },
     ],
     monthly: mkMonthly(310, 60, 'stable'),
-    quarterly: mkQuarterly(960, 60, 'stable'),
     transactions: MID_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.95),
@@ -755,7 +694,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '휴면 전환 임박', score: 1 },
     ],
     monthly: mkMonthly(680, 25, 'growing'),
-    quarterly: mkQuarterly(2060, 25, 'growing'),
     transactions: LOW_TXN,
   },
   {
@@ -776,7 +714,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '휴면 전환 임박', score: 1 },
     ],
     monthly: mkMonthly(920, 18, 'growing'),
-    quarterly: mkQuarterly(2800, 18, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.3),
@@ -800,7 +737,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '휴면 전환 임박', score: 1 },
     ],
     monthly: mkMonthly(560, 32, 'growing'),
-    quarterly: mkQuarterly(1710, 32, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.9),
@@ -824,7 +760,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '휴면 전환 임박', score: 1 },
     ],
     monthly: mkMonthly(780, 22, 'growing'),
-    quarterly: mkQuarterly(2380, 22, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.1),
@@ -848,7 +783,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '휴면 전환 임박', score: 1 },
     ],
     monthly: mkMonthly(640, 29, 'growing'),
-    quarterly: mkQuarterly(1950, 29, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.95),
@@ -872,7 +806,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '휴면 전환 임박', score: 1 },
     ],
     monthly: mkMonthly(1100, 15, 'growing'),
-    quarterly: mkQuarterly(3350, 15, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.5),
@@ -896,7 +829,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '휴면 전환 임박', score: 1 },
     ],
     monthly: mkMonthly(510, 37, 'growing'),
-    quarterly: mkQuarterly(1560, 37, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.85),
@@ -920,7 +852,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '휴면 전환 임박', score: 1 },
     ],
     monthly: mkMonthly(840, 20, 'growing'),
-    quarterly: mkQuarterly(2560, 20, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.2),
@@ -944,7 +875,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '휴면 전환 임박', score: 1 },
     ],
     monthly: mkMonthly(720, 27, 'growing'),
-    quarterly: mkQuarterly(2200, 27, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.05),
@@ -968,7 +898,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '휴면 전환 임박', score: 1 },
     ],
     monthly: mkMonthly(580, 33, 'growing'),
-    quarterly: mkQuarterly(1770, 33, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.92),
@@ -992,7 +921,6 @@ const RAW_CUSTOMERS: Omit<
       { label: '휴면 전환 임박', score: 1 },
     ],
     monthly: mkMonthly(490, 41, 'growing'),
-    quarterly: mkQuarterly(1490, 41, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.88),

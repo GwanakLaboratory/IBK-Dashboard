@@ -20,13 +20,6 @@ export type Transaction = {
   status: '승인' | '취소';
 };
 
-export type QuarterUsage = {
-  quarter: string; // "Q1 2024"
-  usage: number; // 만원
-  riskScore: number;
-  predicted?: boolean;
-};
-
 export type Customer = {
   id: string;
   name: string;
@@ -41,7 +34,6 @@ export type Customer = {
   primaryReason: string;
   churnReasons: ChurnReason[];
   monthly: MonthlyPoint[];
-  quarterly: QuarterUsage[];
   transactions: Transaction[];
 };
 
