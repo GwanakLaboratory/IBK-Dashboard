@@ -3,6 +3,7 @@ import type {
   MonthlyMemberActivityPoint,
   MonthlyPoint,
   MonthlyRiskDistributionPoint,
+  RiskScoreTrendPoint,
   Transaction,
 } from '@/types/churn';
 
@@ -227,12 +228,12 @@ const LOW_TXN: Transaction[] = [
 const RAW_CUSTOMERS: Omit<
   Customer,
   | 'name'
-  | 'residentNumber'
   | 'phoneNumber'
   | 'cardProduct'
   | 'joinedAt'
   | 'gender'
   | 'age'
+  | 'riskScoreTrend'
 >[] = [
   {
     id: 'CUS-10000',
@@ -967,24 +968,34 @@ function buildJoinedAt(index: number) {
   return `${year}-${month}-${day}`;
 }
 
-function buildResidentNumber(
-  index: number,
-  age: number,
-  gender: Customer['gender'],
-) {
-  const birthYear = new Date().getFullYear() - age;
-  const yy = String(birthYear % 100).padStart(2, '0');
-  const month = String(1 + (index % 12)).padStart(2, '0');
-  const day = String(1 + (index % 28)).padStart(2, '0');
-  const genderDigit =
-    birthYear >= 2000 ? (gender === '남' ? 3 : 4) : gender === '남' ? 1 : 2;
-  return `${yy}${month}${day}-${genderDigit}******`;
-}
-
 function buildPhoneNumber(index: number) {
   const middle = String(1000 + ((index * 37) % 9000));
   const last = String(1000 + ((index * 53) % 9000));
   return `010-${middle}-${last}`;
+}
+
+function mkRiskScoreTrend(
+  currentScore: number,
+  monthly: MonthlyPoint[],
+): RiskScoreTrendPoint[] {
+  const months = monthly.slice(-4).map((point) => point.month);
+  const usageStart = monthly[0]?.usage ?? 0;
+  const usageEnd = monthly[monthly.length - 1]?.usage ?? 0;
+  const perStepDelta =
+    usageEnd < usageStart * 0.97 ? 6 : usageEnd > usageStart * 1.03 ? -5 : 0;
+
+  return months.map((month, index) => {
+    const stepsFromNow = months.length - 1 - index;
+    if (stepsFromNow === 0) {
+      return { month, score: currentScore };
+    }
+    const noise = Math.round((Math.random() - 0.5) * 6);
+    const score = Math.min(
+      99,
+      Math.max(5, currentScore - perStepDelta * stepsFromNow + noise),
+    );
+    return { month, score };
+  });
 }
 
 export const customers: Customer[] = RAW_CUSTOMERS.map((customer, index) => {
@@ -994,11 +1005,14 @@ export const customers: Customer[] = RAW_CUSTOMERS.map((customer, index) => {
   return {
     ...customer,
     name: NAMES[index % NAMES.length],
-    residentNumber: buildResidentNumber(index, age, gender),
     phoneNumber: buildPhoneNumber(index),
     cardProduct: CARD_PRODUCTS[index % CARD_PRODUCTS.length],
     joinedAt: buildJoinedAt(index),
     gender,
     age,
+    riskScoreTrend: mkRiskScoreTrend(
+      customer.predictionScore,
+      customer.monthly,
+    ),
   };
 });

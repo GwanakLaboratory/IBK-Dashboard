@@ -6,6 +6,7 @@ import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
 import { CustomerSearchBar } from '@/features/customer-detail/CustomerSearchBar';
 import { CustomerReasonRadar } from '@/features/customer-detail/CustomerReasonRadar';
+import { CustomerRiskScoreTrendChart } from '@/features/customer-detail/CustomerRiskScoreTrendChart';
 import { CustomerTrendChart } from '@/features/customer-detail/CustomerTrendChart';
 import { customers } from '@/data/customers';
 import { maskName } from '@/utils/format';
@@ -34,7 +35,6 @@ export function CustomerProfilePage() {
     [
       { label: '이름', value: maskName(customer.name) },
       { label: '회원 고유번호', value: customer.id },
-      { label: '주민번호', value: customer.residentNumber },
       { label: '전화번호', value: customer.phoneNumber },
       { label: '예측점수', value: `${customer.predictionScore}점` },
       {
@@ -85,12 +85,17 @@ export function CustomerProfilePage() {
         >
           <CustomerTrendChart monthly={customer.monthly} />
         </Card>
+        <Card
+          title="이탈 스코어 변동 추이"
+          description="최근 4개월 (과거 3개월 + 현재) 이탈 스코어 추이"
+        >
+          <CustomerRiskScoreTrendChart
+            riskScoreTrend={customer.riskScoreTrend}
+          />
+        </Card>
         <Card title="이탈 이유 레이더" description="10개 이유별 기여 점수">
           <CustomerReasonRadar churnReasons={customer.churnReasons} />
         </Card>
-      </CardGrid>
-
-      <CardGrid columns={1}>
         <Card title="이탈 이유 상세" description="점수 높은 순">
           <ul className="space-y-2.5">
             {customer.churnReasons.map((reason, reasonIndex) => (

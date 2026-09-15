@@ -10,6 +10,11 @@ export type MonthlyPoint = {
   usage: number; // 만원 단위
 };
 
+export type RiskScoreTrendPoint = {
+  month: string; // "24.01"
+  score: number;
+};
+
 export type Transaction = {
   date: string; // "2024-11-03"
   merchant: string;
@@ -21,7 +26,6 @@ export type Transaction = {
 export type Customer = {
   id: string;
   name: string;
-  residentNumber: string;
   phoneNumber: string;
   cardProduct: string;
   joinedAt: string;
@@ -32,6 +36,7 @@ export type Customer = {
   primaryReason: string;
   churnReasons: ChurnReason[];
   monthly: MonthlyPoint[];
+  riskScoreTrend: RiskScoreTrendPoint[];
   transactions: Transaction[];
 };
 
