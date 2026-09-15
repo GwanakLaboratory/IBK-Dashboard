@@ -1,9 +1,11 @@
 import { useEffect, useState, type ReactNode } from 'react';
+import { AlertTriangle, Gauge } from 'lucide-react';
 import { Navigate, useParams } from 'react-router';
 import { RiskIndicator } from '@/components/domain/RiskIndicator';
 import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
+import { StatCard } from '@/components/molecules/StatCard';
 import { CustomerSearchBar } from '@/features/customer-detail/CustomerSearchBar';
 import { CustomerReasonRadar } from '@/features/customer-detail/CustomerReasonRadar';
 import { CustomerRiskScoreTrendChart } from '@/features/customer-detail/CustomerRiskScoreTrendChart';
@@ -36,30 +38,41 @@ export function CustomerProfilePage() {
       { label: '이름', value: maskName(customer.name) },
       { label: '회원 고유번호', value: customer.id },
       { label: '전화번호', value: customer.phoneNumber },
-      { label: '예측점수', value: `${customer.predictionScore}점` },
-      {
-        label: '위험도',
-        node: (
-          <span className="mt-1 flex items-center gap-1.5">
-            <RiskIndicator riskLevel={customer.riskLevel} />
-            <span className="text-sm font-medium text-gray-900">
-              {RISK_LEVEL_META[customer.riskLevel].label}
-            </span>
-          </span>
-        ),
-      },
       { label: '카드 상품', value: customer.cardProduct },
       { label: '가입일', value: customer.joinedAt },
       { label: '최근 이용일', value: mostRecentUsedAt },
       { label: '성별', value: customer.gender },
       { label: '나이', value: `${customer.age}세` },
     ];
+  const riskIconColorClassName = RISK_LEVEL_META[
+    customer.riskLevel
+  ].dotColorClassName.replace('bg-', 'text-');
 
   return (
     <div>
       <PageHeading title="회원 상세 정보" />
 
       <CustomerSearchBar value={lookupValue} onValueChange={setLookupValue} />
+
+      <CardGrid columns={2} breakpoint="lg">
+        <StatCard
+          label="이탈 예측 점수"
+          value={`${customer.predictionScore}점`}
+          Icon={Gauge}
+        />
+        <div className="flex items-start justify-between gap-3 rounded-xl border border-border p-5 shadow-sm">
+          <div className="flex flex-col gap-2">
+            <p className="text-sm text-gray-500">위험도</p>
+            <div className="flex items-center gap-2">
+              <RiskIndicator riskLevel={customer.riskLevel} />
+              <p className="text-xl font-semibold text-gray-900">
+                {RISK_LEVEL_META[customer.riskLevel].label}
+              </p>
+            </div>
+          </div>
+          <AlertTriangle className={`h-6 w-6 ${riskIconColorClassName}`} />
+        </div>
+      </CardGrid>
 
       <CardGrid columns={1}>
         <Card title="회원 정보">
