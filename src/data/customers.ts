@@ -1,6 +1,7 @@
 import {
   customers as dummyCustomers,
   monthlyMemberActivity,
+  monthlyTotalUsage,
   quarterlyOverall,
 } from '@/data/dummy';
 import type { Customer } from '@/types/churn';
@@ -15,4 +16,4 @@ export const customers: Customer[] = dummyCustomers.map((customer) => ({
   ),
 }));
 
-export { monthlyMemberActivity, quarterlyOverall };
+export { monthlyMemberActivity, monthlyTotalUsage, quarterlyOverall };

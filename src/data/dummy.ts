@@ -23,6 +23,21 @@ export const quarterlyOverall: QuarterlyOverallPoint[] = [
   },
 ];
 
+export const monthlyTotalUsage: MonthlyPoint[] = [
+  { month: '24.02', usage: 58200 },
+  { month: '24.03', usage: 57100 },
+  { month: '24.04', usage: 55800 },
+  { month: '24.05', usage: 56900 },
+  { month: '24.06', usage: 54200 },
+  { month: '24.07', usage: 53100 },
+  { month: '24.08', usage: 51800 },
+  { month: '24.09', usage: 49700 },
+  { month: '24.10', usage: 48200 },
+  { month: '24.11', usage: 46500 },
+  { month: '24.12', usage: 44800 },
+  { month: '25.01', usage: 43200 },
+];
+
 export const monthlyMemberActivity: MonthlyMemberActivityPoint[] = [
   { month: '24.02', activeMembers: 75200, newSignups: 640 },
   { month: '24.03', activeMembers: 76100, newSignups: 760 },
