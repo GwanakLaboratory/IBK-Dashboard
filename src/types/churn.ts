@@ -8,8 +8,6 @@ export type ChurnReason = {
 export type MonthlyPoint = {
   month: string; // "24.01"
   usage: number; // 만원 단위
-  riskScore: number;
-  predicted?: boolean;
 };
 
 export type Transaction = {

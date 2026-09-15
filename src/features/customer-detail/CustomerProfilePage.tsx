@@ -80,8 +80,8 @@ export function CustomerProfilePage() {
 
       <CardGrid columns={2} breakpoint="lg">
         <Card
-          title="카드 사용액 & 위험점수 추이"
-          description="월별 실적 및 향후 3개월 예측 (점선 구간)"
+          title="카드 사용량 추이"
+          description="최근 10개월 (과거 9개월 + 현재) 사용액 추이"
         >
           <CustomerTrendChart monthly={customer.monthly} />
         </Card>

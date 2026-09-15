@@ -46,10 +46,10 @@ export const monthlyMemberActivity: MonthlyMemberActivityPoint[] = [
 /* ── helpers ─────────────────────────────────────────────────── */
 function mkMonthly(
   baseUsage: number,
-  baseRisk: number,
   trend: 'declining' | 'stable' | 'growing',
 ): MonthlyPoint[] {
   const months = [
+    '24.04',
     '24.05',
     '24.06',
     '24.07',
@@ -60,17 +60,6 @@ function mkMonthly(
     '24.12',
     '25.01',
   ];
-  const predicted = [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    true,
-    true,
-    true,
-  ];
   return months.map((m, i) => {
     const usageMult =
       trend === 'declining'
@@ -78,23 +67,9 @@ function mkMonthly(
         : trend === 'growing'
           ? 1 + i * 0.03
           : 1 + (Math.random() - 0.5) * 0.06;
-    const riskMult =
-      trend === 'declining'
-        ? 1 + i * 0.06
-        : trend === 'growing'
-          ? 1 - i * 0.04
-          : 1 + (Math.random() - 0.5) * 0.04;
     return {
       month: m,
       usage: Math.round(baseUsage * usageMult * (0.92 + Math.random() * 0.16)),
-      riskScore: Math.min(
-        99,
-        Math.max(
-          5,
-          Math.round(baseRisk * riskMult * (0.93 + Math.random() * 0.14)),
-        ),
-      ),
-      predicted: predicted[i],
     };
   });
 }
@@ -262,7 +237,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '부가서비스 미이용', score: 13 },
       { label: '실적 조건 미충족', score: 3 },
     ],
-    monthly: mkMonthly(320, 81, 'declining'),
+    monthly: mkMonthly(320, 'declining'),
     transactions: HIGH_TXN,
   },
   {
@@ -282,7 +257,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '휴면 전환 임박', score: 11 },
       { label: '실적 조건 미충족', score: 6 },
     ],
-    monthly: mkMonthly(280, 94, 'declining'),
+    monthly: mkMonthly(280, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.7),
@@ -305,7 +280,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '연회비 대비 혜택 미사용', score: 14 },
       { label: '실적 조건 미충족', score: 8 },
     ],
-    monthly: mkMonthly(190, 77, 'declining'),
+    monthly: mkMonthly(190, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.5),
@@ -328,7 +303,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '부가서비스 미이용', score: 10 },
       { label: '실적 조건 미충족', score: 4 },
     ],
-    monthly: mkMonthly(240, 75, 'declining'),
+    monthly: mkMonthly(240, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       date: t.date.replace('10', '09'),
@@ -351,7 +326,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '연체 이력 발생', score: 16 },
       { label: '실적 조건 미충족', score: 7 },
     ],
-    monthly: mkMonthly(90, 97, 'declining'),
+    monthly: mkMonthly(90, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.3),
@@ -374,7 +349,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '연체 이력 발생', score: 12 },
       { label: '실적 조건 미충족', score: 5 },
     ],
-    monthly: mkMonthly(150, 93, 'declining'),
+    monthly: mkMonthly(150, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.45),
@@ -397,7 +372,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '연체 이력 발생', score: 11 },
       { label: '실적 조건 미충족', score: 5 },
     ],
-    monthly: mkMonthly(210, 85, 'declining'),
+    monthly: mkMonthly(210, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.6),
@@ -420,7 +395,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '부가서비스 미이용', score: 9 },
       { label: '실적 조건 미충족', score: 3 },
     ],
-    monthly: mkMonthly(170, 79, 'declining'),
+    monthly: mkMonthly(170, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.55),
@@ -443,7 +418,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '부가서비스 미이용', score: 10 },
       { label: '실적 조건 미충족', score: 4 },
     ],
-    monthly: mkMonthly(260, 83, 'declining'),
+    monthly: mkMonthly(260, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.65),
@@ -466,7 +441,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '부가서비스 미이용', score: 8 },
       { label: '실적 조건 미충족', score: 3 },
     ],
-    monthly: mkMonthly(300, 76, 'declining'),
+    monthly: mkMonthly(300, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.8),
@@ -489,7 +464,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '부가서비스 미이용', score: 9 },
       { label: '실적 조건 미충족', score: 4 },
     ],
-    monthly: mkMonthly(140, 88, 'declining'),
+    monthly: mkMonthly(140, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.4),
@@ -512,7 +487,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '휴면 전환 임박', score: 7 },
       { label: '실적 조건 미충족', score: 2 },
     ],
-    monthly: mkMonthly(220, 78, 'declining'),
+    monthly: mkMonthly(220, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.58),
@@ -535,7 +510,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '연체 이력 발생', score: 10 },
       { label: '실적 조건 미충족', score: 4 },
     ],
-    monthly: mkMonthly(110, 91, 'declining'),
+    monthly: mkMonthly(110, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.35),
@@ -558,7 +533,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '휴면 전환 임박', score: 4 },
       { label: '실적 조건 미충족', score: 2 },
     ],
-    monthly: mkMonthly(380, 55, 'stable'),
+    monthly: mkMonthly(380, 'stable'),
     transactions: MID_TXN,
   },
   {
@@ -578,7 +553,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '휴면 전환 임박', score: 4 },
       { label: '실적 조건 미충족', score: 1 },
     ],
-    monthly: mkMonthly(420, 62, 'stable'),
+    monthly: mkMonthly(420, 'stable'),
     transactions: MID_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.1),
@@ -601,7 +576,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '휴면 전환 임박', score: 3 },
       { label: '실적 조건 미충족', score: 1 },
     ],
-    monthly: mkMonthly(290, 58, 'stable'),
+    monthly: mkMonthly(290, 'stable'),
     transactions: MID_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.9),
@@ -624,7 +599,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '휴면 전환 임박', score: 5 },
       { label: '실적 조건 미충족', score: 2 },
     ],
-    monthly: mkMonthly(340, 67, 'stable'),
+    monthly: mkMonthly(340, 'stable'),
     transactions: MID_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.05),
@@ -647,7 +622,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '휴면 전환 임박', score: 3 },
       { label: '실적 조건 미충족', score: 1 },
     ],
-    monthly: mkMonthly(460, 51, 'stable'),
+    monthly: mkMonthly(460, 'stable'),
     transactions: MID_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.15),
@@ -670,7 +645,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '휴면 전환 임박', score: 3 },
       { label: '실적 조건 미충족', score: 1 },
     ],
-    monthly: mkMonthly(310, 60, 'stable'),
+    monthly: mkMonthly(310, 'stable'),
     transactions: MID_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.95),
@@ -693,7 +668,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '타사 카드 신규 발급 이력', score: 2 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(680, 25, 'growing'),
+    monthly: mkMonthly(680, 'growing'),
     transactions: LOW_TXN,
   },
   {
@@ -713,7 +688,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '타사 카드 신규 발급 이력', score: 1 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(920, 18, 'growing'),
+    monthly: mkMonthly(920, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.3),
@@ -736,7 +711,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '타사 카드 신규 발급 이력', score: 2 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(560, 32, 'growing'),
+    monthly: mkMonthly(560, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.9),
@@ -759,7 +734,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '타사 카드 신규 발급 이력', score: 1 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(780, 22, 'growing'),
+    monthly: mkMonthly(780, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.1),
@@ -782,7 +757,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '타사 카드 신규 발급 이력', score: 1 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(640, 29, 'growing'),
+    monthly: mkMonthly(640, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.95),
@@ -805,7 +780,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '타사 카드 신규 발급 이력', score: 1 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(1100, 15, 'growing'),
+    monthly: mkMonthly(1100, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.5),
@@ -828,7 +803,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '타사 카드 신규 발급 이력', score: 1 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(510, 37, 'growing'),
+    monthly: mkMonthly(510, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.85),
@@ -851,7 +826,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '타사 카드 신규 발급 이력', score: 1 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(840, 20, 'growing'),
+    monthly: mkMonthly(840, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.2),
@@ -874,7 +849,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '타사 카드 신규 발급 이력', score: 1 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(720, 27, 'growing'),
+    monthly: mkMonthly(720, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.05),
@@ -897,7 +872,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '타사 카드 신규 발급 이력', score: 1 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(580, 33, 'growing'),
+    monthly: mkMonthly(580, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.92),
@@ -920,7 +895,7 @@ const RAW_CUSTOMERS: Omit<
       { label: '타사 카드 신규 발급 이력', score: 2 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(490, 41, 'growing'),
+    monthly: mkMonthly(490, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.88),
