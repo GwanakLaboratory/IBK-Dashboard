@@ -8,8 +8,11 @@ export type ChurnReason = {
 export type MonthlyPoint = {
   month: string; // "24.01"
   usage: number; // 만원 단위
-  riskScore: number;
-  predicted?: boolean;
+};
+
+export type RiskScoreTrendPoint = {
+  month: string; // "24.01"
+  score: number;
 };
 
 export type Transaction = {
@@ -20,29 +23,33 @@ export type Transaction = {
   status: '승인' | '취소';
 };
 
-export type QuarterUsage = {
-  quarter: string; // "Q1 2024"
-  usage: number; // 만원
-  riskScore: number;
-  predicted?: boolean;
-};
-
 export type Customer = {
   id: string;
+  name: string;
+  phoneNumber: string;
+  cardProduct: string;
+  joinedAt: string;
+  gender: '남' | '여';
+  age: number;
   predictionScore: number;
   riskLevel: RiskLevel;
   primaryReason: string;
   churnReasons: ChurnReason[];
   monthly: MonthlyPoint[];
-  quarterly: QuarterUsage[];
+  riskScoreTrend: RiskScoreTrendPoint[];
   transactions: Transaction[];
 };
 
-export type QuarterlyOverallPoint = {
-  quarter: string;
-  totalUsage: number;
-  high: number;
-  mid: number;
-  low: number;
+export type MonthlyMemberActivityPoint = {
+  month: string; // "24.02"
+  activeMembers: number; // 카드 이용 중인 회원 수
+  newSignups: number; // 신규 가입 회원 수
   predicted?: boolean;
+};
+
+export type MonthlyRiskDistributionPoint = {
+  month: string; // "24.02"
+  high: number; // 위험 비율(%)
+  mid: number; // 중위험 비율(%)
+  low: number; // 저위험 비율(%)
 };

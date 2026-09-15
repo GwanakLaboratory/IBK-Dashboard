@@ -43,7 +43,7 @@ export function RiskSummaryTable({
                   </span>
                 </td>
                 <td className="px-3 py-3 text-right text-base font-semibold text-gray-900">
-                  {customerCount}
+                  {customerCount.toLocaleString('ko-KR')}
                 </td>
                 <td className="px-3 py-3 text-right text-gray-500">
                   {customerRatio.toFixed(1)}%
@@ -53,9 +53,12 @@ export function RiskSummaryTable({
           })}
         </tbody>
       </table>
-      <p className="mt-3 text-right text-xs text-gray-400">
-        전체 {totalCustomerCount}명
-      </p>
+      <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
+        <span className="text-sm text-gray-500">전체 회원</span>
+        <span className="text-2xl font-bold text-gray-900">
+          {totalCustomerCount.toLocaleString('ko-KR')}명
+        </span>
+      </div>
     </div>
   );
 }

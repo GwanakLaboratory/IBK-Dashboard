@@ -1,24 +1,59 @@
 import type {
   Customer,
+  MonthlyMemberActivityPoint,
   MonthlyPoint,
-  QuarterlyOverallPoint,
-  QuarterUsage,
+  MonthlyRiskDistributionPoint,
+  RiskScoreTrendPoint,
   Transaction,
 } from '@/types/churn';
 
 /* ── 홈 대시보드 집계 데이터 ─────────────────────────────────── */
-export const quarterlyOverall: QuarterlyOverallPoint[] = [
-  { quarter: '2023 Q3', totalUsage: 142800, high: 20, mid: 25, low: 55 },
-  { quarter: '2023 Q4', totalUsage: 158400, high: 23, mid: 27, low: 50 },
-  { quarter: '2024 Q1', totalUsage: 173200, high: 28, mid: 22, low: 50 },
-  { quarter: '2024 Q2', totalUsage: 161000, high: 33, mid: 24, low: 43 },
-  { quarter: '2024 Q3', totalUsage: 148600, high: 37, mid: 23, low: 40 },
+export const monthlyTotalUsage: MonthlyPoint[] = [
+  { month: '24.02', usage: 58200 },
+  { month: '24.03', usage: 57100 },
+  { month: '24.04', usage: 55800 },
+  { month: '24.05', usage: 56900 },
+  { month: '24.06', usage: 54200 },
+  { month: '24.07', usage: 53100 },
+  { month: '24.08', usage: 51800 },
+  { month: '24.09', usage: 49700 },
+  { month: '24.10', usage: 48200 },
+  { month: '24.11', usage: 46500 },
+  { month: '24.12', usage: 44800 },
+  { month: '25.01', usage: 43200 },
+];
+
+export const monthlyRiskDistribution: MonthlyRiskDistributionPoint[] = [
+  { month: '24.02', high: 26, mid: 24, low: 50 },
+  { month: '24.03', high: 27, mid: 23, low: 50 },
+  { month: '24.04', high: 29, mid: 22, low: 49 },
+  { month: '24.05', high: 31, mid: 23, low: 46 },
+  { month: '24.06', high: 33, mid: 24, low: 43 },
+  { month: '24.07', high: 35, mid: 23, low: 42 },
+  { month: '24.08', high: 36, mid: 23, low: 41 },
+  { month: '24.09', high: 38, mid: 22, low: 40 },
+  { month: '24.10', high: 39, mid: 22, low: 39 },
+  { month: '24.11', high: 41, mid: 21, low: 38 },
+  { month: '24.12', high: 42, mid: 21, low: 37 },
+  { month: '25.01', high: 43, mid: 21, low: 36 },
+];
+
+export const monthlyMemberActivity: MonthlyMemberActivityPoint[] = [
+  { month: '24.02', activeMembers: 75200, newSignups: 640 },
+  { month: '24.03', activeMembers: 76100, newSignups: 760 },
+  { month: '24.04', activeMembers: 75800, newSignups: 700 },
+  { month: '24.05', activeMembers: 77300, newSignups: 690 },
+  { month: '24.06', activeMembers: 78100, newSignups: 730 },
+  { month: '24.07', activeMembers: 77600, newSignups: 610 },
+  { month: '24.08', activeMembers: 79400, newSignups: 700 },
+  { month: '24.09', activeMembers: 80200, newSignups: 820 },
+  { month: '24.10', activeMembers: 79800, newSignups: 580 },
+  { month: '24.11', activeMembers: 81500, newSignups: 760 },
+  { month: '24.12', activeMembers: 82600, newSignups: 810 },
   {
-    quarter: '2024 Q4(예측)',
-    totalUsage: 132000,
-    high: 43,
-    mid: 21,
-    low: 36,
+    month: '25.01',
+    activeMembers: 83900,
+    newSignups: 870,
     predicted: true,
   },
 ];
@@ -26,10 +61,10 @@ export const quarterlyOverall: QuarterlyOverallPoint[] = [
 /* ── helpers ─────────────────────────────────────────────────── */
 function mkMonthly(
   baseUsage: number,
-  baseRisk: number,
   trend: 'declining' | 'stable' | 'growing',
 ): MonthlyPoint[] {
   const months = [
+    '24.04',
     '24.05',
     '24.06',
     '24.07',
@@ -40,17 +75,6 @@ function mkMonthly(
     '24.12',
     '25.01',
   ];
-  const predicted = [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    true,
-    true,
-    true,
-  ];
   return months.map((m, i) => {
     const usageMult =
       trend === 'declining'
@@ -58,64 +82,9 @@ function mkMonthly(
         : trend === 'growing'
           ? 1 + i * 0.03
           : 1 + (Math.random() - 0.5) * 0.06;
-    const riskMult =
-      trend === 'declining'
-        ? 1 + i * 0.06
-        : trend === 'growing'
-          ? 1 - i * 0.04
-          : 1 + (Math.random() - 0.5) * 0.04;
     return {
       month: m,
       usage: Math.round(baseUsage * usageMult * (0.92 + Math.random() * 0.16)),
-      riskScore: Math.min(
-        99,
-        Math.max(
-          5,
-          Math.round(baseRisk * riskMult * (0.93 + Math.random() * 0.14)),
-        ),
-      ),
-      predicted: predicted[i],
-    };
-  });
-}
-
-function mkQuarterly(
-  baseUsage: number,
-  baseRisk: number,
-  trend: 'declining' | 'stable' | 'growing',
-): QuarterUsage[] {
-  const quarters = [
-    'Q1 2024',
-    'Q2 2024',
-    'Q3 2024',
-    'Q4 2024(예)',
-    'Q1 2025(예)',
-  ];
-  const preds = [false, false, false, true, true];
-  return quarters.map((q, i) => {
-    const usageMult =
-      trend === 'declining'
-        ? 1 - i * 0.07
-        : trend === 'growing'
-          ? 1 + i * 0.05
-          : 1;
-    const riskMult =
-      trend === 'declining'
-        ? 1 + i * 0.08
-        : trend === 'growing'
-          ? 1 - i * 0.05
-          : 1;
-    return {
-      quarter: q,
-      usage: Math.round(baseUsage * usageMult * (0.9 + Math.random() * 0.2)),
-      riskScore: Math.min(
-        99,
-        Math.max(
-          5,
-          Math.round(baseRisk * riskMult * (0.92 + Math.random() * 0.16)),
-        ),
-      ),
-      predicted: preds[i],
     };
   });
 }
@@ -256,7 +225,16 @@ const LOW_TXN: Transaction[] = [
 ];
 
 /* ── 30명 더미 데이터 ────────────────────────────────────────── */
-export const customers: Customer[] = [
+const RAW_CUSTOMERS: Omit<
+  Customer,
+  | 'name'
+  | 'phoneNumber'
+  | 'cardProduct'
+  | 'joinedAt'
+  | 'gender'
+  | 'age'
+  | 'riskScoreTrend'
+>[] = [
   {
     id: 'CUS-10000',
     predictionScore: 81,
@@ -274,8 +252,7 @@ export const customers: Customer[] = [
       { label: '부가서비스 미이용', score: 13 },
       { label: '실적 조건 미충족', score: 3 },
     ],
-    monthly: mkMonthly(320, 81, 'declining'),
-    quarterly: mkQuarterly(980, 81, 'declining'),
+    monthly: mkMonthly(320, 'declining'),
     transactions: HIGH_TXN,
   },
   {
@@ -295,8 +272,7 @@ export const customers: Customer[] = [
       { label: '휴면 전환 임박', score: 11 },
       { label: '실적 조건 미충족', score: 6 },
     ],
-    monthly: mkMonthly(280, 94, 'declining'),
-    quarterly: mkQuarterly(870, 94, 'declining'),
+    monthly: mkMonthly(280, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.7),
@@ -319,8 +295,7 @@ export const customers: Customer[] = [
       { label: '연회비 대비 혜택 미사용', score: 14 },
       { label: '실적 조건 미충족', score: 8 },
     ],
-    monthly: mkMonthly(190, 77, 'declining'),
-    quarterly: mkQuarterly(590, 77, 'declining'),
+    monthly: mkMonthly(190, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.5),
@@ -343,8 +318,7 @@ export const customers: Customer[] = [
       { label: '부가서비스 미이용', score: 10 },
       { label: '실적 조건 미충족', score: 4 },
     ],
-    monthly: mkMonthly(240, 75, 'declining'),
-    quarterly: mkQuarterly(740, 75, 'declining'),
+    monthly: mkMonthly(240, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       date: t.date.replace('10', '09'),
@@ -367,8 +341,7 @@ export const customers: Customer[] = [
       { label: '연체 이력 발생', score: 16 },
       { label: '실적 조건 미충족', score: 7 },
     ],
-    monthly: mkMonthly(90, 97, 'declining'),
-    quarterly: mkQuarterly(290, 97, 'declining'),
+    monthly: mkMonthly(90, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.3),
@@ -391,8 +364,7 @@ export const customers: Customer[] = [
       { label: '연체 이력 발생', score: 12 },
       { label: '실적 조건 미충족', score: 5 },
     ],
-    monthly: mkMonthly(150, 93, 'declining'),
-    quarterly: mkQuarterly(470, 93, 'declining'),
+    monthly: mkMonthly(150, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.45),
@@ -415,8 +387,7 @@ export const customers: Customer[] = [
       { label: '연체 이력 발생', score: 11 },
       { label: '실적 조건 미충족', score: 5 },
     ],
-    monthly: mkMonthly(210, 85, 'declining'),
-    quarterly: mkQuarterly(660, 85, 'declining'),
+    monthly: mkMonthly(210, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.6),
@@ -439,8 +410,7 @@ export const customers: Customer[] = [
       { label: '부가서비스 미이용', score: 9 },
       { label: '실적 조건 미충족', score: 3 },
     ],
-    monthly: mkMonthly(170, 79, 'declining'),
-    quarterly: mkQuarterly(530, 79, 'declining'),
+    monthly: mkMonthly(170, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.55),
@@ -463,8 +433,7 @@ export const customers: Customer[] = [
       { label: '부가서비스 미이용', score: 10 },
       { label: '실적 조건 미충족', score: 4 },
     ],
-    monthly: mkMonthly(260, 83, 'declining'),
-    quarterly: mkQuarterly(800, 83, 'declining'),
+    monthly: mkMonthly(260, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.65),
@@ -487,8 +456,7 @@ export const customers: Customer[] = [
       { label: '부가서비스 미이용', score: 8 },
       { label: '실적 조건 미충족', score: 3 },
     ],
-    monthly: mkMonthly(300, 76, 'declining'),
-    quarterly: mkQuarterly(920, 76, 'declining'),
+    monthly: mkMonthly(300, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.8),
@@ -511,8 +479,7 @@ export const customers: Customer[] = [
       { label: '부가서비스 미이용', score: 9 },
       { label: '실적 조건 미충족', score: 4 },
     ],
-    monthly: mkMonthly(140, 88, 'declining'),
-    quarterly: mkQuarterly(440, 88, 'declining'),
+    monthly: mkMonthly(140, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.4),
@@ -535,8 +502,7 @@ export const customers: Customer[] = [
       { label: '휴면 전환 임박', score: 7 },
       { label: '실적 조건 미충족', score: 2 },
     ],
-    monthly: mkMonthly(220, 78, 'declining'),
-    quarterly: mkQuarterly(680, 78, 'declining'),
+    monthly: mkMonthly(220, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.58),
@@ -559,8 +525,7 @@ export const customers: Customer[] = [
       { label: '연체 이력 발생', score: 10 },
       { label: '실적 조건 미충족', score: 4 },
     ],
-    monthly: mkMonthly(110, 91, 'declining'),
-    quarterly: mkQuarterly(350, 91, 'declining'),
+    monthly: mkMonthly(110, 'declining'),
     transactions: HIGH_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.35),
@@ -583,8 +548,7 @@ export const customers: Customer[] = [
       { label: '휴면 전환 임박', score: 4 },
       { label: '실적 조건 미충족', score: 2 },
     ],
-    monthly: mkMonthly(380, 55, 'stable'),
-    quarterly: mkQuarterly(1160, 55, 'stable'),
+    monthly: mkMonthly(380, 'stable'),
     transactions: MID_TXN,
   },
   {
@@ -604,8 +568,7 @@ export const customers: Customer[] = [
       { label: '휴면 전환 임박', score: 4 },
       { label: '실적 조건 미충족', score: 1 },
     ],
-    monthly: mkMonthly(420, 62, 'stable'),
-    quarterly: mkQuarterly(1280, 62, 'stable'),
+    monthly: mkMonthly(420, 'stable'),
     transactions: MID_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.1),
@@ -628,8 +591,7 @@ export const customers: Customer[] = [
       { label: '휴면 전환 임박', score: 3 },
       { label: '실적 조건 미충족', score: 1 },
     ],
-    monthly: mkMonthly(290, 58, 'stable'),
-    quarterly: mkQuarterly(890, 58, 'stable'),
+    monthly: mkMonthly(290, 'stable'),
     transactions: MID_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.9),
@@ -652,8 +614,7 @@ export const customers: Customer[] = [
       { label: '휴면 전환 임박', score: 5 },
       { label: '실적 조건 미충족', score: 2 },
     ],
-    monthly: mkMonthly(340, 67, 'stable'),
-    quarterly: mkQuarterly(1040, 67, 'stable'),
+    monthly: mkMonthly(340, 'stable'),
     transactions: MID_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.05),
@@ -676,8 +637,7 @@ export const customers: Customer[] = [
       { label: '휴면 전환 임박', score: 3 },
       { label: '실적 조건 미충족', score: 1 },
     ],
-    monthly: mkMonthly(460, 51, 'stable'),
-    quarterly: mkQuarterly(1400, 51, 'stable'),
+    monthly: mkMonthly(460, 'stable'),
     transactions: MID_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.15),
@@ -700,8 +660,7 @@ export const customers: Customer[] = [
       { label: '휴면 전환 임박', score: 3 },
       { label: '실적 조건 미충족', score: 1 },
     ],
-    monthly: mkMonthly(310, 60, 'stable'),
-    quarterly: mkQuarterly(960, 60, 'stable'),
+    monthly: mkMonthly(310, 'stable'),
     transactions: MID_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.95),
@@ -724,8 +683,7 @@ export const customers: Customer[] = [
       { label: '타사 카드 신규 발급 이력', score: 2 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(680, 25, 'growing'),
-    quarterly: mkQuarterly(2060, 25, 'growing'),
+    monthly: mkMonthly(680, 'growing'),
     transactions: LOW_TXN,
   },
   {
@@ -745,8 +703,7 @@ export const customers: Customer[] = [
       { label: '타사 카드 신규 발급 이력', score: 1 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(920, 18, 'growing'),
-    quarterly: mkQuarterly(2800, 18, 'growing'),
+    monthly: mkMonthly(920, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.3),
@@ -769,8 +726,7 @@ export const customers: Customer[] = [
       { label: '타사 카드 신규 발급 이력', score: 2 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(560, 32, 'growing'),
-    quarterly: mkQuarterly(1710, 32, 'growing'),
+    monthly: mkMonthly(560, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.9),
@@ -793,8 +749,7 @@ export const customers: Customer[] = [
       { label: '타사 카드 신규 발급 이력', score: 1 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(780, 22, 'growing'),
-    quarterly: mkQuarterly(2380, 22, 'growing'),
+    monthly: mkMonthly(780, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.1),
@@ -817,8 +772,7 @@ export const customers: Customer[] = [
       { label: '타사 카드 신규 발급 이력', score: 1 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(640, 29, 'growing'),
-    quarterly: mkQuarterly(1950, 29, 'growing'),
+    monthly: mkMonthly(640, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.95),
@@ -841,8 +795,7 @@ export const customers: Customer[] = [
       { label: '타사 카드 신규 발급 이력', score: 1 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(1100, 15, 'growing'),
-    quarterly: mkQuarterly(3350, 15, 'growing'),
+    monthly: mkMonthly(1100, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.5),
@@ -865,8 +818,7 @@ export const customers: Customer[] = [
       { label: '타사 카드 신규 발급 이력', score: 1 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(510, 37, 'growing'),
-    quarterly: mkQuarterly(1560, 37, 'growing'),
+    monthly: mkMonthly(510, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.85),
@@ -889,8 +841,7 @@ export const customers: Customer[] = [
       { label: '타사 카드 신규 발급 이력', score: 1 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(840, 20, 'growing'),
-    quarterly: mkQuarterly(2560, 20, 'growing'),
+    monthly: mkMonthly(840, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.2),
@@ -913,8 +864,7 @@ export const customers: Customer[] = [
       { label: '타사 카드 신규 발급 이력', score: 1 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(720, 27, 'growing'),
-    quarterly: mkQuarterly(2200, 27, 'growing'),
+    monthly: mkMonthly(720, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 1.05),
@@ -937,8 +887,7 @@ export const customers: Customer[] = [
       { label: '타사 카드 신규 발급 이력', score: 1 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(580, 33, 'growing'),
-    quarterly: mkQuarterly(1770, 33, 'growing'),
+    monthly: mkMonthly(580, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.92),
@@ -961,11 +910,109 @@ export const customers: Customer[] = [
       { label: '타사 카드 신규 발급 이력', score: 2 },
       { label: '휴면 전환 임박', score: 1 },
     ],
-    monthly: mkMonthly(490, 41, 'growing'),
-    quarterly: mkQuarterly(1490, 41, 'growing'),
+    monthly: mkMonthly(490, 'growing'),
     transactions: LOW_TXN.map((t) => ({
       ...t,
       amount: Math.round(t.amount * 0.88),
     })),
   },
 ];
+
+const GENDERS: Customer['gender'][] = ['남', '여'];
+
+const CARD_PRODUCTS = [
+  'IBK 드림 체크카드',
+  'IBK 알뜰 신용카드',
+  'IBK 탄탄대로 카드',
+  'IBK 참! 좋은 카드',
+  'IBK 오하필 체크카드',
+];
+
+const NAMES = [
+  '김민준',
+  '이서연',
+  '박도윤',
+  '최지우',
+  '정하준',
+  '강서윤',
+  '조은우',
+  '윤지호',
+  '장하은',
+  '임도현',
+  '한소율',
+  '오준서',
+  '서지안',
+  '신다은',
+  '권민재',
+  '황서준',
+  '안수아',
+  '송예준',
+  '류지훈',
+  '전서현',
+  '홍시우',
+  '문가은',
+  '손우진',
+  '배은서',
+  '노준영',
+  '남지원',
+  '심하윤',
+  '허준혁',
+  '주다인',
+  '구민서',
+];
+
+function buildJoinedAt(index: number) {
+  const year = 2016 + (index % 8);
+  const month = String(1 + ((index * 3) % 12)).padStart(2, '0');
+  const day = String(1 + ((index * 5) % 28)).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function buildPhoneNumber(index: number) {
+  const middle = String(1000 + ((index * 37) % 9000));
+  const last = String(1000 + ((index * 53) % 9000));
+  return `010-${middle}-${last}`;
+}
+
+function mkRiskScoreTrend(
+  currentScore: number,
+  monthly: MonthlyPoint[],
+): RiskScoreTrendPoint[] {
+  const months = monthly.slice(-4).map((point) => point.month);
+  const usageStart = monthly[0]?.usage ?? 0;
+  const usageEnd = monthly[monthly.length - 1]?.usage ?? 0;
+  const perStepDelta =
+    usageEnd < usageStart * 0.97 ? 6 : usageEnd > usageStart * 1.03 ? -5 : 0;
+
+  return months.map((month, index) => {
+    const stepsFromNow = months.length - 1 - index;
+    if (stepsFromNow === 0) {
+      return { month, score: currentScore };
+    }
+    const noise = Math.round((Math.random() - 0.5) * 6);
+    const score = Math.min(
+      99,
+      Math.max(5, currentScore - perStepDelta * stepsFromNow + noise),
+    );
+    return { month, score };
+  });
+}
+
+export const customers: Customer[] = RAW_CUSTOMERS.map((customer, index) => {
+  const age = 24 + ((index * 13) % 42);
+  const gender = GENDERS[index % 2];
+
+  return {
+    ...customer,
+    name: NAMES[index % NAMES.length],
+    phoneNumber: buildPhoneNumber(index),
+    cardProduct: CARD_PRODUCTS[index % CARD_PRODUCTS.length],
+    joinedAt: buildJoinedAt(index),
+    gender,
+    age,
+    riskScoreTrend: mkRiskScoreTrend(
+      customer.predictionScore,
+      customer.monthly,
+    ),
+  };
+});

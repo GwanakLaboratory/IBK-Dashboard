@@ -1,4 +1,9 @@
-import { customers as dummyCustomers, quarterlyOverall } from '@/data/dummy';
+import {
+  customers as dummyCustomers,
+  monthlyMemberActivity,
+  monthlyRiskDistribution,
+  monthlyTotalUsage,
+} from '@/data/dummy';
 import type { Customer } from '@/types/churn';
 
 // Reasons are sorted by score (highest first) so that consumers can safely
@@ -11,4 +16,4 @@ export const customers: Customer[] = dummyCustomers.map((customer) => ({
   ),
 }));
 
-export { quarterlyOverall };
+export { monthlyMemberActivity, monthlyRiskDistribution, monthlyTotalUsage };

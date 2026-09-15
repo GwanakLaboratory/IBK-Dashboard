@@ -1,6 +1,6 @@
 import {
-  Area,
-  AreaChart,
+  Bar,
+  BarChart,
   CartesianGrid,
   ResponsiveContainer,
   Tooltip,
@@ -8,25 +8,28 @@ import {
   YAxis,
 } from 'recharts';
 import { RISK_LEVEL_META } from '@/utils/risk';
-import type { QuarterlyOverallPoint } from '@/types/churn';
 
-type RiskRatioTrendChartProps = {
-  quarterlyOverall: QuarterlyOverallPoint[];
+type ChurnScoreHistogramPoint = {
+  month: string;
+  high: number;
+  mid: number;
+  low: number;
 };
 
-export function RiskRatioTrendChart({
-  quarterlyOverall,
-}: RiskRatioTrendChartProps) {
+type ChurnScoreHistogramChartProps = {
+  data: ChurnScoreHistogramPoint[];
+};
+
+export function ChurnScoreHistogramChart({
+  data,
+}: ChurnScoreHistogramChartProps) {
   return (
     <div className="h-64">
       <ResponsiveContainer width="100%" height="95%">
-        <AreaChart
-          data={quarterlyOverall}
-          margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
-        >
+        <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
           <XAxis
-            dataKey="quarter"
+            dataKey="month"
             tick={{ fontSize: 12, fill: '#9ca3af' }}
             axisLine={false}
             tickLine={false}
@@ -36,7 +39,7 @@ export function RiskRatioTrendChart({
             axisLine={false}
             tickLine={false}
             width={40}
-            tickFormatter={(value: number) => `${value}%`}
+            tickFormatter={(value: number) => `${(value / 10000).toFixed(1)}만`}
           />
           <Tooltip
             content={({ active, label, payload }) => {
@@ -53,41 +56,35 @@ export function RiskRatioTrendChart({
                     .map((entry, entryIndex) => (
                       <p key={entryIndex} className="text-sm text-gray-900">
                         {entry.name}:{' '}
-                        <span className="font-semibold">{entry.value}%</span>
+                        <span className="font-semibold">
+                          {Number(entry.value).toLocaleString('ko-KR')}명
+                        </span>
                       </p>
                     ))}
                 </div>
               );
             }}
           />
-          <Area
-            type="monotone"
+          <Bar
             dataKey="low"
             name={RISK_LEVEL_META.low.label}
-            stackId="risk-ratio"
-            stroke={RISK_LEVEL_META.low.chartColor}
+            stackId="churn-score"
             fill={RISK_LEVEL_META.low.chartColor}
-            fillOpacity={0.35}
           />
-          <Area
-            type="monotone"
+          <Bar
             dataKey="mid"
             name={RISK_LEVEL_META.medium.label}
-            stackId="risk-ratio"
-            stroke={RISK_LEVEL_META.medium.chartColor}
+            stackId="churn-score"
             fill={RISK_LEVEL_META.medium.chartColor}
-            fillOpacity={0.35}
           />
-          <Area
-            type="monotone"
+          <Bar
             dataKey="high"
             name={RISK_LEVEL_META.high.label}
-            stackId="risk-ratio"
-            stroke={RISK_LEVEL_META.high.chartColor}
+            stackId="churn-score"
             fill={RISK_LEVEL_META.high.chartColor}
-            fillOpacity={0.35}
+            radius={[4, 4, 0, 0]}
           />
-        </AreaChart>
+        </BarChart>
       </ResponsiveContainer>
       <div className="mt-2 flex items-center justify-center gap-4 text-xs text-gray-500">
         <span className="flex items-center gap-1.5">
@@ -100,16 +97,16 @@ export function RiskRatioTrendChart({
         <span className="flex items-center gap-1.5">
           <span
             className="h-2.5 w-2.5 rounded-full"
-            style={{ backgroundColor: RISK_LEVEL_META.low.chartColor }}
+            style={{ backgroundColor: RISK_LEVEL_META.medium.chartColor }}
           />
-          {RISK_LEVEL_META.low.label}
+          {RISK_LEVEL_META.medium.label}
         </span>
         <span className="flex items-center gap-1.5">
           <span
             className="h-2.5 w-2.5 rounded-full"
-            style={{ backgroundColor: RISK_LEVEL_META.medium.chartColor }}
+            style={{ backgroundColor: RISK_LEVEL_META.low.chartColor }}
           />
-          {RISK_LEVEL_META.medium.label}
+          {RISK_LEVEL_META.low.label}
         </span>
       </div>
     </div>
