@@ -3,27 +3,10 @@ import type {
   MonthlyMemberActivityPoint,
   MonthlyPoint,
   MonthlyRiskDistributionPoint,
-  QuarterlyOverallPoint,
   Transaction,
 } from '@/types/churn';
 
 /* ── 홈 대시보드 집계 데이터 ─────────────────────────────────── */
-export const quarterlyOverall: QuarterlyOverallPoint[] = [
-  { quarter: '2023 Q3', totalUsage: 142800, high: 20, mid: 25, low: 55 },
-  { quarter: '2023 Q4', totalUsage: 158400, high: 23, mid: 27, low: 50 },
-  { quarter: '2024 Q1', totalUsage: 173200, high: 28, mid: 22, low: 50 },
-  { quarter: '2024 Q2', totalUsage: 161000, high: 33, mid: 24, low: 43 },
-  { quarter: '2024 Q3', totalUsage: 148600, high: 37, mid: 23, low: 40 },
-  {
-    quarter: '2024 Q4(예측)',
-    totalUsage: 132000,
-    high: 43,
-    mid: 21,
-    low: 36,
-    predicted: true,
-  },
-];
-
 export const monthlyTotalUsage: MonthlyPoint[] = [
   { month: '24.02', usage: 58200 },
   { month: '24.03', usage: 57100 },

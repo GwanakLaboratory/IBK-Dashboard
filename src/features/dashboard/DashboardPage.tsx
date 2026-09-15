@@ -14,9 +14,7 @@ import { MemberActivityTrendChart } from '@/features/dashboard/MemberActivityTre
 import { MonthlyRiskDistributionTrendChart } from '@/features/dashboard/MonthlyRiskDistributionTrendChart';
 import { MonthlyUsageTrendChart } from '@/features/dashboard/MonthlyUsageTrendChart';
 import { NewSignupTrendChart } from '@/features/dashboard/NewSignupTrendChart';
-import { QuarterlyUsageChart } from '@/features/dashboard/QuarterlyUsageChart';
 import { RiskDistributionChart } from '@/features/dashboard/RiskDistributionChart';
-import { RiskRatioTrendChart } from '@/features/dashboard/RiskRatioTrendChart';
 import { RiskSummaryTable } from '@/features/dashboard/RiskSummaryTable';
 import { getAverageReasonImpact } from '@/features/reason-analysis/reasonAnalytics';
 import {
@@ -24,7 +22,6 @@ import {
   monthlyMemberActivity,
   monthlyRiskDistribution,
   monthlyTotalUsage,
-  quarterlyOverall,
 } from '@/data/customers';
 import { countCustomersByRiskLevel } from '@/utils/risk';
 
@@ -127,21 +124,6 @@ export function DashboardPage() {
             countsByRiskLevel={countsByRiskLevel}
             totalCustomerCount={totalCustomerCount}
           />
-        </Card>
-      </CardGrid>
-
-      <CardGrid columns={2} breakpoint="lg">
-        <Card
-          title="분기별 전체 카드 사용액 추이"
-          description="단위: 만원 (점선=예측)"
-        >
-          <QuarterlyUsageChart quarterlyOverall={quarterlyOverall} />
-        </Card>
-        <Card
-          title="분기별 위험도 비율 추이"
-          description="위험 / 중위험 / 저위험 구성비 (%)"
-        >
-          <RiskRatioTrendChart quarterlyOverall={quarterlyOverall} />
         </Card>
       </CardGrid>
     </div>

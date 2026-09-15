@@ -35,15 +35,6 @@ export type Customer = {
   transactions: Transaction[];
 };
 
-export type QuarterlyOverallPoint = {
-  quarter: string;
-  totalUsage: number;
-  high: number;
-  mid: number;
-  low: number;
-  predicted?: boolean;
-};
-
 export type MonthlyMemberActivityPoint = {
   month: string; // "24.02"
   activeMembers: number; // 카드 이용 중인 회원 수
