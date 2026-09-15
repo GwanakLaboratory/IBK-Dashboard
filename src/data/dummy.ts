@@ -2,6 +2,7 @@ import type {
   Customer,
   MonthlyMemberActivityPoint,
   MonthlyPoint,
+  MonthlyRiskDistributionPoint,
   QuarterlyOverallPoint,
   Transaction,
 } from '@/types/churn';
@@ -36,6 +37,21 @@ export const monthlyTotalUsage: MonthlyPoint[] = [
   { month: '24.11', usage: 46500 },
   { month: '24.12', usage: 44800 },
   { month: '25.01', usage: 43200 },
+];
+
+export const monthlyRiskDistribution: MonthlyRiskDistributionPoint[] = [
+  { month: '24.02', high: 26, mid: 24, low: 50 },
+  { month: '24.03', high: 27, mid: 23, low: 50 },
+  { month: '24.04', high: 29, mid: 22, low: 49 },
+  { month: '24.05', high: 31, mid: 23, low: 46 },
+  { month: '24.06', high: 33, mid: 24, low: 43 },
+  { month: '24.07', high: 35, mid: 23, low: 42 },
+  { month: '24.08', high: 36, mid: 23, low: 41 },
+  { month: '24.09', high: 38, mid: 22, low: 40 },
+  { month: '24.10', high: 39, mid: 22, low: 39 },
+  { month: '24.11', high: 41, mid: 21, low: 38 },
+  { month: '24.12', high: 42, mid: 21, low: 37 },
+  { month: '25.01', high: 43, mid: 21, low: 36 },
 ];
 
 export const monthlyMemberActivity: MonthlyMemberActivityPoint[] = [

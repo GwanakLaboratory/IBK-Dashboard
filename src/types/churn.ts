@@ -50,3 +50,10 @@ export type MonthlyMemberActivityPoint = {
   newSignups: number; // 신규 가입 회원 수
   predicted?: boolean;
 };
+
+export type MonthlyRiskDistributionPoint = {
+  month: string; // "24.02"
+  high: number; // 위험 비율(%)
+  mid: number; // 중위험 비율(%)
+  low: number; // 저위험 비율(%)
+};

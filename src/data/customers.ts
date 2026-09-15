@@ -1,6 +1,7 @@
 import {
   customers as dummyCustomers,
   monthlyMemberActivity,
+  monthlyRiskDistribution,
   monthlyTotalUsage,
   quarterlyOverall,
 } from '@/data/dummy';
@@ -16,4 +17,9 @@ export const customers: Customer[] = dummyCustomers.map((customer) => ({
   ),
 }));
 
-export { monthlyMemberActivity, monthlyTotalUsage, quarterlyOverall };
+export {
+  monthlyMemberActivity,
+  monthlyRiskDistribution,
+  monthlyTotalUsage,
+  quarterlyOverall,
+};
