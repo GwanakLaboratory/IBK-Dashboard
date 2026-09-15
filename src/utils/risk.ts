@@ -53,15 +53,3 @@ export function getRiskLevelRank(riskLevel: RiskLevel) {
 export function getTopReason(customer: Customer) {
   return customer.churnReasons[0];
 }
-
-export function countCustomersByRiskLevel(customers: Customer[]) {
-  const countsByRiskLevel: Record<RiskLevel, number> = {
-    low: 0,
-    medium: 0,
-    high: 0,
-  };
-  for (const customer of customers) {
-    countsByRiskLevel[customer.riskLevel] += 1;
-  }
-  return countsByRiskLevel;
-}

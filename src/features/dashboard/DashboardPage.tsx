@@ -23,15 +23,9 @@ import {
   monthlyRiskDistribution,
   monthlyTotalUsage,
 } from '@/data/customers';
-import { countCustomersByRiskLevel } from '@/utils/risk';
+import type { RiskLevel } from '@/types/churn';
 
 export function DashboardPage() {
-  const countsByRiskLevel = useMemo(
-    () => countCustomersByRiskLevel(customers),
-    [],
-  );
-  const totalCustomerCount = customers.length;
-
   const latestUsage = monthlyTotalUsage[monthlyTotalUsage.length - 1];
   const latestActivity =
     monthlyMemberActivity[monthlyMemberActivity.length - 1];
@@ -40,6 +34,15 @@ export function DashboardPage() {
   const latestHighRiskCount = Math.round(
     (latestActivity.activeMembers * latestRiskDistribution.high) / 100,
   );
+  const latestRiskCounts: Record<RiskLevel, number> = {
+    high: latestHighRiskCount,
+    medium: Math.round(
+      (latestActivity.activeMembers * latestRiskDistribution.mid) / 100,
+    ),
+    low: Math.round(
+      (latestActivity.activeMembers * latestRiskDistribution.low) / 100,
+    ),
+  };
   const topReason = useMemo(() => getAverageReasonImpact(customers)[0], []);
 
   return (
@@ -115,14 +118,14 @@ export function DashboardPage() {
 
         <Card title="위험도 분포" description="전체 회원의 위험도별 구성비">
           <RiskDistributionChart
-            countsByRiskLevel={countsByRiskLevel}
-            totalCustomerCount={totalCustomerCount}
+            countsByRiskLevel={latestRiskCounts}
+            totalCustomerCount={latestActivity.activeMembers}
           />
         </Card>
         <Card title="위험도별 인원 현황" description="위험도 단계별 회원 수">
           <RiskSummaryTable
-            countsByRiskLevel={countsByRiskLevel}
-            totalCustomerCount={totalCustomerCount}
+            countsByRiskLevel={latestRiskCounts}
+            totalCustomerCount={latestActivity.activeMembers}
           />
         </Card>
       </CardGrid>

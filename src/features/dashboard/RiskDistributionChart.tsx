@@ -81,7 +81,7 @@ export function RiskDistributionChart({
                       </span>
                     </div>
                     <p className="mt-1 text-sm font-semibold text-gray-900">
-                      {hoveredSlice.count}명
+                      {hoveredSlice.count.toLocaleString('ko-KR')}명
                       <span className="ml-1 text-xs font-normal text-gray-400">
                         ({sliceRatio.toFixed(1)}%)
                       </span>
@@ -114,7 +114,8 @@ export function RiskDistributionChart({
               />
               <span className="font-medium text-gray-700">{slice.label}</span>
               <span className="text-gray-400">
-                {slice.count}명 ({sliceRatio.toFixed(1)}%)
+                {slice.count.toLocaleString('ko-KR')}명 ({sliceRatio.toFixed(1)}
+                %)
               </span>
             </li>
           );

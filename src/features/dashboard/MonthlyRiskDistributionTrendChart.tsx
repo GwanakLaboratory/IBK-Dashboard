@@ -100,16 +100,16 @@ export function MonthlyRiskDistributionTrendChart({
         <span className="flex items-center gap-1.5">
           <span
             className="h-2.5 w-2.5 rounded-full"
-            style={{ backgroundColor: RISK_LEVEL_META.low.chartColor }}
+            style={{ backgroundColor: RISK_LEVEL_META.medium.chartColor }}
           />
-          {RISK_LEVEL_META.low.label}
+          {RISK_LEVEL_META.medium.label}
         </span>
         <span className="flex items-center gap-1.5">
           <span
             className="h-2.5 w-2.5 rounded-full"
-            style={{ backgroundColor: RISK_LEVEL_META.medium.chartColor }}
+            style={{ backgroundColor: RISK_LEVEL_META.low.chartColor }}
           />
-          {RISK_LEVEL_META.medium.label}
+          {RISK_LEVEL_META.low.label}
         </span>
       </div>
     </div>
