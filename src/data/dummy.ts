@@ -1,5 +1,6 @@
 import type {
   Customer,
+  MonthlyMemberActivityPoint,
   MonthlyPoint,
   QuarterlyOverallPoint,
   QuarterUsage,
@@ -19,6 +20,26 @@ export const quarterlyOverall: QuarterlyOverallPoint[] = [
     high: 43,
     mid: 21,
     low: 36,
+    predicted: true,
+  },
+];
+
+export const monthlyMemberActivity: MonthlyMemberActivityPoint[] = [
+  { month: '24.02', activeMembers: 75200, newSignups: 640 },
+  { month: '24.03', activeMembers: 76100, newSignups: 760 },
+  { month: '24.04', activeMembers: 75800, newSignups: 700 },
+  { month: '24.05', activeMembers: 77300, newSignups: 690 },
+  { month: '24.06', activeMembers: 78100, newSignups: 730 },
+  { month: '24.07', activeMembers: 77600, newSignups: 610 },
+  { month: '24.08', activeMembers: 79400, newSignups: 700 },
+  { month: '24.09', activeMembers: 80200, newSignups: 820 },
+  { month: '24.10', activeMembers: 79800, newSignups: 580 },
+  { month: '24.11', activeMembers: 81500, newSignups: 760 },
+  { month: '24.12', activeMembers: 82600, newSignups: 810 },
+  {
+    month: '25.01',
+    activeMembers: 83900,
+    newSignups: 870,
     predicted: true,
   },
 ];

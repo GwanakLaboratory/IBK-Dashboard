@@ -53,3 +53,10 @@ export type QuarterlyOverallPoint = {
   low: number;
   predicted?: boolean;
 };
+
+export type MonthlyMemberActivityPoint = {
+  month: string; // "24.02"
+  activeMembers: number; // 카드 이용 중인 회원 수
+  newSignups: number; // 신규 가입 회원 수
+  predicted?: boolean;
+};

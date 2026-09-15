@@ -4,12 +4,18 @@ import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
 import { StatCard } from '@/components/molecules/StatCard';
+import { MemberActivityTrendChart } from '@/features/dashboard/MemberActivityTrendChart';
+import { NewSignupTrendChart } from '@/features/dashboard/NewSignupTrendChart';
 import { QuarterlyUsageChart } from '@/features/dashboard/QuarterlyUsageChart';
 import { RiskDistributionChart } from '@/features/dashboard/RiskDistributionChart';
 import { RiskRatioTrendChart } from '@/features/dashboard/RiskRatioTrendChart';
 import { RiskSummaryTable } from '@/features/dashboard/RiskSummaryTable';
 import { TopRiskCustomersTable } from '@/features/dashboard/TopRiskCustomersTable';
-import { customers, quarterlyOverall } from '@/data/customers';
+import {
+  customers,
+  monthlyMemberActivity,
+  quarterlyOverall,
+} from '@/data/customers';
 import { countCustomersByRiskLevel } from '@/utils/risk';
 
 const TOP_RISK_CUSTOMER_COUNT = 5;
@@ -76,6 +82,23 @@ export function DashboardPage() {
           indicator={<RiskIndicator riskLevel="low" />}
         />
         <StatCard label="평균 예측점수" value={`${averagePredictionScore}점`} />
+      </CardGrid>
+
+      <CardGrid columns={2} breakpoint="lg">
+        <Card
+          title="이용 가능 회원수 추이"
+          description="월별 카드 이용 회원수 및 신규 가입자 추이 (최근 12개월)"
+        >
+          <MemberActivityTrendChart
+            monthlyMemberActivity={monthlyMemberActivity}
+          />
+        </Card>
+        <Card
+          title="신규 가입자 추이"
+          description="월별 신규 가입 회원 수 (최근 12개월)"
+        >
+          <NewSignupTrendChart monthlyMemberActivity={monthlyMemberActivity} />
+        </Card>
       </CardGrid>
 
       <CardGrid columns={2} breakpoint="lg">
