@@ -4,19 +4,23 @@ import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
 import { Pagination } from '@/components/molecules/Pagination';
+import { ChurnScoreHistogramChart } from '@/features/customer-detail/ChurnScoreHistogramChart';
 import { CustomerSearchBar } from '@/features/customer-detail/CustomerSearchBar';
 import {
   CustomerTable,
   type SortableColumnKey,
   type SortDirection,
 } from '@/features/customer-detail/CustomerTable';
-import { customers } from '@/data/customers';
+import { customers, monthlyMemberActivity } from '@/data/customers';
 import {
   RISK_LEVEL_META,
   RISK_LEVEL_DISPLAY_ORDER,
   getRiskLevelRank,
 } from '@/utils/risk';
 import type { RiskLevel } from '@/types/churn';
+
+const HIGH_RISK_SHARE = 0.05;
+const MID_RISK_SHARE = 0.15;
 
 type RiskLevelFilter = RiskLevel | 'all';
 
@@ -37,7 +41,9 @@ export function CustomerDetailPage() {
     return customers.filter((customer) => {
       const matchesSearchKeyword =
         !normalizedSearchKeyword ||
-        customer.id.toLowerCase().includes(normalizedSearchKeyword);
+        customer.id.toLowerCase().includes(normalizedSearchKeyword) ||
+        customer.name.toLowerCase().includes(normalizedSearchKeyword) ||
+        customer.phoneNumber.includes(normalizedSearchKeyword);
       const matchesRiskLevelFilter =
         riskLevelFilter === 'all' || customer.riskLevel === riskLevelFilter;
 
@@ -45,6 +51,17 @@ export function CustomerDetailPage() {
     });
   }, [normalizedSearchKeyword, riskLevelFilter]);
   const hasFilteredCustomers = filteredCustomers.length > 0;
+
+  const churnScoreHistogramData = useMemo(
+    () =>
+      monthlyMemberActivity.map((point) => {
+        const high = Math.round(point.activeMembers * HIGH_RISK_SHARE);
+        const mid = Math.round(point.activeMembers * MID_RISK_SHARE);
+        const low = point.activeMembers - high - mid;
+        return { month: point.month, high, mid, low };
+      }),
+    [],
+  );
 
   const sortedCustomers = useMemo(() => {
     if (!sortColumnKey) {
@@ -94,6 +111,15 @@ export function CustomerDetailPage() {
   return (
     <div>
       <PageHeading title="회원별 상세" />
+
+      <CardGrid columns={1}>
+        <Card
+          title="회원 전체 이탈 스코어"
+          description="위험 / 중위험 / 저위험 구성 (최근 12개월)"
+        >
+          <ChurnScoreHistogramChart data={churnScoreHistogramData} />
+        </Card>
+      </CardGrid>
 
       <CustomerSearchBar
         value={searchKeyword}

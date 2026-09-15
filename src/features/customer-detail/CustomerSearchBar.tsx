@@ -17,8 +17,14 @@ export function CustomerSearchBar({
 
   function handleLookup() {
     const trimmedValue = value.trim();
+    if (!trimmedValue) {
+      return;
+    }
     const matchedCustomer = customers.find(
-      (customer) => customer.id === trimmedValue,
+      (customer) =>
+        customer.id === trimmedValue ||
+        customer.name === trimmedValue ||
+        customer.phoneNumber === trimmedValue,
     );
     if (matchedCustomer) {
       navigate(`/customer-detail/${matchedCustomer.id}`);
@@ -42,7 +48,7 @@ export function CustomerSearchBar({
             handleLookup();
           }
         }}
-        placeholder="회원번호 조회 (예: CUS-10000)"
+        placeholder="이름 / 전화번호 / 회원번호로 조회"
         className="flex-1"
       />
       <Button onClick={handleLookup}>조회</Button>
