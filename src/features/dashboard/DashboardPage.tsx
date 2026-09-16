@@ -83,6 +83,7 @@ export function DashboardPage() {
           value={topReason.label}
           helperText={`평균 기여점수 ${topReason.averageScore}점`}
           Icon={AlertCircle}
+          textSize="text-base"
         />
       </CardGrid>
 
@@ -95,7 +96,7 @@ export function DashboardPage() {
         </Card>
         <Card
           title="이용 가능 회원수 추이"
-          description="월별 카드 이용 회원수 추이 (최근 12개월)"
+          description="월별 카드 이용 회원수 및 신규 가입자 추이 (최근 12개월)"
         >
           <MemberActivityTrendChart
             monthlyMemberActivity={monthlyMemberActivity}
