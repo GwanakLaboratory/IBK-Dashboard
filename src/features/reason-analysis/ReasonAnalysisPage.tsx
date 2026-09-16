@@ -20,7 +20,7 @@ export function ReasonAnalysisPage() {
   return (
     <div>
       <PageHeading
-        title="이탈 이유 분석"
+        title="이탈 원인"
         description="이탈 이유별 평균 영향도 및 예측점수 분포를 분석합니다."
       />
 

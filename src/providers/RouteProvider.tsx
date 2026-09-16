@@ -5,7 +5,6 @@ import {
 } from 'react-router';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
-import { RiskSummaryPage } from '@/features/risk-summary/RiskSummaryPage';
 import { ReasonAnalysisPage } from '@/features/reason-analysis/ReasonAnalysisPage';
 import { CustomerDetailPage } from '@/features/customer-detail/CustomerDetailPage';
 import { CustomerProfilePage } from '@/features/customer-detail/CustomerProfilePage';
@@ -18,7 +17,6 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to={DEFAULT_PATH} replace /> },
       { path: '/dashboard', element: <DashboardPage /> },
-      { path: '/risk-summary', element: <RiskSummaryPage /> },
       { path: '/reason-analysis', element: <ReasonAnalysisPage /> },
       { path: '/customer-detail', element: <CustomerDetailPage /> },
       {

@@ -8,28 +8,29 @@ import {
   YAxis,
 } from 'recharts';
 import { RISK_LEVEL_META } from '@/utils/risk';
-import type { QuarterlyOverallPoint } from '@/types/churn';
+import type { MonthlyRiskDistributionPoint } from '@/types/churn';
 
-type RiskRatioTrendChartProps = {
-  quarterlyOverall: QuarterlyOverallPoint[];
+type MonthlyRiskDistributionTrendChartProps = {
+  monthlyRiskDistribution: MonthlyRiskDistributionPoint[];
 };
 
-export function RiskRatioTrendChart({
-  quarterlyOverall,
-}: RiskRatioTrendChartProps) {
+export function MonthlyRiskDistributionTrendChart({
+  monthlyRiskDistribution,
+}: MonthlyRiskDistributionTrendChartProps) {
   return (
     <div className="h-64">
       <ResponsiveContainer width="100%" height="95%">
         <AreaChart
-          data={quarterlyOverall}
+          data={monthlyRiskDistribution}
           margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
           <XAxis
-            dataKey="quarter"
+            dataKey="month"
             tick={{ fontSize: 12, fill: '#9ca3af' }}
             axisLine={false}
             tickLine={false}
+            interval={0}
           />
           <YAxis
             tick={{ fontSize: 12, fill: '#9ca3af' }}
@@ -64,7 +65,7 @@ export function RiskRatioTrendChart({
             type="monotone"
             dataKey="low"
             name={RISK_LEVEL_META.low.label}
-            stackId="risk-ratio"
+            stackId="risk-distribution"
             stroke={RISK_LEVEL_META.low.chartColor}
             fill={RISK_LEVEL_META.low.chartColor}
             fillOpacity={0.35}
@@ -73,7 +74,7 @@ export function RiskRatioTrendChart({
             type="monotone"
             dataKey="mid"
             name={RISK_LEVEL_META.medium.label}
-            stackId="risk-ratio"
+            stackId="risk-distribution"
             stroke={RISK_LEVEL_META.medium.chartColor}
             fill={RISK_LEVEL_META.medium.chartColor}
             fillOpacity={0.35}
@@ -82,7 +83,7 @@ export function RiskRatioTrendChart({
             type="monotone"
             dataKey="high"
             name={RISK_LEVEL_META.high.label}
-            stackId="risk-ratio"
+            stackId="risk-distribution"
             stroke={RISK_LEVEL_META.high.chartColor}
             fill={RISK_LEVEL_META.high.chartColor}
             fillOpacity={0.35}
@@ -100,16 +101,16 @@ export function RiskRatioTrendChart({
         <span className="flex items-center gap-1.5">
           <span
             className="h-2.5 w-2.5 rounded-full"
-            style={{ backgroundColor: RISK_LEVEL_META.low.chartColor }}
+            style={{ backgroundColor: RISK_LEVEL_META.medium.chartColor }}
           />
-          {RISK_LEVEL_META.low.label}
+          {RISK_LEVEL_META.medium.label}
         </span>
         <span className="flex items-center gap-1.5">
           <span
             className="h-2.5 w-2.5 rounded-full"
-            style={{ backgroundColor: RISK_LEVEL_META.medium.chartColor }}
+            style={{ backgroundColor: RISK_LEVEL_META.low.chartColor }}
           />
-          {RISK_LEVEL_META.medium.label}
+          {RISK_LEVEL_META.low.label}
         </span>
       </div>
     </div>

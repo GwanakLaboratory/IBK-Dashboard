@@ -28,16 +28,10 @@ export const NAV_GROUPS: NavGroup[] = [
         pageTitle: '대시보드',
       },
       {
-        tabKey: 'risk-summary',
-        path: '/risk-summary',
-        label: '위험도 현황',
-        pageTitle: '위험도 현황',
-      },
-      {
         tabKey: 'reason-analysis',
         path: '/reason-analysis',
-        label: '이탈 이유 분석',
-        pageTitle: '이탈 이유 분석',
+        label: '이탈 원인',
+        pageTitle: '이탈 원인',
       },
     ],
   },
