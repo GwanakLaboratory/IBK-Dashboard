@@ -30,8 +30,8 @@ export const NAV_GROUPS: NavGroup[] = [
       {
         tabKey: 'reason-analysis',
         path: '/reason-analysis',
-        label: '이탈 이유 분석',
-        pageTitle: '이탈 이유 분석',
+        label: '이탈 원인',
+        pageTitle: '이탈 원인',
       },
     ],
   },

@@ -6,17 +6,17 @@ export type ChurnReason = {
 };
 
 export type MonthlyPoint = {
-  month: string; // "24.01"
+  month: string; // "26.08"
   usage: number; // 만원 단위
 };
 
 export type RiskScoreTrendPoint = {
-  month: string; // "24.01"
+  month: string; // "26.08"
   score: number;
 };
 
 export type Transaction = {
-  date: string; // "2024-11-03"
+  date: string; // "2026-08-03"
   merchant: string;
   category: string;
   amount: number; // 원 단위
@@ -41,14 +41,14 @@ export type Customer = {
 };
 
 export type MonthlyMemberActivityPoint = {
-  month: string; // "24.02"
+  month: string; // "26.08"
   activeMembers: number; // 카드 이용 중인 회원 수
   newSignups: number; // 신규 가입 회원 수
   predicted?: boolean;
 };
 
 export type MonthlyRiskDistributionPoint = {
-  month: string; // "24.02"
+  month: string; // "26.08"
   high: number; // 위험 비율(%)
   mid: number; // 중위험 비율(%)
   low: number; // 저위험 비율(%)

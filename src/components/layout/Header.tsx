@@ -2,7 +2,7 @@ import { Button } from '@/components/atoms/Button';
 import { Divider } from '@/components/atoms/Divider';
 import { LogOut } from 'lucide-react';
 
-const DASHBOARD_TITLE = 'IBK 대시보드';
+const DASHBOARD_TITLE = 'IBK CARD RISK INSIGHT';
 const CURRENT_USER_DEPARTMENT = '카드사업부';
 const CURRENT_USER_NAME = 'IBK';
 
@@ -14,7 +14,9 @@ export function Header() {
   return (
     <header className="shrink-0 border-b border-gray-200 bg-white">
       <div className="flex items-center justify-between px-6 py-3">
-        <h1 className="text-lg font-medium text-primary">{DASHBOARD_TITLE}</h1>
+        <h1 className="text-lg font-semibold text-gray-900">
+          {DASHBOARD_TITLE}
+        </h1>
         <div className="flex items-center gap-5">
           <div className="flex gap-3 text-xs text-gray-600">
             <span>{CURRENT_USER_DEPARTMENT}</span>
