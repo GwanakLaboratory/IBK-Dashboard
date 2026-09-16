@@ -55,7 +55,7 @@ export function RiskSummaryTable({
       </table>
       <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
         <span className="text-sm text-gray-500">전체 회원</span>
-        <span className="text-2xl font-bold text-gray-900">
+        <span className="text-base font-semibold text-gray-900">
           {totalCustomerCount.toLocaleString('ko-KR')}명
         </span>
       </div>

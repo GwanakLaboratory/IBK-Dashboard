@@ -19,7 +19,7 @@ export function MonthlyUsageTrendChart({
   monthlyTotalUsage,
 }: MonthlyUsageTrendChartProps) {
   return (
-    <div className="h-64">
+    <div className="h-[308px]">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={monthlyTotalUsage}
@@ -31,6 +31,7 @@ export function MonthlyUsageTrendChart({
             tick={{ fontSize: 12, fill: '#9ca3af' }}
             axisLine={false}
             tickLine={false}
+            interval={0}
           />
           <YAxis
             tick={{ fontSize: 12, fill: '#9ca3af' }}

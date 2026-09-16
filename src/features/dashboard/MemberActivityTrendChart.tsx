@@ -135,6 +135,7 @@ export function MemberActivityTrendChart({
               tick={{ fontSize: 12, fill: '#9ca3af' }}
               axisLine={false}
               tickLine={false}
+              interval={0}
             />
             <YAxis
               tick={{ fontSize: 11, fill: '#9ca3af' }}
