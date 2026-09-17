@@ -1,6 +1,8 @@
+import { ibkCreditCardInfos } from '@/data/ibkCreditCardInfo';
 import type {
   CreditScoreHistoryPoint,
   Customer,
+  IbkCreditCardInfo,
   MonthlyMemberActivityPoint,
   MonthlyPoint,
   MonthlyRiskDistributionPoint,
@@ -10,47 +12,16 @@ import type {
 } from '@/types/churn';
 
 /* ── 개인 신용카드 상품 목록 (법인카드 제외) ─────────────────────── */
-export const ibkCreditCards = [
-  '해피메이트 IBK카드',
-  'I-기후동행카드(신용)',
-  'IBK포인트3.8 토스 제휴카드',
-  'IBK포인트(신용)',
-  'IBK포인트3.8(신용)',
-  '한국감정평가사협회 The Value',
-  '한국감정평가사협회 The Highness',
-  'IBK KaPick',
-  'I-어디로든 그린카드',
-  'I-PET',
-  'K-패스(신용)',
-  'I-나눔(일반)',
-  'I-나눔(아동,장애)',
-  'I-나눔(동물,환경)',
-  'I-ALL',
-  'IBK 웰릭스 카드',
-  '모바일전용 일년의 설렘카드',
-  'DailyWith 데일리위드 카드',
-  '원에어(UniMile) 카드',
-  '코웨이 IBK 카드',
-  '쇼핑앤조이 카드',
-  '제주항공 Refresh Point 카드',
-  '참! 좋은 친구 청년동행카드(신용)',
-  'IBK-Hybrid(하이브리드)카드',
-  '참! 좋은 다이소카드(신용)',
-  '일상의 기쁨카드(신용)',
-  '일년의 설렘카드',
-  '그린카드 v2',
-  'kt텔레캅 안심 Plus 카드',
-  '용인시민카드(신용)',
-  'IBK-Syrup카드[신용]',
-  '국민행복카드[신용]',
-  '참! 좋은 kt wiz 카드[신용]',
-  'olleh Super DC IBK카드',
-  '자연드림IBK카드',
-  'IBK hi 카드',
-  'IBK 후불 하이패스 카드(개인)',
-  '아시아나클럽카드',
-  '대한항공 SKYPASS 카드',
-];
+export { ibkCreditCardInfos };
+
+export const ibkCreditCards = ibkCreditCardInfos.map(
+  (cardInfo) => cardInfo.name,
+);
+
+export const ibkCreditCardInfoByName: Record<string, IbkCreditCardInfo> =
+  Object.fromEntries(
+    ibkCreditCardInfos.map((cardInfo) => [cardInfo.name, cardInfo]),
+  );
 
 /* ── 홈 대시보드 집계 데이터 ─────────────────────────────────── */
 export const monthlyTotalUsage: MonthlyPoint[] = [

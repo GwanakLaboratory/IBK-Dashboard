@@ -60,3 +60,9 @@ export type MonthlyRiskDistributionPoint = {
   mid: number; // 중위험 비율(%)
   low: number; // 저위험 비율(%)
 };
+
+export type IbkCreditCardInfo = {
+  name: string;
+  benefitCategories: string[]; // IBK 맞춤카드찾기 '카드혜택' 필터 카테고리
+  brands: string[]; // IBK 맞춤카드찾기 '브랜드' 필터 브랜드
+};

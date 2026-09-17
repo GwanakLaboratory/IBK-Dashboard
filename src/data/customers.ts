@@ -1,5 +1,8 @@
 import {
   customers as dummyCustomers,
+  ibkCreditCardInfoByName,
+  ibkCreditCardInfos,
+  ibkCreditCards,
   monthlyMemberActivity,
   monthlyRiskDistribution,
   monthlyTotalUsage,
@@ -16,4 +19,11 @@ export const customers: Customer[] = dummyCustomers.map((customer) => ({
   ),
 }));
 
-export { monthlyMemberActivity, monthlyRiskDistribution, monthlyTotalUsage };
+export {
+  ibkCreditCardInfoByName,
+  ibkCreditCardInfos,
+  ibkCreditCards,
+  monthlyMemberActivity,
+  monthlyRiskDistribution,
+  monthlyTotalUsage,
+};
