@@ -23,13 +23,22 @@ const HIGH_RISK_SHARE = 0.05;
 const MID_RISK_SHARE = 0.15;
 
 type RiskLevelFilter = RiskLevel | 'all';
+type ProductNameFilter = string | 'all';
 
 const CUSTOMERS_PER_PAGE = 6;
+
+const PRODUCT_NAME_OPTIONS = Array.from(
+  new Set(customers.map((customer) => customer.productName)),
+).sort((productNameA, productNameB) =>
+  productNameA.localeCompare(productNameB, 'ko'),
+);
 
 export function CustomerDetailPage() {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [riskLevelFilter, setRiskLevelFilter] =
     useState<RiskLevelFilter>('all');
+  const [productNameFilter, setProductNameFilter] =
+    useState<ProductNameFilter>('all');
   const [sortColumnKey, setSortColumnKey] = useState<SortableColumnKey | null>(
     null,
   );
@@ -46,10 +55,17 @@ export function CustomerDetailPage() {
         customer.phoneNumber.includes(normalizedSearchKeyword);
       const matchesRiskLevelFilter =
         riskLevelFilter === 'all' || customer.riskLevel === riskLevelFilter;
+      const matchesProductNameFilter =
+        productNameFilter === 'all' ||
+        customer.productName === productNameFilter;
 
-      return matchesSearchKeyword && matchesRiskLevelFilter;
+      return (
+        matchesSearchKeyword &&
+        matchesRiskLevelFilter &&
+        matchesProductNameFilter
+      );
     });
-  }, [normalizedSearchKeyword, riskLevelFilter]);
+  }, [normalizedSearchKeyword, riskLevelFilter, productNameFilter]);
   const hasFilteredCustomers = filteredCustomers.length > 0;
 
   const churnScoreHistogramData = useMemo(
@@ -95,7 +111,7 @@ export function CustomerDetailPage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [normalizedSearchKeyword, riskLevelFilter]);
+  }, [normalizedSearchKeyword, riskLevelFilter, productNameFilter]);
 
   function handleSortColumnClick(columnKey: SortableColumnKey) {
     if (sortColumnKey !== columnKey) {
@@ -142,6 +158,19 @@ export function CustomerDetailPage() {
               {RISK_LEVEL_DISPLAY_ORDER.map((riskLevel) => (
                 <option key={riskLevel} value={riskLevel}>
                   {RISK_LEVEL_META[riskLevel].label}
+                </option>
+              ))}
+            </Select>
+            <Select
+              value={productNameFilter}
+              onChange={(event) =>
+                setProductNameFilter(event.target.value as ProductNameFilter)
+              }
+            >
+              <option value="all">전체 카드상품</option>
+              {PRODUCT_NAME_OPTIONS.map((productName) => (
+                <option key={productName} value={productName}>
+                  {productName}
                 </option>
               ))}
             </Select>

@@ -33,6 +33,7 @@ export type Customer = {
   name: string;
   phoneNumber: string;
   cardProduct: string;
+  productName: string; // 개인 신용카드 상품명 (ibkCreditCards 중 하나)
   joinedAt: string;
   gender: '남' | '여';
   age: number;

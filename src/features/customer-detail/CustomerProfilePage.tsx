@@ -13,7 +13,7 @@ import { CustomerRiskScoreTrendChart } from '@/features/customer-detail/Customer
 import { CustomerTrendChart } from '@/features/customer-detail/CustomerTrendChart';
 import { customers } from '@/data/customers';
 import { maskName } from '@/utils/format';
-import { RISK_LEVEL_META } from '@/utils/risk';
+import { getLastUsedAt, RISK_LEVEL_META } from '@/utils/risk';
 
 export function CustomerProfilePage() {
   const { customerId } = useParams<{ customerId: string }>();
@@ -28,11 +28,7 @@ export function CustomerProfilePage() {
     return <Navigate to="/customer-detail" replace />;
   }
 
-  const mostRecentUsedAt = customer.transactions.reduce(
-    (latestDate, transaction) =>
-      transaction.date > latestDate ? transaction.date : latestDate,
-    customer.transactions[0]?.date ?? '-',
-  );
+  const mostRecentUsedAt = getLastUsedAt(customer) ?? '-';
 
   const memberInfoItems: { label: string; value?: string; node?: ReactNode }[] =
     [

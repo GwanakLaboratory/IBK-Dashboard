@@ -53,3 +53,14 @@ export function getRiskLevelRank(riskLevel: RiskLevel) {
 export function getTopReason(customer: Customer) {
   return customer.churnReasons[0];
 }
+
+export function getLastUsedAt(customer: Customer): string | null {
+  if (customer.transactions.length === 0) {
+    return null;
+  }
+  return customer.transactions.reduce(
+    (latestDate, transaction) =>
+      transaction.date > latestDate ? transaction.date : latestDate,
+    customer.transactions[0].date,
+  );
+}
