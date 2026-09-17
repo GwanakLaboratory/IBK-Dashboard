@@ -64,6 +64,8 @@ function mkMonthly(
   trend: 'declining' | 'stable' | 'growing',
 ): MonthlyPoint[] {
   const months = [
+    '25.09',
+    '25.10',
     '25.11',
     '25.12',
     '26.01',
