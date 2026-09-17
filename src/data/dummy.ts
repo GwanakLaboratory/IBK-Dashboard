@@ -1,8 +1,10 @@
 import type {
+  CreditScoreHistoryPoint,
   Customer,
   MonthlyMemberActivityPoint,
   MonthlyPoint,
   MonthlyRiskDistributionPoint,
+  RiskLevel,
   RiskScoreTrendPoint,
   Transaction,
 } from '@/types/churn';
@@ -236,6 +238,7 @@ const RAW_CUSTOMERS: Omit<
   | 'gender'
   | 'age'
   | 'riskScoreTrend'
+  | 'creditScoreHistory'
 >[] = [
   {
     id: 'CUS-10000',
@@ -1000,6 +1003,43 @@ function mkRiskScoreTrend(
   });
 }
 
+const CREDIT_SCORE_BASE_BY_RISK: Record<RiskLevel, number> = {
+  high: 740,
+  medium: 780,
+  low: 860,
+};
+
+const CREDIT_SCORE_TREND_BY_RISK: Record<RiskLevel, number> = {
+  high: 14, // 최근으로 올수록 점수 하락 (위험도 상승 반영)
+  medium: 6,
+  low: -4, // 최근으로 올수록 점수 상승 (개선 추세)
+};
+
+const CREDIT_SCORE_HISTORY_MONTH_COUNT = 12;
+
+function mkCreditScoreHistory(
+  riskLevel: RiskLevel,
+  monthly: MonthlyPoint[],
+  seedIndex: number,
+): CreditScoreHistoryPoint[] {
+  const months = monthly
+    .slice(-CREDIT_SCORE_HISTORY_MONTH_COUNT)
+    .map((point) => point.month);
+  const baseScore =
+    CREDIT_SCORE_BASE_BY_RISK[riskLevel] + ((seedIndex * 17) % 40) - 20;
+  const perStepDelta = CREDIT_SCORE_TREND_BY_RISK[riskLevel];
+
+  return months.map((month, index) => {
+    const stepsFromNow = months.length - 1 - index;
+    const noise = Math.round((Math.random() - 0.5) * 12);
+    const score = Math.min(
+      1000,
+      Math.max(300, baseScore + perStepDelta * stepsFromNow + noise),
+    );
+    return { month, score };
+  });
+}
+
 export const customers: Customer[] = RAW_CUSTOMERS.map((customer, index) => {
   const age = 24 + ((index * 13) % 42);
   const gender = GENDERS[index % 2];
@@ -1015,6 +1055,11 @@ export const customers: Customer[] = RAW_CUSTOMERS.map((customer, index) => {
     riskScoreTrend: mkRiskScoreTrend(
       customer.predictionScore,
       customer.monthly,
+    ),
+    creditScoreHistory: mkCreditScoreHistory(
+      customer.riskLevel,
+      customer.monthly,
+      index,
     ),
   };
 });

@@ -15,6 +15,11 @@ export type RiskScoreTrendPoint = {
   score: number;
 };
 
+export type CreditScoreHistoryPoint = {
+  month: string; // "26.08"
+  score: number; // 신용점수, 0~1000 스케일
+};
+
 export type Transaction = {
   date: string; // "2026-08-03"
   merchant: string;
@@ -37,6 +42,7 @@ export type Customer = {
   churnReasons: ChurnReason[];
   monthly: MonthlyPoint[];
   riskScoreTrend: RiskScoreTrendPoint[];
+  creditScoreHistory: CreditScoreHistoryPoint[];
   transactions: Transaction[];
 };
 

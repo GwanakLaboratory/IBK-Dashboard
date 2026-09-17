@@ -6,6 +6,7 @@ import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
 import { StatCard } from '@/components/molecules/StatCard';
+import { CustomerCreditScoreTrendChart } from '@/features/customer-detail/CustomerCreditScoreTrendChart';
 import { CustomerSearchBar } from '@/features/customer-detail/CustomerSearchBar';
 import { CustomerReasonRadar } from '@/features/customer-detail/CustomerReasonRadar';
 import { CustomerRiskScoreTrendChart } from '@/features/customer-detail/CustomerRiskScoreTrendChart';
@@ -94,6 +95,14 @@ export function CustomerProfilePage() {
       <CardGrid columns={2} breakpoint="lg">
         <Card title="카드 사용량 추이" description="기간별 사용액 추이">
           <CustomerTrendChart monthly={customer.monthly} />
+        </Card>
+        <Card
+          title="신용점수 변동 추이"
+          description="기간별 신용점수 추이 및 카드 발급 심사 기준선 (0~1000점)"
+        >
+          <CustomerCreditScoreTrendChart
+            creditScoreHistory={customer.creditScoreHistory}
+          />
         </Card>
         <Card
           title="이탈 스코어 변동 추이"
