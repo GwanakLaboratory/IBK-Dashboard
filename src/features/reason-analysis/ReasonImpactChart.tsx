@@ -39,7 +39,7 @@ export function ReasonImpactChart({ reasonImpacts }: ReasonImpactChartProps) {
           <YAxis
             type="category"
             dataKey="label"
-            width={140}
+            width="auto"
             tick={{ fontSize: 12, fill: '#374151' }}
             axisLine={false}
             tickLine={false}

@@ -10,6 +10,7 @@ import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
 import { StatCard } from '@/components/molecules/StatCard';
+import { FilterableReasonImpactChart } from '@/features/dashboard/FilterableReasonImpactChart';
 import { MemberActivityTrendChart } from '@/features/dashboard/MemberActivityTrendChart';
 import { MonthlyRiskDistributionTrendChart } from '@/features/dashboard/MonthlyRiskDistributionTrendChart';
 import { MonthlyUsageTrendChart } from '@/features/dashboard/MonthlyUsageTrendChart';
@@ -19,11 +20,21 @@ import { RiskSummaryTable } from '@/features/dashboard/RiskSummaryTable';
 import { getAverageReasonImpact } from '@/features/reason-analysis/reasonAnalytics';
 import {
   customers,
+  ibkCreditCardInfoByName,
+  ibkCreditCards,
   monthlyMemberActivity,
   monthlyRiskDistribution,
   monthlyTotalUsage,
 } from '@/data/customers';
 import type { RiskLevel } from '@/types/churn';
+
+const BENEFIT_CATEGORY_OPTIONS = Array.from(
+  new Set(
+    Object.values(ibkCreditCardInfoByName).flatMap(
+      (cardInfo) => cardInfo.benefitCategories,
+    ),
+  ),
+).sort((a, b) => a.localeCompare(b, 'ko'));
 
 export function DashboardPage() {
   const latestUsage = monthlyTotalUsage[monthlyTotalUsage.length - 1];
@@ -43,7 +54,8 @@ export function DashboardPage() {
       (latestActivity.activeMembers * latestRiskDistribution.low) / 100,
     ),
   };
-  const topReason = useMemo(() => getAverageReasonImpact(customers)[0], []);
+  const reasonImpacts = useMemo(() => getAverageReasonImpact(customers), []);
+  const topReason = reasonImpacts[0];
 
   return (
     <div>
@@ -127,6 +139,39 @@ export function DashboardPage() {
           <RiskSummaryTable
             countsByRiskLevel={latestRiskCounts}
             totalCustomerCount={latestActivity.activeMembers}
+          />
+        </Card>
+      </CardGrid>
+
+      <CardGrid columns={2} breakpoint="lg">
+        <Card
+          title="카드상품별 이탈 사유 Top 5"
+          description="카드상품 선택 시 해당 상품 회원 기준 주요 이탈 사유"
+        >
+          <FilterableReasonImpactChart
+            customers={customers}
+            options={ibkCreditCards}
+            allOptionLabel="전체 카드상품"
+            matchesOption={(customer, option) =>
+              customer.productName === option
+            }
+            emptyMessage="선택한 상품을 보유한 회원 데이터가 없습니다."
+          />
+        </Card>
+        <Card
+          title="혜택 카테고리별 이탈 사유 Top 5"
+          description="혜택 카테고리 선택 시 해당 카테고리 카드 회원 기준 주요 이탈 사유"
+        >
+          <FilterableReasonImpactChart
+            customers={customers}
+            options={BENEFIT_CATEGORY_OPTIONS}
+            allOptionLabel="전체 카테고리"
+            matchesOption={(customer, option) =>
+              ibkCreditCardInfoByName[
+                customer.productName
+              ]?.benefitCategories.includes(option) ?? false
+            }
+            emptyMessage="선택한 카테고리에 해당하는 회원 데이터가 없습니다."
           />
         </Card>
       </CardGrid>
