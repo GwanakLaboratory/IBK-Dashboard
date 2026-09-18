@@ -1,8 +1,11 @@
 import {
+  ageGroupChurnStats,
   customers as dummyCustomers,
+  genderChurnStats,
   ibkCreditCardInfoByName,
   ibkCreditCardInfos,
   ibkCreditCards,
+  memberCohortChurnStats,
   monthlyMemberActivity,
   monthlyRiskDistribution,
   monthlyTotalUsage,
@@ -21,9 +24,12 @@ export const customers: Customer[] = dummyCustomers.map((customer) => ({
 }));
 
 export {
+  ageGroupChurnStats,
+  genderChurnStats,
   ibkCreditCardInfoByName,
   ibkCreditCardInfos,
   ibkCreditCards,
+  memberCohortChurnStats,
   monthlyMemberActivity,
   monthlyRiskDistribution,
   monthlyTotalUsage,

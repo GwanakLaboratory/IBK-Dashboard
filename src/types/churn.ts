@@ -77,3 +77,10 @@ export type ProductUsageStat = {
   mediumRiskCount: number; // 이용 회원 중 중위험 회원 수
   lowRiskCount: number; // 이용 회원 중 저위험 회원 수
 };
+
+export type ChurnRateBreakdown = {
+  label: string;
+  issuedCount: number;
+  canceledCount: number;
+  churnRate: number; // 이탈률(%)
+};

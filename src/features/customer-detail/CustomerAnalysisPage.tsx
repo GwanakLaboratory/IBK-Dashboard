@@ -2,10 +2,14 @@ import { useMemo } from 'react';
 import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
+import { ChurnRateComparisonChart } from '@/features/customer-detail/ChurnRateComparisonChart';
 import { ChurnScoreHistogramChart } from '@/features/customer-detail/ChurnScoreHistogramChart';
 import { MemberSegmentAvgUsageChart } from '@/features/customer-detail/MemberSegmentAvgUsageChart';
 import { MemberSegmentUsageTrendChart } from '@/features/customer-detail/MemberSegmentUsageTrendChart';
 import {
+  ageGroupChurnStats,
+  genderChurnStats,
+  memberCohortChurnStats,
   monthlyMemberActivity,
   monthlyRiskDistribution,
   monthlyTotalUsage,
@@ -57,6 +61,27 @@ export function CustomerAnalysisPage() {
             monthlyTotalUsage={monthlyTotalUsage}
             monthlyMemberActivity={monthlyMemberActivity}
           />
+        </Card>
+      </CardGrid>
+
+      <CardGrid columns={3} breakpoint="lg">
+        <Card
+          title="신규/기존 회원 이탈률 비교"
+          description="신규 회원(6개월 이내 가입) vs 기존 회원"
+        >
+          <ChurnRateComparisonChart items={memberCohortChurnStats} />
+        </Card>
+        <Card
+          title="연령대별 이탈률 비교"
+          description="연령대별 발급 회원수 대비 해지 비율"
+        >
+          <ChurnRateComparisonChart items={ageGroupChurnStats} />
+        </Card>
+        <Card
+          title="성별 이탈률 비교"
+          description="성별 발급 회원수 대비 해지 비율"
+        >
+          <ChurnRateComparisonChart items={genderChurnStats} />
         </Card>
       </CardGrid>
     </div>

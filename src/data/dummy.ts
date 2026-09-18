@@ -1,5 +1,6 @@
 import { ibkCreditCardInfos } from '@/data/ibkCreditCardInfo';
 import type {
+  ChurnRateBreakdown,
   CreditScoreHistoryPoint,
   Customer,
   IbkCreditCardInfo,
@@ -1303,3 +1304,50 @@ export const productUsageStats: ProductUsageStat[] = ibkCreditCards.map(
     };
   },
 );
+
+/* ── 회원 세그먼트별 이탈률 (회원 분석 집계 데이터) ──────────────── */
+function buildChurnRateBreakdown(
+  label: string,
+  issuedCount: number,
+  churnRate: number,
+): ChurnRateBreakdown {
+  return {
+    label,
+    issuedCount,
+    canceledCount: Math.round(issuedCount * (churnRate / 100)),
+    churnRate,
+  };
+}
+
+// "신규"는 최근 6개월(26.03~26.08) 내 가입한 회원 누적, "기존"은 그 이전 가입자.
+const RECENT_6_MONTH_NEW_SIGNUPS = monthlyMemberActivity
+  .slice(-6)
+  .reduce((sum, point) => sum + point.newSignups, 0);
+const LATEST_ACTIVE_MEMBERS =
+  monthlyMemberActivity[monthlyMemberActivity.length - 1].activeMembers;
+
+export const memberCohortChurnStats: ChurnRateBreakdown[] = [
+  buildChurnRateBreakdown(
+    '신규 회원 (6개월 이내)',
+    RECENT_6_MONTH_NEW_SIGNUPS,
+    16.5,
+  ),
+  buildChurnRateBreakdown(
+    '기존 회원 (6개월 초과)',
+    LATEST_ACTIVE_MEMBERS - RECENT_6_MONTH_NEW_SIGNUPS,
+    7.2,
+  ),
+];
+
+export const ageGroupChurnStats: ChurnRateBreakdown[] = [
+  buildChurnRateBreakdown('20대', 14000, 15.8),
+  buildChurnRateBreakdown('30대', 24500, 9.2),
+  buildChurnRateBreakdown('40대', 22000, 7.5),
+  buildChurnRateBreakdown('50대', 15500, 8.8),
+  buildChurnRateBreakdown('60대 이상', 8000, 13.4),
+];
+
+export const genderChurnStats: ChurnRateBreakdown[] = [
+  buildChurnRateBreakdown('남성', 43000, 9.8),
+  buildChurnRateBreakdown('여성', 41000, 8.6),
+];
