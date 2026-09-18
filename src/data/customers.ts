@@ -6,6 +6,7 @@ import {
   monthlyMemberActivity,
   monthlyRiskDistribution,
   monthlyTotalUsage,
+  productUsageStats,
 } from '@/data/dummy';
 import type { Customer } from '@/types/churn';
 
@@ -26,4 +27,5 @@ export {
   monthlyMemberActivity,
   monthlyRiskDistribution,
   monthlyTotalUsage,
+  productUsageStats,
 };
