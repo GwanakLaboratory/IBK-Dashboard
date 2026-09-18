@@ -97,7 +97,11 @@ export function CardDetailPage() {
     <div>
       <PageHeading title="카드 상세 정보" />
 
-      <ProductSearchBar value={lookupValue} onValueChange={setLookupValue} />
+      <ProductSearchBar
+        value={lookupValue}
+        onValueChange={setLookupValue}
+        disabled
+      />
 
       <CardGrid columns={1}>
         <Card title="카드 정보">

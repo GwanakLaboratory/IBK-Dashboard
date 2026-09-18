@@ -7,11 +7,13 @@ import { productUsageStats } from '@/data/customers';
 type ProductSearchBarProps = {
   value: string;
   onValueChange: (value: string) => void;
+  disabled?: boolean;
 };
 
 export function ProductSearchBar({
   value,
   onValueChange,
+  disabled = false,
 }: ProductSearchBarProps) {
   const navigate = useNavigate();
 
@@ -39,6 +41,7 @@ export function ProductSearchBar({
       <Input
         type="text"
         value={value}
+        disabled={disabled}
         onChange={(event) => onValueChange(event.target.value)}
         onKeyDown={(event) => {
           if (event.key === 'Enter') {
@@ -48,7 +51,9 @@ export function ProductSearchBar({
         placeholder="카드 상품명으로 조회"
         className="flex-1"
       />
-      <Button onClick={handleLookup}>조회</Button>
+      <Button onClick={handleLookup} disabled={disabled}>
+        조회
+      </Button>
       <Button variant="outline" onClick={handleReset}>
         <RotateCcw className="h-3.5 w-3.5" />
         초기화
