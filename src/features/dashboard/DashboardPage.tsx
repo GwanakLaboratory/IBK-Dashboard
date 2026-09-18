@@ -11,6 +11,7 @@ import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
 import { StatCard } from '@/components/molecules/StatCard';
 import { ActiveCardDistributionChart } from '@/features/dashboard/ActiveCardDistributionChart';
+import { AverageUsagePerMemberTrendChart } from '@/features/dashboard/AverageUsagePerMemberTrendChart';
 import { MemberActivityTrendChart } from '@/features/dashboard/MemberActivityTrendChart';
 import { MonthlyRiskDistributionTrendChart } from '@/features/dashboard/MonthlyRiskDistributionTrendChart';
 import { MonthlyUsageTrendChart } from '@/features/dashboard/MonthlyUsageTrendChart';
@@ -95,6 +96,15 @@ export function DashboardPage() {
           description="월별 전체 카드 사용액 추이 (최근 12개월)"
         >
           <MonthlyUsageTrendChart monthlyTotalUsage={monthlyTotalUsage} />
+        </Card>
+        <Card
+          title="1인당 평균 카드 사용액 추이"
+          description="전체 사용액을 이용 회원수로 나눈 값 (최근 12개월)"
+        >
+          <AverageUsagePerMemberTrendChart
+            monthlyTotalUsage={monthlyTotalUsage}
+            monthlyMemberActivity={monthlyMemberActivity}
+          />
         </Card>
         <Card
           title="이용 가능 회원수 추이"

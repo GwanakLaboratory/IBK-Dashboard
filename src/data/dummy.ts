@@ -26,18 +26,18 @@ export const ibkCreditCardInfoByName: Record<string, IbkCreditCardInfo> =
 
 /* ── 홈 대시보드 집계 데이터 ─────────────────────────────────── */
 export const monthlyTotalUsage: MonthlyPoint[] = [
-  { month: '25.09', usage: 58200 },
-  { month: '25.10', usage: 57100 },
-  { month: '25.11', usage: 55800 },
-  { month: '25.12', usage: 56900 },
-  { month: '26.01', usage: 54200 },
-  { month: '26.02', usage: 53100 },
-  { month: '26.03', usage: 51800 },
-  { month: '26.04', usage: 49700 },
-  { month: '26.05', usage: 48200 },
-  { month: '26.06', usage: 46500 },
-  { month: '26.07', usage: 44800 },
-  { month: '26.08', usage: 43200 },
+  { month: '25.09', usage: 3783000 },
+  { month: '25.10', usage: 3711500 },
+  { month: '25.11', usage: 3627000 },
+  { month: '25.12', usage: 3698500 },
+  { month: '26.01', usage: 3523000 },
+  { month: '26.02', usage: 3451500 },
+  { month: '26.03', usage: 3367000 },
+  { month: '26.04', usage: 3230500 },
+  { month: '26.05', usage: 3133000 },
+  { month: '26.06', usage: 3022500 },
+  { month: '26.07', usage: 2912000 },
+  { month: '26.08', usage: 2808000 },
 ];
 
 export const monthlyRiskDistribution: MonthlyRiskDistributionPoint[] = [
