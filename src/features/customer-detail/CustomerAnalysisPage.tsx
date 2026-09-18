@@ -5,17 +5,21 @@ import { PageHeading } from '@/components/molecules/PageHeading';
 import { ChurnScoreHistogramChart } from '@/features/customer-detail/ChurnScoreHistogramChart';
 import { MemberSegmentAvgUsageChart } from '@/features/customer-detail/MemberSegmentAvgUsageChart';
 import { MemberSegmentUsageTrendChart } from '@/features/customer-detail/MemberSegmentUsageTrendChart';
-import { monthlyMemberActivity, monthlyTotalUsage } from '@/data/customers';
-
-const HIGH_RISK_SHARE = 0.05;
-const MID_RISK_SHARE = 0.15;
+import {
+  monthlyMemberActivity,
+  monthlyRiskDistribution,
+  monthlyTotalUsage,
+} from '@/data/customers';
 
 export function CustomerAnalysisPage() {
   const churnScoreHistogramData = useMemo(
     () =>
-      monthlyMemberActivity.map((point) => {
-        const high = Math.round(point.activeMembers * HIGH_RISK_SHARE);
-        const mid = Math.round(point.activeMembers * MID_RISK_SHARE);
+      monthlyMemberActivity.map((point, index) => {
+        const distribution = monthlyRiskDistribution[index];
+        const high = Math.round(
+          (point.activeMembers * distribution.high) / 100,
+        );
+        const mid = Math.round((point.activeMembers * distribution.mid) / 100);
         const low = point.activeMembers - high - mid;
         return { month: point.month, high, mid, low };
       }),
