@@ -4,7 +4,10 @@ import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
 import { Pagination } from '@/components/molecules/Pagination';
-import { CustomerSearchBar } from '@/features/customer-detail/CustomerSearchBar';
+import {
+  CustomerSearchBar,
+  type CustomerSearchField,
+} from '@/features/customer-detail/CustomerSearchBar';
 import {
   CustomerTable,
   type SortableColumnKey,
@@ -29,6 +32,7 @@ const PRODUCT_NAME_OPTIONS = [...ibkCreditCards].sort((a, b) =>
 
 export function CustomerDetailPage() {
   const [searchKeyword, setSearchKeyword] = useState('');
+  const [searchField, setSearchField] = useState<CustomerSearchField>('name');
   const [riskLevelFilter, setRiskLevelFilter] =
     useState<RiskLevelFilter>('all');
   const [productNameFilter, setProductNameFilter] =
@@ -44,9 +48,7 @@ export function CustomerDetailPage() {
     return customers.filter((customer) => {
       const matchesSearchKeyword =
         !normalizedSearchKeyword ||
-        customer.id.toLowerCase().includes(normalizedSearchKeyword) ||
-        customer.name.toLowerCase().includes(normalizedSearchKeyword) ||
-        customer.phoneNumber.includes(normalizedSearchKeyword);
+        customer[searchField].toLowerCase().includes(normalizedSearchKeyword);
       const matchesRiskLevelFilter =
         riskLevelFilter === 'all' || customer.riskLevel === riskLevelFilter;
       const matchesProductNameFilter =
@@ -59,7 +61,12 @@ export function CustomerDetailPage() {
         matchesProductNameFilter
       );
     });
-  }, [normalizedSearchKeyword, riskLevelFilter, productNameFilter]);
+  }, [
+    normalizedSearchKeyword,
+    searchField,
+    riskLevelFilter,
+    productNameFilter,
+  ]);
   const hasFilteredCustomers = filteredCustomers.length > 0;
 
   const sortedCustomers = useMemo(() => {
@@ -94,7 +101,12 @@ export function CustomerDetailPage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [normalizedSearchKeyword, riskLevelFilter, productNameFilter]);
+  }, [
+    normalizedSearchKeyword,
+    searchField,
+    riskLevelFilter,
+    productNameFilter,
+  ]);
 
   function handleSortColumnClick(columnKey: SortableColumnKey) {
     if (sortColumnKey !== columnKey) {
@@ -114,6 +126,8 @@ export function CustomerDetailPage() {
       <CustomerSearchBar
         value={searchKeyword}
         onValueChange={setSearchKeyword}
+        searchField={searchField}
+        onSearchFieldChange={setSearchField}
       />
 
       <CardGrid columns={1}>

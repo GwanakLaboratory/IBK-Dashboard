@@ -49,7 +49,13 @@ export function CustomerProfilePage() {
     <div>
       <PageHeading title="회원 상세 정보" />
 
-      <CustomerSearchBar value={lookupValue} onValueChange={setLookupValue} />
+      <CustomerSearchBar
+        value={lookupValue}
+        onValueChange={setLookupValue}
+        searchField="id"
+        onSearchFieldChange={() => {}}
+        disabled
+      />
 
       <CardGrid columns={2} breakpoint="lg">
         <StatCard
