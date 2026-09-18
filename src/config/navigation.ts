@@ -43,8 +43,14 @@ export const NAV_GROUPS: NavGroup[] = [
       {
         tabKey: 'customer-list',
         path: '/customer-detail',
-        label: '전체 목록',
-        pageTitle: '회원별 상세',
+        label: '목록',
+        pageTitle: '회원 목록',
+      },
+      {
+        tabKey: 'customer-analysis',
+        path: '/customer-analysis',
+        label: '분석',
+        pageTitle: '회원 이탈 스코어 분석',
       },
     ],
   },

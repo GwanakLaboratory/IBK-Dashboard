@@ -9,6 +9,7 @@ import { CardDetailPage } from '@/features/card-analysis/CardDetailPage';
 import { CardProductListPage } from '@/features/card-analysis/CardProductListPage';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { ReasonAnalysisPage } from '@/features/reason-analysis/ReasonAnalysisPage';
+import { CustomerAnalysisPage } from '@/features/customer-detail/CustomerAnalysisPage';
 import { CustomerDetailPage } from '@/features/customer-detail/CustomerDetailPage';
 import { CustomerProfilePage } from '@/features/customer-detail/CustomerProfilePage';
 
@@ -25,6 +26,7 @@ const router = createBrowserRouter([
       { path: '/card-list/:productName', element: <CardDetailPage /> },
       { path: '/reason-analysis', element: <ReasonAnalysisPage /> },
       { path: '/customer-detail', element: <CustomerDetailPage /> },
+      { path: '/customer-analysis', element: <CustomerAnalysisPage /> },
       {
         path: '/customer-detail/:customerId',
         element: <CustomerProfilePage />,
