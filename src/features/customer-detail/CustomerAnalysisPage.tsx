@@ -3,7 +3,9 @@ import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
 import { ChurnScoreHistogramChart } from '@/features/customer-detail/ChurnScoreHistogramChart';
-import { monthlyMemberActivity } from '@/data/customers';
+import { MemberSegmentAvgUsageChart } from '@/features/customer-detail/MemberSegmentAvgUsageChart';
+import { MemberSegmentUsageTrendChart } from '@/features/customer-detail/MemberSegmentUsageTrendChart';
+import { monthlyMemberActivity, monthlyTotalUsage } from '@/data/customers';
 
 const HIGH_RISK_SHARE = 0.05;
 const MID_RISK_SHARE = 0.15;
@@ -30,6 +32,27 @@ export function CustomerAnalysisPage() {
           description="위험 / 중위험 / 저위험 구성 (최근 12개월)"
         >
           <ChurnScoreHistogramChart data={churnScoreHistogramData} />
+        </Card>
+      </CardGrid>
+
+      <CardGrid columns={2} breakpoint="lg">
+        <Card
+          title="이용 가능 회원 카드 사용액 추이"
+          description="신규 회원 vs 기존 회원 (최근 12개월)"
+        >
+          <MemberSegmentUsageTrendChart
+            monthlyTotalUsage={monthlyTotalUsage}
+            monthlyMemberActivity={monthlyMemberActivity}
+          />
+        </Card>
+        <Card
+          title="1인당 카드 사용액 추이"
+          description="신규 회원 vs 기존 회원 (최근 12개월)"
+        >
+          <MemberSegmentAvgUsageChart
+            monthlyTotalUsage={monthlyTotalUsage}
+            monthlyMemberActivity={monthlyMemberActivity}
+          />
         </Card>
       </CardGrid>
     </div>
