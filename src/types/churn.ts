@@ -84,3 +84,8 @@ export type ChurnRateBreakdown = {
   canceledCount: number;
   churnRate: number; // 이탈률(%)
 };
+
+export type MonthlyCountPoint = {
+  month: string; // "26.08"
+  count: number;
+};

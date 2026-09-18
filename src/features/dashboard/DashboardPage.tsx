@@ -18,12 +18,15 @@ import { MonthlyUsageTrendChart } from '@/features/dashboard/MonthlyUsageTrendCh
 import { NewSignupTrendChart } from '@/features/dashboard/NewSignupTrendChart';
 import { RiskDistributionChart } from '@/features/dashboard/RiskDistributionChart';
 import { RiskSummaryTable } from '@/features/dashboard/RiskSummaryTable';
+import { TransactionCountTrendChart } from '@/features/dashboard/TransactionCountTrendChart';
+import { UsageVolatilityChart } from '@/features/dashboard/UsageVolatilityChart';
 import { getAverageReasonImpact } from '@/features/reason-analysis/reasonAnalytics';
 import {
   customers,
   monthlyMemberActivity,
   monthlyRiskDistribution,
   monthlyTotalUsage,
+  monthlyTransactionCount,
   productUsageStats,
 } from '@/data/customers';
 import type { RiskLevel } from '@/types/churn';
@@ -105,6 +108,20 @@ export function DashboardPage() {
             monthlyTotalUsage={monthlyTotalUsage}
             monthlyMemberActivity={monthlyMemberActivity}
           />
+        </Card>
+        <Card
+          title="카드 이용 횟수 추이"
+          description="월별 전체 카드 이용 건수 (최근 12개월)"
+        >
+          <TransactionCountTrendChart
+            monthlyTransactionCount={monthlyTransactionCount}
+          />
+        </Card>
+        <Card
+          title="카드 사용액 변동성 추이"
+          description="전월 대비 전체 카드 사용액 증감률 (최근 11개월)"
+        >
+          <UsageVolatilityChart monthlyTotalUsage={monthlyTotalUsage} />
         </Card>
         <Card
           title="이용 가능 회원수 추이"

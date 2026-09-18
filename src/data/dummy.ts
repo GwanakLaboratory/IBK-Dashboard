@@ -4,6 +4,7 @@ import type {
   CreditScoreHistoryPoint,
   Customer,
   IbkCreditCardInfo,
+  MonthlyCountPoint,
   MonthlyMemberActivityPoint,
   MonthlyPoint,
   MonthlyRiskDistributionPoint,
@@ -1350,4 +1351,20 @@ export const ageGroupChurnStats: ChurnRateBreakdown[] = [
 export const genderChurnStats: ChurnRateBreakdown[] = [
   buildChurnRateBreakdown('남성', 43000, 9.8),
   buildChurnRateBreakdown('여성', 41000, 8.6),
+];
+
+/* ── 카드 이용 횟수 추이 (회원 분석 집계 데이터) ─────────────────── */
+export const monthlyTransactionCount: MonthlyCountPoint[] = [
+  { month: '25.09', count: 1252000 },
+  { month: '25.10', count: 1238000 },
+  { month: '25.11', count: 1219000 },
+  { month: '25.12', count: 1231000 },
+  { month: '26.01', count: 1198000 },
+  { month: '26.02', count: 1180000 },
+  { month: '26.03', count: 1162000 },
+  { month: '26.04', count: 1145000 },
+  { month: '26.05', count: 1128000 },
+  { month: '26.06', count: 1110000 },
+  { month: '26.07', count: 1095000 },
+  { month: '26.08', count: 1080000 },
 ];
