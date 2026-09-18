@@ -1,26 +1,43 @@
+import { ibkCreditCardInfos } from '@/data/ibkCreditCardInfo';
 import type {
+  CreditScoreHistoryPoint,
   Customer,
+  IbkCreditCardInfo,
   MonthlyMemberActivityPoint,
   MonthlyPoint,
   MonthlyRiskDistributionPoint,
+  ProductUsageStat,
+  RiskLevel,
   RiskScoreTrendPoint,
   Transaction,
 } from '@/types/churn';
 
+/* ── 개인 신용카드 상품 목록 (법인카드 제외) ─────────────────────── */
+export { ibkCreditCardInfos };
+
+export const ibkCreditCards = ibkCreditCardInfos.map(
+  (cardInfo) => cardInfo.name,
+);
+
+export const ibkCreditCardInfoByName: Record<string, IbkCreditCardInfo> =
+  Object.fromEntries(
+    ibkCreditCardInfos.map((cardInfo) => [cardInfo.name, cardInfo]),
+  );
+
 /* ── 홈 대시보드 집계 데이터 ─────────────────────────────────── */
 export const monthlyTotalUsage: MonthlyPoint[] = [
-  { month: '25.09', usage: 58200 },
-  { month: '25.10', usage: 57100 },
-  { month: '25.11', usage: 55800 },
-  { month: '25.12', usage: 56900 },
-  { month: '26.01', usage: 54200 },
-  { month: '26.02', usage: 53100 },
-  { month: '26.03', usage: 51800 },
-  { month: '26.04', usage: 49700 },
-  { month: '26.05', usage: 48200 },
-  { month: '26.06', usage: 46500 },
-  { month: '26.07', usage: 44800 },
-  { month: '26.08', usage: 43200 },
+  { month: '25.09', usage: 3783000 },
+  { month: '25.10', usage: 3711500 },
+  { month: '25.11', usage: 3627000 },
+  { month: '25.12', usage: 3698500 },
+  { month: '26.01', usage: 3523000 },
+  { month: '26.02', usage: 3451500 },
+  { month: '26.03', usage: 3367000 },
+  { month: '26.04', usage: 3230500 },
+  { month: '26.05', usage: 3133000 },
+  { month: '26.06', usage: 3022500 },
+  { month: '26.07', usage: 2912000 },
+  { month: '26.08', usage: 2808000 },
 ];
 
 export const monthlyRiskDistribution: MonthlyRiskDistributionPoint[] = [
@@ -64,6 +81,8 @@ function mkMonthly(
   trend: 'declining' | 'stable' | 'growing',
 ): MonthlyPoint[] {
   const months = [
+    '25.09',
+    '25.10',
     '25.11',
     '25.12',
     '26.01',
@@ -230,10 +249,12 @@ const RAW_CUSTOMERS: Omit<
   | 'name'
   | 'phoneNumber'
   | 'cardProduct'
+  | 'productName'
   | 'joinedAt'
   | 'gender'
   | 'age'
   | 'riskScoreTrend'
+  | 'creditScoreHistory'
 >[] = [
   {
     id: 'CUS-10000',
@@ -916,17 +937,207 @@ const RAW_CUSTOMERS: Omit<
       amount: Math.round(t.amount * 0.88),
     })),
   },
+  {
+    id: 'CUS-10030',
+    predictionScore: 82,
+    riskLevel: 'high',
+    primaryReason: '연체 이력 발생',
+    churnReasons: [
+      { label: '연체 이력 발생', score: 88 },
+      { label: '타사 카드 신규 발급 이력', score: 45 },
+      { label: '리볼빙 이용 증가', score: 33 },
+      { label: '고객센터 불만 접수', score: 24 },
+      { label: '휴면 전환 임박', score: 18 },
+      { label: '연회비 대비 혜택 미사용', score: 12 },
+      { label: '포인트 소멸 임박', score: 9 },
+      { label: '최근 3개월 이용금액 급감', score: 6 },
+      { label: '부가서비스 미이용', score: 4 },
+      { label: '실적 조건 미충족', score: 2 },
+    ],
+    monthly: mkMonthly(150, 'declining'),
+    transactions: HIGH_TXN.map((t) => ({
+      ...t,
+      amount: Math.round(t.amount * 0.95),
+    })),
+  },
+  {
+    id: 'CUS-10031',
+    predictionScore: 89,
+    riskLevel: 'high',
+    primaryReason: '타사 카드 신규 발급 이력',
+    churnReasons: [
+      { label: '타사 카드 신규 발급 이력', score: 92 },
+      { label: '연체 이력 발생', score: 40 },
+      { label: '고객센터 불만 접수', score: 29 },
+      { label: '리볼빙 이용 증가', score: 22 },
+      { label: '휴면 전환 임박', score: 16 },
+      { label: '포인트 소멸 임박', score: 11 },
+      { label: '연회비 대비 혜택 미사용', score: 8 },
+      { label: '최근 3개월 이용금액 급감', score: 5 },
+      { label: '부가서비스 미이용', score: 3 },
+      { label: '실적 조건 미충족', score: 1 },
+    ],
+    monthly: mkMonthly(110, 'declining'),
+    transactions: HIGH_TXN.map((t) => ({
+      ...t,
+      amount: Math.round(t.amount * 1.05),
+    })),
+  },
+  {
+    id: 'CUS-10032',
+    predictionScore: 59,
+    riskLevel: 'medium',
+    primaryReason: '리볼빙 이용 증가',
+    churnReasons: [
+      { label: '리볼빙 이용 증가', score: 70 },
+      { label: '포인트 소멸 임박', score: 55 },
+      { label: '연회비 대비 혜택 미사용', score: 41 },
+      { label: '최근 3개월 이용금액 급감', score: 30 },
+      { label: '타사 카드 신규 발급 이력', score: 21 },
+      { label: '부가서비스 미이용', score: 14 },
+      { label: '고객센터 불만 접수', score: 9 },
+      { label: '연체 이력 발생', score: 5 },
+      { label: '휴면 전환 임박', score: 3 },
+      { label: '실적 조건 미충족', score: 1 },
+    ],
+    monthly: mkMonthly(350, 'stable'),
+    transactions: MID_TXN.map((t) => ({
+      ...t,
+      amount: Math.round(t.amount * 0.9),
+    })),
+  },
+  {
+    id: 'CUS-10033',
+    predictionScore: 64,
+    riskLevel: 'medium',
+    primaryReason: '연회비 대비 혜택 미사용',
+    churnReasons: [
+      { label: '연회비 대비 혜택 미사용', score: 76 },
+      { label: '포인트 소멸 임박', score: 62 },
+      { label: '최근 3개월 이용금액 급감', score: 48 },
+      { label: '리볼빙 이용 증가', score: 35 },
+      { label: '타사 카드 신규 발급 이력', score: 24 },
+      { label: '부가서비스 미이용', score: 16 },
+      { label: '고객센터 불만 접수', score: 10 },
+      { label: '연체 이력 발생', score: 6 },
+      { label: '휴면 전환 임박', score: 3 },
+      { label: '실적 조건 미충족', score: 1 },
+    ],
+    monthly: mkMonthly(400, 'stable'),
+    transactions: MID_TXN.map((t) => ({
+      ...t,
+      amount: Math.round(t.amount * 1.05),
+    })),
+  },
+  {
+    id: 'CUS-10034',
+    predictionScore: 53,
+    riskLevel: 'medium',
+    primaryReason: '포인트 소멸 임박',
+    churnReasons: [
+      { label: '포인트 소멸 임박', score: 71 },
+      { label: '연회비 대비 혜택 미사용', score: 58 },
+      { label: '최근 3개월 이용금액 급감', score: 44 },
+      { label: '부가서비스 미이용', score: 31 },
+      { label: '타사 카드 신규 발급 이력', score: 20 },
+      { label: '리볼빙 이용 증가', score: 13 },
+      { label: '고객센터 불만 접수', score: 8 },
+      { label: '연체 이력 발생', score: 5 },
+      { label: '휴면 전환 임박', score: 3 },
+      { label: '실적 조건 미충족', score: 1 },
+    ],
+    monthly: mkMonthly(330, 'stable'),
+    transactions: MID_TXN,
+  },
+  {
+    id: 'CUS-10035',
+    predictionScore: 24,
+    riskLevel: 'low',
+    primaryReason: '실적 조건 미충족',
+    churnReasons: [
+      { label: '실적 조건 미충족', score: 50 },
+      { label: '부가서비스 미이용', score: 38 },
+      { label: '포인트 소멸 임박', score: 27 },
+      { label: '연회비 대비 혜택 미사용', score: 18 },
+      { label: '최근 3개월 이용금액 급감', score: 11 },
+      { label: '리볼빙 이용 증가', score: 7 },
+      { label: '타사 카드 신규 발급 이력', score: 4 },
+      { label: '고객센터 불만 접수', score: 2 },
+      { label: '연체 이력 발생', score: 1 },
+      { label: '휴면 전환 임박', score: 1 },
+    ],
+    monthly: mkMonthly(700, 'growing'),
+    transactions: LOW_TXN.map((t) => ({
+      ...t,
+      amount: Math.round(t.amount * 1.02),
+    })),
+  },
+  {
+    id: 'CUS-10036',
+    predictionScore: 19,
+    riskLevel: 'low',
+    primaryReason: '부가서비스 미이용',
+    churnReasons: [
+      { label: '부가서비스 미이용', score: 44 },
+      { label: '실적 조건 미충족', score: 33 },
+      { label: '포인트 소멸 임박', score: 24 },
+      { label: '연회비 대비 혜택 미사용', score: 16 },
+      { label: '최근 3개월 이용금액 급감', score: 10 },
+      { label: '리볼빙 이용 증가', score: 6 },
+      { label: '타사 카드 신규 발급 이력', score: 3 },
+      { label: '고객센터 불만 접수', score: 2 },
+      { label: '연체 이력 발생', score: 1 },
+      { label: '휴면 전환 임박', score: 1 },
+    ],
+    monthly: mkMonthly(650, 'growing'),
+    transactions: LOW_TXN,
+  },
+  {
+    id: 'CUS-10037',
+    predictionScore: 35,
+    riskLevel: 'low',
+    primaryReason: '연회비 대비 혜택 미사용',
+    churnReasons: [
+      { label: '연회비 대비 혜택 미사용', score: 55 },
+      { label: '포인트 소멸 임박', score: 46 },
+      { label: '최근 3개월 이용금액 급감', score: 34 },
+      { label: '부가서비스 미이용', score: 23 },
+      { label: '실적 조건 미충족', score: 15 },
+      { label: '리볼빙 이용 증가', score: 9 },
+      { label: '타사 카드 신규 발급 이력', score: 5 },
+      { label: '고객센터 불만 접수', score: 3 },
+      { label: '연체 이력 발생', score: 1 },
+      { label: '휴면 전환 임박', score: 1 },
+    ],
+    monthly: mkMonthly(830, 'growing'),
+    transactions: LOW_TXN.map((t) => ({
+      ...t,
+      amount: Math.round(t.amount * 0.95),
+    })),
+  },
+  {
+    id: 'CUS-10038',
+    predictionScore: 80,
+    riskLevel: 'high',
+    primaryReason: '고객센터 불만 접수',
+    churnReasons: [
+      { label: '고객센터 불만 접수', score: 85 },
+      { label: '연체 이력 발생', score: 47 },
+      { label: '타사 카드 신규 발급 이력', score: 35 },
+      { label: '리볼빙 이용 증가', score: 26 },
+      { label: '휴면 전환 임박', score: 19 },
+      { label: '포인트 소멸 임박', score: 13 },
+      { label: '연회비 대비 혜택 미사용', score: 9 },
+      { label: '최근 3개월 이용금액 급감', score: 6 },
+      { label: '부가서비스 미이용', score: 3 },
+      { label: '실적 조건 미충족', score: 1 },
+    ],
+    monthly: mkMonthly(280, 'declining'),
+    transactions: HIGH_TXN,
+  },
 ];
 
 const GENDERS: Customer['gender'][] = ['남', '여'];
-
-const CARD_PRODUCTS = [
-  'IBK 드림 체크카드',
-  'IBK 알뜰 신용카드',
-  'IBK 탄탄대로 카드',
-  'IBK 참! 좋은 카드',
-  'IBK 오하필 체크카드',
-];
 
 const NAMES = [
   '김민준',
@@ -998,6 +1209,43 @@ function mkRiskScoreTrend(
   });
 }
 
+const CREDIT_SCORE_BASE_BY_RISK: Record<RiskLevel, number> = {
+  high: 740,
+  medium: 780,
+  low: 860,
+};
+
+const CREDIT_SCORE_TREND_BY_RISK: Record<RiskLevel, number> = {
+  high: 14, // 최근으로 올수록 점수 하락 (위험도 상승 반영)
+  medium: 6,
+  low: -4, // 최근으로 올수록 점수 상승 (개선 추세)
+};
+
+const CREDIT_SCORE_HISTORY_MONTH_COUNT = 12;
+
+function mkCreditScoreHistory(
+  riskLevel: RiskLevel,
+  monthly: MonthlyPoint[],
+  seedIndex: number,
+): CreditScoreHistoryPoint[] {
+  const months = monthly
+    .slice(-CREDIT_SCORE_HISTORY_MONTH_COUNT)
+    .map((point) => point.month);
+  const baseScore =
+    CREDIT_SCORE_BASE_BY_RISK[riskLevel] + ((seedIndex * 17) % 40) - 20;
+  const perStepDelta = CREDIT_SCORE_TREND_BY_RISK[riskLevel];
+
+  return months.map((month, index) => {
+    const stepsFromNow = months.length - 1 - index;
+    const noise = Math.round((Math.random() - 0.5) * 12);
+    const score = Math.min(
+      1000,
+      Math.max(300, baseScore + perStepDelta * stepsFromNow + noise),
+    );
+    return { month, score };
+  });
+}
+
 export const customers: Customer[] = RAW_CUSTOMERS.map((customer, index) => {
   const age = 24 + ((index * 13) % 42);
   const gender = GENDERS[index % 2];
@@ -1006,7 +1254,8 @@ export const customers: Customer[] = RAW_CUSTOMERS.map((customer, index) => {
     ...customer,
     name: NAMES[index % NAMES.length],
     phoneNumber: buildPhoneNumber(index),
-    cardProduct: CARD_PRODUCTS[index % CARD_PRODUCTS.length],
+    cardProduct: ibkCreditCards[index % ibkCreditCards.length],
+    productName: ibkCreditCards[index % ibkCreditCards.length],
     joinedAt: buildJoinedAt(index),
     gender,
     age,
@@ -1014,5 +1263,43 @@ export const customers: Customer[] = RAW_CUSTOMERS.map((customer, index) => {
       customer.predictionScore,
       customer.monthly,
     ),
+    creditScoreHistory: mkCreditScoreHistory(
+      customer.riskLevel,
+      customer.monthly,
+      index,
+    ),
   };
 });
+
+/* ── 카드 상품별 이용 현황 (Home 집계 데이터) ───────────────────── */
+export const productUsageStats: ProductUsageStat[] = ibkCreditCards.map(
+  (productName, index) => {
+    const issuedCount =
+      800 + ((index * 137) % 30) * 300 + Math.round(Math.random() * 4000);
+    const targetChurnRate = 3 + ((index * 53) % 25) + (Math.random() - 0.5) * 4;
+    const canceledCount = Math.round(
+      issuedCount * (Math.max(1, targetChurnRate) / 100),
+    );
+    const churnRate = Math.round((canceledCount / issuedCount) * 1000) / 10;
+    const activeCount = issuedCount - canceledCount;
+
+    // 이용 회원 중 위험도 구성 (고/중/저) — 실제 예측 모델 대신, 상품별로
+    // 그럴듯한 비중을 부여한 목데이터.
+    const highRiskShare = 0.12 + ((index * 29) % 18) / 100;
+    const mediumRiskShare = 0.2 + ((index * 11) % 15) / 100;
+    const highRiskCount = Math.round(activeCount * highRiskShare);
+    const mediumRiskCount = Math.round(activeCount * mediumRiskShare);
+    const lowRiskCount = activeCount - highRiskCount - mediumRiskCount;
+
+    return {
+      productName,
+      issuedCount,
+      activeCount,
+      canceledCount,
+      churnRate,
+      highRiskCount,
+      mediumRiskCount,
+      lowRiskCount,
+    };
+  },
+);

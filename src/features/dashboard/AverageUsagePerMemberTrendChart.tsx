@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   CartesianGrid,
   Line,
@@ -7,22 +8,53 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import type { MonthlyPoint } from '@/types/churn';
+import type { MonthlyMemberActivityPoint, MonthlyPoint } from '@/types/churn';
 
-type MonthlyUsageTrendChartProps = {
+type AverageUsagePerMemberTrendChartProps = {
   monthlyTotalUsage: MonthlyPoint[];
+  monthlyMemberActivity: MonthlyMemberActivityPoint[];
 };
 
-const LINE_COLOR = '#466cff';
+type AverageUsagePoint = {
+  month: string;
+  avgUsagePerMember: number; // 원 단위
+};
 
-export function MonthlyUsageTrendChart({
+const LINE_COLOR = '#eb6834';
+
+export function AverageUsagePerMemberTrendChart({
   monthlyTotalUsage,
-}: MonthlyUsageTrendChartProps) {
+  monthlyMemberActivity,
+}: AverageUsagePerMemberTrendChartProps) {
+  const activeMembersByMonth = useMemo(
+    () =>
+      new Map(
+        monthlyMemberActivity.map((point) => [
+          point.month,
+          point.activeMembers,
+        ]),
+      ),
+    [monthlyMemberActivity],
+  );
+
+  const averageUsageData: AverageUsagePoint[] = useMemo(
+    () =>
+      monthlyTotalUsage.map((point) => {
+        const activeMembers = activeMembersByMonth.get(point.month) ?? 0;
+        const avgUsagePerMember =
+          activeMembers === 0
+            ? 0
+            : Math.round((point.usage * 10000) / activeMembers);
+        return { month: point.month, avgUsagePerMember };
+      }),
+    [monthlyTotalUsage, activeMembersByMonth],
+  );
+
   return (
     <div className="h-[308px]">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
-          data={monthlyTotalUsage}
+          data={averageUsageData}
           margin={{ top: 8, right: 28, bottom: 0, left: 0 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
@@ -37,8 +69,8 @@ export function MonthlyUsageTrendChart({
             tick={{ fontSize: 12, fill: '#9ca3af' }}
             axisLine={false}
             tickLine={false}
-            width={48}
-            tickFormatter={(value: number) => `${(value / 10000).toFixed(1)}억`}
+            width={52}
+            tickFormatter={(value: number) => `${(value / 10000).toFixed(0)}만`}
           />
           <Tooltip
             content={({ active, label, payload }) => {
@@ -50,15 +82,15 @@ export function MonthlyUsageTrendChart({
                 <div className="rounded-lg border border-white/40 bg-white/70 px-3 py-2 shadow-lg backdrop-blur-md">
                   <p className="text-xs font-medium text-gray-500">{label}</p>
                   <p className="mt-1 text-sm font-semibold text-gray-900">
-                    {(Number(payload[0]?.value) / 10000).toFixed(1)}억원
+                    {Number(payload[0]?.value).toLocaleString('ko-KR')}원
                   </p>
                 </div>
               );
             }}
           />
           <Line
-            dataKey="usage"
-            name="카드 사용액"
+            dataKey="avgUsagePerMember"
+            name="1인당 평균 카드 사용액"
             stroke={LINE_COLOR}
             strokeWidth={2}
             dot={{ r: 3 }}

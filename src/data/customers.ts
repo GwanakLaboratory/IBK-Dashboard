@@ -1,8 +1,12 @@
 import {
   customers as dummyCustomers,
+  ibkCreditCardInfoByName,
+  ibkCreditCardInfos,
+  ibkCreditCards,
   monthlyMemberActivity,
   monthlyRiskDistribution,
   monthlyTotalUsage,
+  productUsageStats,
 } from '@/data/dummy';
 import type { Customer } from '@/types/churn';
 
@@ -16,4 +20,12 @@ export const customers: Customer[] = dummyCustomers.map((customer) => ({
   ),
 }));
 
-export { monthlyMemberActivity, monthlyRiskDistribution, monthlyTotalUsage };
+export {
+  ibkCreditCardInfoByName,
+  ibkCreditCardInfos,
+  ibkCreditCards,
+  monthlyMemberActivity,
+  monthlyRiskDistribution,
+  monthlyTotalUsage,
+  productUsageStats,
+};

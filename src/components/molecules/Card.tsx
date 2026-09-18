@@ -11,7 +11,7 @@ type CardProps = {
 
 export function Card({ title, description, seeMoreHref, children }: CardProps) {
   return (
-    <section>
+    <section className="flex h-full flex-col">
       <header className="mb-4 flex items-start justify-between gap-4">
         <div>
           <h2 className="flex items-center gap-3 text-base font-semibold text-gray-900">
@@ -32,7 +32,7 @@ export function Card({ title, description, seeMoreHref, children }: CardProps) {
           </Link>
         )}
       </header>
-      <div className="rounded-lg border border-border p-6 shadow-sm">
+      <div className="flex-1 rounded-lg border border-border p-6 shadow-sm">
         {children}
       </div>
     </section>

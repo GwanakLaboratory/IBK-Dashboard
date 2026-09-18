@@ -6,13 +6,14 @@ import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
 import { StatCard } from '@/components/molecules/StatCard';
+import { CustomerCreditScoreTrendChart } from '@/features/customer-detail/CustomerCreditScoreTrendChart';
 import { CustomerSearchBar } from '@/features/customer-detail/CustomerSearchBar';
 import { CustomerReasonRadar } from '@/features/customer-detail/CustomerReasonRadar';
 import { CustomerRiskScoreTrendChart } from '@/features/customer-detail/CustomerRiskScoreTrendChart';
 import { CustomerTrendChart } from '@/features/customer-detail/CustomerTrendChart';
 import { customers } from '@/data/customers';
 import { maskName } from '@/utils/format';
-import { RISK_LEVEL_META } from '@/utils/risk';
+import { getLastUsedAt, RISK_LEVEL_META } from '@/utils/risk';
 
 export function CustomerProfilePage() {
   const { customerId } = useParams<{ customerId: string }>();
@@ -27,11 +28,7 @@ export function CustomerProfilePage() {
     return <Navigate to="/customer-detail" replace />;
   }
 
-  const mostRecentUsedAt = customer.transactions.reduce(
-    (latestDate, transaction) =>
-      transaction.date > latestDate ? transaction.date : latestDate,
-    customer.transactions[0]?.date ?? '-',
-  );
+  const mostRecentUsedAt = getLastUsedAt(customer) ?? '-';
 
   const memberInfoItems: { label: string; value?: string; node?: ReactNode }[] =
     [
@@ -52,7 +49,13 @@ export function CustomerProfilePage() {
     <div>
       <PageHeading title="회원 상세 정보" />
 
-      <CustomerSearchBar value={lookupValue} onValueChange={setLookupValue} />
+      <CustomerSearchBar
+        value={lookupValue}
+        onValueChange={setLookupValue}
+        searchField="id"
+        onSearchFieldChange={() => {}}
+        disabled
+      />
 
       <CardGrid columns={2} breakpoint="lg">
         <StatCard
@@ -92,11 +95,16 @@ export function CustomerProfilePage() {
       </CardGrid>
 
       <CardGrid columns={2} breakpoint="lg">
-        <Card
-          title="카드 사용량 추이"
-          description="최근 10개월 (과거 9개월 + 현재) 사용액 추이"
-        >
+        <Card title="카드 사용량 추이" description="기간별 사용액 추이">
           <CustomerTrendChart monthly={customer.monthly} />
+        </Card>
+        <Card
+          title="신용점수 변동 추이"
+          description="기간별 신용점수 추이 및 카드 발급 심사 기준선 (0~1000점)"
+        >
+          <CustomerCreditScoreTrendChart
+            creditScoreHistory={customer.creditScoreHistory}
+          />
         </Card>
         <Card
           title="이탈 스코어 변동 추이"
