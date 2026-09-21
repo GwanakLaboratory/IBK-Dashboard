@@ -27,12 +27,6 @@ export const NAV_GROUPS: NavGroup[] = [
         label: '대시보드',
         pageTitle: '대시보드',
       },
-      {
-        tabKey: 'reason-analysis',
-        path: '/reason-analysis',
-        label: '이탈 원인',
-        pageTitle: '이탈 원인',
-      },
     ],
   },
   {

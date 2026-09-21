@@ -3,15 +3,22 @@ import { type ReactNode } from 'react';
 import { Link } from 'react-router';
 
 type CardProps = {
+  id?: string;
   title: string;
   description?: string;
   seeMoreHref?: string;
   children: ReactNode;
 };
 
-export function Card({ title, description, seeMoreHref, children }: CardProps) {
+export function Card({
+  id,
+  title,
+  description,
+  seeMoreHref,
+  children,
+}: CardProps) {
   return (
-    <section className="flex h-full flex-col">
+    <section id={id} className="flex h-full scroll-mt-6 flex-col">
       <header className="mb-4 flex items-start justify-between gap-4">
         <div>
           <h2 className="flex items-center gap-3 text-base font-semibold text-gray-900">

@@ -1,6 +1,5 @@
 export type DashboardTabKey =
   | 'dashboard'
-  | 'reason-analysis'
   | 'card-analysis'
   | 'card-list'
   | 'customer-list'

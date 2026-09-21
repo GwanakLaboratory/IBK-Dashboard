@@ -21,7 +21,12 @@ import { RiskDistributionChart } from '@/features/dashboard/RiskDistributionChar
 import { RiskSummaryTable } from '@/features/dashboard/RiskSummaryTable';
 import { TransactionCountTrendChart } from '@/features/dashboard/TransactionCountTrendChart';
 import { UsageVolatilityChart } from '@/features/dashboard/UsageVolatilityChart';
-import { getAverageReasonImpact } from '@/features/reason-analysis/reasonAnalytics';
+import { ReasonImpactChart } from '@/features/reason-analysis/ReasonImpactChart';
+import { ScoreDistributionChart } from '@/features/reason-analysis/ScoreDistributionChart';
+import {
+  getAverageReasonImpact,
+  getPredictionScoreHistogram,
+} from '@/features/reason-analysis/reasonAnalytics';
 import {
   customers,
   monthlyMemberActivity,
@@ -31,6 +36,12 @@ import {
   productUsageStats,
 } from '@/data/customers';
 import type { RiskLevel } from '@/types/churn';
+
+function scrollToSection(sectionId: string) {
+  document
+    .getElementById(sectionId)
+    ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
 
 export function DashboardPage() {
   const latestUsage = monthlyTotalUsage[monthlyTotalUsage.length - 1];
@@ -50,7 +61,12 @@ export function DashboardPage() {
       (latestActivity.activeMembers * latestRiskDistribution.low) / 100,
     ),
   };
-  const topReason = useMemo(() => getAverageReasonImpact(customers)[0], []);
+  const reasonImpacts = useMemo(() => getAverageReasonImpact(customers), []);
+  const topReason = reasonImpacts[0];
+  const scoreHistogramBuckets = useMemo(
+    () => getPredictionScoreHistogram(customers),
+    [],
+  );
   const latestAvgUsagePerMember =
     (latestUsage.usage * 10000) / latestActivity.activeMembers;
   const overallChurnRate = useMemo(() => {
@@ -78,12 +94,14 @@ export function DashboardPage() {
           value={`${(latestUsage.usage / 10000).toFixed(1)}억원`}
           helperText={`1인당 평균 ${(latestAvgUsagePerMember / 10000).toFixed(1)}만원`}
           Icon={CreditCard}
+          onClick={() => scrollToSection('section-total-usage')}
         />
         <StatCard
           label="이용 가능 회원수"
           value={`${latestActivity.activeMembers.toLocaleString('ko-KR')}명`}
           helperText={`신규 ${latestActivity.newSignups.toLocaleString('ko-KR')}명 | 해지 ${latestActivity.canceledMembers.toLocaleString('ko-KR')}명`}
           Icon={Users}
+          onClick={() => scrollToSection('section-active-members')}
         />
         <StatCard
           label="전체 이탈률"
@@ -91,6 +109,7 @@ export function DashboardPage() {
           helperText="발급 대비 누적 해지 비율"
           Icon={Percent}
           indicator
+          onClick={() => scrollToSection('section-risk-distribution-trend')}
         />
         <StatCard
           label="위험도 상태 회원"
@@ -98,6 +117,7 @@ export function DashboardPage() {
           helperText={`전체의 ${latestRiskDistribution.high}%`}
           Icon={AlertTriangle}
           indicator
+          onClick={() => scrollToSection('section-risk-summary')}
         />
         <StatCard
           label="주요 이탈 사유"
@@ -105,17 +125,20 @@ export function DashboardPage() {
           helperText={`평균 기여점수 ${topReason.averageScore}점`}
           Icon={AlertCircle}
           textSize="text-base"
+          onClick={() => scrollToSection('section-reason-impact')}
         />
         <StatCard
           label="카드 상품 개수"
           value={`${productUsageStats.length}개`}
           helperText="개인 신용카드 상품 기준"
           Icon={Layers}
+          onClick={() => scrollToSection('section-active-card-distribution')}
         />
       </CardGrid>
 
       <CardGrid columns={2} breakpoint="lg">
         <Card
+          id="section-total-usage"
           title="전체 카드 사용액 추이"
           description="월별 전체 카드 사용액 추이 (최근 12개월)"
         >
@@ -145,6 +168,7 @@ export function DashboardPage() {
           <UsageVolatilityChart monthlyTotalUsage={monthlyTotalUsage} />
         </Card>
         <Card
+          id="section-active-members"
           title="이용 가능 회원수 추이"
           description="월별 카드 이용 회원수 및 신규 가입자 추이 (최근 12개월)"
         >
@@ -159,6 +183,7 @@ export function DashboardPage() {
           <NewSignupTrendChart monthlyMemberActivity={monthlyMemberActivity} />
         </Card>
         <Card
+          id="section-active-card-distribution"
           title="이용 중인 카드 상품 비중"
           description="현재 이용 회원 기준 발급 카드 상품 비중 상위 5개 (클릭 시 카드 상세로 이동)"
           seeMoreHref="/card-list"
@@ -166,6 +191,7 @@ export function DashboardPage() {
           <ActiveCardDistributionChart stats={productUsageStats} />
         </Card>
         <Card
+          id="section-risk-distribution-trend"
           title="위험도 상태별 회원 현황"
           description="위험 / 중위험 / 저위험 구성비 (최근 12개월)"
         >
@@ -180,11 +206,28 @@ export function DashboardPage() {
             totalCustomerCount={latestActivity.activeMembers}
           />
         </Card>
-        <Card title="위험도별 인원 현황" description="위험도 단계별 회원 수">
+        <Card
+          id="section-risk-summary"
+          title="위험도별 인원 현황"
+          description="위험도 단계별 회원 수"
+        >
           <RiskSummaryTable
             countsByRiskLevel={latestRiskCounts}
             totalCustomerCount={latestActivity.activeMembers}
           />
+        </Card>
+        <Card
+          id="section-reason-impact"
+          title="이유별 평균 영향도"
+          description="전체 회원 기준 이탈 이유별 평균 기여 점수 (높은 순)"
+        >
+          <ReasonImpactChart reasonImpacts={reasonImpacts} />
+        </Card>
+        <Card
+          title="예측점수 분포 (히스토그램)"
+          description="10점 구간별 회원 인원수 — 저위험(녹색) / 중위험(주황) / 위험(빨강)"
+        >
+          <ScoreDistributionChart buckets={scoreHistogramBuckets} />
         </Card>
       </CardGrid>
     </div>
