@@ -1,6 +1,6 @@
 import { type ReactNode } from 'react';
 
-type CardGridColumns = 1 | 2 | 3 | 4 | 5;
+type CardGridColumns = 1 | 2 | 3 | 4 | 5 | 6;
 type CardGridBreakpoint = 'sm' | 'lg';
 
 type CardGridProps = {
@@ -19,6 +19,7 @@ const COLUMNS_CLASS_NAME: Record<
     3: 'sm:grid-cols-3',
     4: 'sm:grid-cols-4',
     5: 'sm:grid-cols-5',
+    6: 'sm:grid-cols-6',
   },
   lg: {
     1: '',
@@ -26,6 +27,7 @@ const COLUMNS_CLASS_NAME: Record<
     3: 'lg:grid-cols-3',
     4: 'lg:grid-cols-4',
     5: 'lg:grid-cols-5',
+    6: 'sm:grid-cols-6',
   },
 };
 

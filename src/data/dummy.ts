@@ -58,21 +58,77 @@ export const monthlyRiskDistribution: MonthlyRiskDistributionPoint[] = [
 ];
 
 export const monthlyMemberActivity: MonthlyMemberActivityPoint[] = [
-  { month: '25.09', activeMembers: 75200, newSignups: 640 },
-  { month: '25.10', activeMembers: 76100, newSignups: 760 },
-  { month: '25.11', activeMembers: 75800, newSignups: 700 },
-  { month: '25.12', activeMembers: 77300, newSignups: 690 },
-  { month: '26.01', activeMembers: 78100, newSignups: 730 },
-  { month: '26.02', activeMembers: 77600, newSignups: 610 },
-  { month: '26.03', activeMembers: 79400, newSignups: 700 },
-  { month: '26.04', activeMembers: 80200, newSignups: 820 },
-  { month: '26.05', activeMembers: 79800, newSignups: 580 },
-  { month: '26.06', activeMembers: 81500, newSignups: 760 },
-  { month: '26.07', activeMembers: 82600, newSignups: 810 },
+  {
+    month: '25.09',
+    activeMembers: 75200,
+    newSignups: 640,
+    canceledMembers: 180,
+  },
+  {
+    month: '25.10',
+    activeMembers: 76100,
+    newSignups: 760,
+    canceledMembers: 210,
+  },
+  {
+    month: '25.11',
+    activeMembers: 75800,
+    newSignups: 700,
+    canceledMembers: 230,
+  },
+  {
+    month: '25.12',
+    activeMembers: 77300,
+    newSignups: 690,
+    canceledMembers: 250,
+  },
+  {
+    month: '26.01',
+    activeMembers: 78100,
+    newSignups: 730,
+    canceledMembers: 270,
+  },
+  {
+    month: '26.02',
+    activeMembers: 77600,
+    newSignups: 610,
+    canceledMembers: 300,
+  },
+  {
+    month: '26.03',
+    activeMembers: 79400,
+    newSignups: 700,
+    canceledMembers: 330,
+  },
+  {
+    month: '26.04',
+    activeMembers: 80200,
+    newSignups: 820,
+    canceledMembers: 360,
+  },
+  {
+    month: '26.05',
+    activeMembers: 79800,
+    newSignups: 580,
+    canceledMembers: 400,
+  },
+  {
+    month: '26.06',
+    activeMembers: 81500,
+    newSignups: 760,
+    canceledMembers: 440,
+  },
+  {
+    month: '26.07',
+    activeMembers: 82600,
+    newSignups: 810,
+    canceledMembers: 480,
+  },
   {
     month: '26.08',
     activeMembers: 83900,
     newSignups: 870,
+    canceledMembers: 520,
     predicted: true,
   },
 ];

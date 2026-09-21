@@ -3,7 +3,8 @@ import {
   AlertCircle,
   AlertTriangle,
   CreditCard,
-  UserPlus,
+  Layers,
+  Percent,
   Users,
 } from 'lucide-react';
 import { Card } from '@/components/molecules/Card';
@@ -50,6 +51,19 @@ export function DashboardPage() {
     ),
   };
   const topReason = useMemo(() => getAverageReasonImpact(customers)[0], []);
+  const latestAvgUsagePerMember =
+    (latestUsage.usage * 10000) / latestActivity.activeMembers;
+  const overallChurnRate = useMemo(() => {
+    const totalIssued = productUsageStats.reduce(
+      (sum, stat) => sum + stat.issuedCount,
+      0,
+    );
+    const totalCanceled = productUsageStats.reduce(
+      (sum, stat) => sum + stat.canceledCount,
+      0,
+    );
+    return totalIssued === 0 ? 0 : (totalCanceled / totalIssued) * 100;
+  }, []);
 
   return (
     <div>
@@ -58,24 +72,25 @@ export function DashboardPage() {
         description="카드 회원 이탈 위험 현황을 한눈에 확인합니다."
       />
 
-      <CardGrid columns={5} breakpoint="lg">
+      <CardGrid columns={6} breakpoint="lg">
         <StatCard
           label="전체 카드 사용액"
           value={`${(latestUsage.usage / 10000).toFixed(1)}억원`}
-          helperText={`${latestUsage.month} 기준`}
+          helperText={`1인당 평균 ${(latestAvgUsagePerMember / 10000).toFixed(1)}만원`}
           Icon={CreditCard}
         />
         <StatCard
           label="이용 가능 회원수"
           value={`${latestActivity.activeMembers.toLocaleString('ko-KR')}명`}
-          helperText={`${latestActivity.month} 기준`}
+          helperText={`신규 ${latestActivity.newSignups.toLocaleString('ko-KR')}명 | 해지 ${latestActivity.canceledMembers.toLocaleString('ko-KR')}명`}
           Icon={Users}
         />
         <StatCard
-          label="신규 가입자 수"
-          value={`${latestActivity.newSignups.toLocaleString('ko-KR')}명`}
-          helperText={`${latestActivity.month} 기준`}
-          Icon={UserPlus}
+          label="전체 이탈률"
+          value={`${overallChurnRate.toFixed(1)}%`}
+          helperText="발급 대비 누적 해지 비율"
+          Icon={Percent}
+          indicator
         />
         <StatCard
           label="위험도 상태 회원"
@@ -90,6 +105,12 @@ export function DashboardPage() {
           helperText={`평균 기여점수 ${topReason.averageScore}점`}
           Icon={AlertCircle}
           textSize="text-base"
+        />
+        <StatCard
+          label="카드 상품 개수"
+          value={`${productUsageStats.length}개`}
+          helperText="개인 신용카드 상품 기준"
+          Icon={Layers}
         />
       </CardGrid>
 
@@ -138,6 +159,13 @@ export function DashboardPage() {
           <NewSignupTrendChart monthlyMemberActivity={monthlyMemberActivity} />
         </Card>
         <Card
+          title="이용 중인 카드 상품 비중"
+          description="현재 이용 회원 기준 발급 카드 상품 비중 상위 5개 (클릭 시 카드 상세로 이동)"
+          seeMoreHref="/card-list"
+        >
+          <ActiveCardDistributionChart stats={productUsageStats} />
+        </Card>
+        <Card
           title="위험도 상태별 회원 현황"
           description="위험 / 중위험 / 저위험 구성비 (최근 12개월)"
         >
@@ -157,15 +185,6 @@ export function DashboardPage() {
             countsByRiskLevel={latestRiskCounts}
             totalCustomerCount={latestActivity.activeMembers}
           />
-        </Card>
-      </CardGrid>
-
-      <CardGrid columns={1}>
-        <Card
-          title="이용 중인 카드 상품 비중"
-          description="현재 이용 회원 기준 발급 카드 상품 비중 상위 5개 (클릭 시 카드 상세로 이동)"
-        >
-          <ActiveCardDistributionChart stats={productUsageStats} />
         </Card>
       </CardGrid>
     </div>

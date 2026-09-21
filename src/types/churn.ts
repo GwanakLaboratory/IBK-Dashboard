@@ -51,6 +51,7 @@ export type MonthlyMemberActivityPoint = {
   month: string; // "26.08"
   activeMembers: number; // 카드 이용 중인 회원 수
   newSignups: number; // 신규 가입 회원 수
+  canceledMembers: number; // 해지(카드 이용 중단) 회원 수
   predicted?: boolean;
 };
 
