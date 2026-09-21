@@ -2,14 +2,21 @@ import { useEffect, useRef } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
+import { ChatLauncher } from '@/components/domain/chat/ChatLauncher';
 
 export function DashboardLayout() {
   const mainRef = useRef<HTMLElement>(null);
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
 
   useEffect(() => {
+    // A hash means the destination page wants to scroll to a specific
+    // section itself (e.g. DashboardPage's stat-card deep links) — don't
+    // fight it by snapping back to the top first.
+    if (hash) {
+      return;
+    }
     mainRef.current?.scrollTo({ top: 0 });
-  }, [pathname]);
+  }, [pathname, hash]);
 
   return (
     <div className="flex h-dvh flex-col gap-0.5 bg-slate-900">
@@ -23,6 +30,7 @@ export function DashboardLayout() {
           <Outlet />
         </main>
       </div>
+      <ChatLauncher />
     </div>
   );
 }
