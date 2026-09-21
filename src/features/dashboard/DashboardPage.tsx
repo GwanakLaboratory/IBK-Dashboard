@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   AlertCircle,
   AlertTriangle,
@@ -7,6 +7,7 @@ import {
   Percent,
   Users,
 } from 'lucide-react';
+import { useLocation } from 'react-router';
 import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
@@ -44,6 +45,16 @@ function scrollToSection(sectionId: string) {
 }
 
 export function DashboardPage() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!location.hash) {
+      return;
+    }
+    const sectionId = location.hash.slice(1);
+    scrollToSection(sectionId);
+  }, [location.hash]);
+
   const latestUsage = monthlyTotalUsage[monthlyTotalUsage.length - 1];
   const latestActivity =
     monthlyMemberActivity[monthlyMemberActivity.length - 1];
