@@ -49,7 +49,7 @@ export function StatCard({
 
         {Icon && (
           <Icon
-            className={`h-6 w-6 ${indicator ? 'text-red-500' : 'text-gray-400'}`}
+            className={`h-5 w-5 ${indicator ? 'text-red-500' : 'text-gray-400'}`}
           />
         )}
       </div>

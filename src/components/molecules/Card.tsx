@@ -39,7 +39,7 @@ export function Card({
           </Link>
         )}
       </header>
-      <div className="flex-1 rounded-lg border border-border p-6 shadow-sm">
+      <div className="flex flex-1 flex-col justify-center rounded-lg border border-border p-6 shadow-sm">
         {children}
       </div>
     </section>
