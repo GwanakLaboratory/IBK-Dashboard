@@ -44,6 +44,27 @@ export function CardAnalysisPage() {
         description="혜택 카테고리별 이탈률을 랭킹으로 찾고, 클릭해서 이탈 사유까지 확인합니다. (카드상품 단위 분석은 상품 목록에서 확인하세요.)"
       />
 
+      <div className="mt-6 flex flex-wrap gap-2">
+        {categoryRanking.map((item) => {
+          const isSelected = item.key === selectedCategory;
+
+          return (
+            <button
+              key={item.key}
+              type="button"
+              onClick={() => handleSelectCategory(item.key)}
+              className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                isSelected
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {item.label}
+            </button>
+          );
+        })}
+      </div>
+
       <CardGrid columns={2} breakpoint="lg">
         <Card
           title="혜택 카테고리별 이탈률 랭킹"
