@@ -1,7 +1,8 @@
 import { ArrowDown, ArrowUp, ArrowUpDown, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router';
 import { RiskIndicator } from '@/components/domain/RiskIndicator';
-import { getTopReason } from '@/utils/risk';
+import { formatDaysAgo, maskName } from '@/utils/format';
+import { getLastUsedAt, getTopReason } from '@/utils/risk';
 import type { Customer } from '@/types/churn';
 
 export type SortableColumnKey = 'predictionScore' | 'riskLevel';
@@ -15,7 +16,7 @@ type CustomerTableProps = {
 };
 
 const SORTABLE_COLUMNS: { key: SortableColumnKey; label: string }[] = [
-  { key: 'predictionScore', label: '예측점수' },
+  { key: 'predictionScore', label: '이탈예측점수' },
   { key: 'riskLevel', label: '위험도' },
 ];
 
@@ -43,15 +44,20 @@ export function CustomerTable({
     <div className="overflow-x-auto">
       <table className="w-full table-fixed text-sm">
         <colgroup>
-          <col className="w-[20%]" />
-          <col className="w-[14%]" />
-          <col className="w-[14%]" />
-          <col className="w-[42%]" />
+          <col className="w-[13%]" />
+          <col className="w-[8%]" />
+          <col className="w-[16%]" />
+          <col className="w-[10%]" />
+          <col className="w-[9%]" />
+          <col className="w-[22%]" />
+          <col className="w-[12%]" />
           <col className="w-[10%]" />
         </colgroup>
         <thead>
           <tr className="border-b border-gray-200 text-left text-xs text-gray-500">
             <th className="px-3 pb-2 font-medium">회원번호</th>
+            <th className="px-3 pb-2 font-medium">이름</th>
+            <th className="px-3 pb-2 font-medium">카드상품</th>
             {SORTABLE_COLUMNS.map((column) => {
               const isActiveColumn = sortColumnKey === column.key;
 
@@ -76,12 +82,16 @@ export function CustomerTable({
               );
             })}
             <th className="px-3 pb-2 font-medium">주요 이유</th>
+            <th className="px-3 pb-2 text-center font-medium">
+              최근 미이용일수
+            </th>
             <th className="px-3 pb-2 text-right font-medium" />
           </tr>
         </thead>
         <tbody>
           {customers.map((customer) => {
             const topReason = getTopReason(customer);
+            const lastUsedAt = getLastUsedAt(customer);
 
             return (
               <tr
@@ -96,6 +106,15 @@ export function CustomerTable({
                     {customer.id}
                   </Link>
                 </td>
+                <td className="truncate px-3 py-3 text-gray-700">
+                  {maskName(customer.name)}
+                </td>
+                <td
+                  className="truncate px-3 py-3 text-gray-700"
+                  title={customer.productName}
+                >
+                  {customer.productName}
+                </td>
                 <td className="px-3 py-3 text-center text-gray-700">
                   {customer.predictionScore}
                 </td>
@@ -107,6 +126,9 @@ export function CustomerTable({
                   title={topReason.label}
                 >
                   {topReason.label}
+                </td>
+                <td className="px-3 py-3 text-center text-gray-700">
+                  {lastUsedAt ? formatDaysAgo(lastUsedAt) : '-'}
                 </td>
                 <td className="px-3 py-3 text-right">
                   <Link

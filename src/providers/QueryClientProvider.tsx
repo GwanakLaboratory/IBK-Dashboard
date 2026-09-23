@@ -7,7 +7,7 @@ export function QueryClientProvider({ children }: { children: ReactNode }) {
   return (
     <TanStackQueryClientProvider client={queryClient}>
       {children}
-      <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
+      <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
     </TanStackQueryClientProvider>
   );
 }

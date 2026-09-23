@@ -15,6 +15,11 @@ export type RiskScoreTrendPoint = {
   score: number;
 };
 
+export type CreditScoreHistoryPoint = {
+  month: string; // "26.08"
+  score: number; // 신용점수, 0~1000 스케일
+};
+
 export type Transaction = {
   date: string; // "2026-08-03"
   merchant: string;
@@ -28,6 +33,7 @@ export type Customer = {
   name: string;
   phoneNumber: string;
   cardProduct: string;
+  productName: string; // 개인 신용카드 상품명 (ibkCreditCards 중 하나)
   joinedAt: string;
   gender: '남' | '여';
   age: number;
@@ -37,6 +43,7 @@ export type Customer = {
   churnReasons: ChurnReason[];
   monthly: MonthlyPoint[];
   riskScoreTrend: RiskScoreTrendPoint[];
+  creditScoreHistory: CreditScoreHistoryPoint[];
   transactions: Transaction[];
 };
 
@@ -44,6 +51,7 @@ export type MonthlyMemberActivityPoint = {
   month: string; // "26.08"
   activeMembers: number; // 카드 이용 중인 회원 수
   newSignups: number; // 신규 가입 회원 수
+  canceledMembers: number; // 해지(카드 이용 중단) 회원 수
   predicted?: boolean;
 };
 
@@ -52,4 +60,45 @@ export type MonthlyRiskDistributionPoint = {
   high: number; // 위험 비율(%)
   mid: number; // 중위험 비율(%)
   low: number; // 저위험 비율(%)
+};
+
+export type IbkCreditCardInfo = {
+  name: string;
+  benefitCategories: string[]; // IBK 맞춤카드찾기 '카드혜택' 필터 카테고리
+  brands: string[]; // IBK 맞춤카드찾기 '브랜드' 필터 브랜드
+};
+
+export type ProductUsageStat = {
+  productName: string;
+  issuedCount: number; // 발급 회원 수
+  activeCount: number; // 이용 회원 수 (발급 - 해지)
+  canceledCount: number; // 해지 회원 수
+  churnRate: number; // 이탈률(%)
+  highRiskCount: number; // 이용 회원 중 고위험 회원 수
+  mediumRiskCount: number; // 이용 회원 중 중위험 회원 수
+  lowRiskCount: number; // 이용 회원 중 저위험 회원 수
+};
+
+export type ChurnRateBreakdown = {
+  label: string;
+  issuedCount: number;
+  canceledCount: number;
+  churnRate: number; // 이탈률(%)
+};
+
+export type MonthlyCountPoint = {
+  month: string; // "26.08"
+  count: number;
+};
+
+export type RiskTransitionRow = {
+  from: RiskLevel;
+  totalCount: number; // 지난달 기준 해당 위험도 인원수
+  to: Record<RiskLevel, number>; // 이번달 위험도별 비율(%), 한 행의 합은 100
+};
+
+export type UsageChurnHistogramBin = {
+  upperBound: number; // 이 구간의 월 사용액 상한(원), 배타적
+  issuedCount: number;
+  canceledCount: number;
 };

@@ -78,10 +78,13 @@ export function Sidebar() {
 
           <nav className="flex flex-col gap-0.5 px-4">
             {activeGroup.items.map((item) => {
-              const detailSegment = location.pathname.startsWith(
+              const rawDetailSegment = location.pathname.startsWith(
                 `${item.path}/`,
               )
                 ? location.pathname.slice(item.path.length + 1)
+                : null;
+              const detailSegment = rawDetailSegment
+                ? decodeURIComponent(rawDetailSegment)
                 : null;
 
               return (
@@ -102,7 +105,7 @@ export function Sidebar() {
                   {detailSegment && (
                     <div className="ml-4 flex items-center gap-2 border-l-2 border-primary/30 py-1 pl-3">
                       <span className="truncate text-sm font-medium text-primary">
-                        • {detailSegment}
+                        {detailSegment}
                       </span>
                     </div>
                   )}

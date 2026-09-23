@@ -22,7 +22,7 @@ export function MonthlyRiskDistributionTrendChart({
       <ResponsiveContainer width="100%" height="95%">
         <AreaChart
           data={monthlyRiskDistribution}
-          margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
+          margin={{ top: 8, right: 28, bottom: 0, left: 0 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
           <XAxis
