@@ -90,3 +90,15 @@ export type MonthlyCountPoint = {
   month: string; // "26.08"
   count: number;
 };
+
+export type RiskTransitionRow = {
+  from: RiskLevel;
+  totalCount: number; // 지난달 기준 해당 위험도 인원수
+  to: Record<RiskLevel, number>; // 이번달 위험도별 비율(%), 한 행의 합은 100
+};
+
+export type UsageChurnHistogramBin = {
+  upperBound: number; // 이 구간의 월 사용액 상한(원), 배타적
+  issuedCount: number;
+  canceledCount: number;
+};

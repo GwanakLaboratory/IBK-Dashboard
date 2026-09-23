@@ -11,7 +11,9 @@ import type {
   ProductUsageStat,
   RiskLevel,
   RiskScoreTrendPoint,
+  RiskTransitionRow,
   Transaction,
+  UsageChurnHistogramBin,
 } from '@/types/churn';
 
 /* ── 개인 신용카드 상품 목록 (법인카드 제외) ─────────────────────── */
@@ -1423,4 +1425,31 @@ export const monthlyTransactionCount: MonthlyCountPoint[] = [
   { month: '26.06', count: 1110000 },
   { month: '26.07', count: 1095000 },
   { month: '26.08', count: 1080000 },
+];
+
+/* ── 이탈 위험도 전이 매트릭스 (지난달 → 이번달, 회원 분석 집계 데이터) ── */
+// "from" 인원수는 monthlyRiskDistribution/monthlyMemberActivity의 26.07 값
+// (activeMembers 82,600 × high 42% / mid 21% / low 37%)을 기준으로 산출.
+export const riskTransitionMatrix: RiskTransitionRow[] = [
+  { from: 'high', totalCount: 34692, to: { high: 83, medium: 12, low: 5 } },
+  { from: 'medium', totalCount: 17346, to: { high: 19, medium: 66, low: 15 } },
+  { from: 'low', totalCount: 30562, to: { high: 5, medium: 14, low: 81 } },
+];
+
+/* ── 카드 사용액 규모별 이탈 분석용 히스토그램 (회원 분석 집계 데이터) ──
+ * 월 카드 사용액(원) 구간별 발급/해지 인원수. 사용자가 입력하는 구간 경계값은
+ * 이 히스토그램을 다시 잘라 합산하는 방식으로 반영된다 (usageSegmentChurn.ts 참고).
+ * 구간별 issuedCount 합계는 activeMembers(26.08, 83,900명)와 일치하도록 구성.
+ */
+export const usageChurnHistogram: UsageChurnHistogramBin[] = [
+  { upperBound: 100000, issuedCount: 18000, canceledCount: 3510 },
+  { upperBound: 200000, issuedCount: 15500, canceledCount: 2325 },
+  { upperBound: 300000, issuedCount: 13000, canceledCount: 1560 },
+  { upperBound: 500000, issuedCount: 14000, canceledCount: 1330 },
+  { upperBound: 700000, issuedCount: 9500, canceledCount: 741 },
+  { upperBound: 1000000, issuedCount: 6800, canceledCount: 422 },
+  { upperBound: 1500000, issuedCount: 4200, canceledCount: 210 },
+  { upperBound: 2000000, issuedCount: 1600, canceledCount: 64 },
+  { upperBound: 3000000, issuedCount: 800, canceledCount: 26 },
+  { upperBound: 5000000, issuedCount: 500, canceledCount: 13 },
 ];

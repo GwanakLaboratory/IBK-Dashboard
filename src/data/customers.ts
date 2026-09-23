@@ -11,6 +11,8 @@ import {
   monthlyTotalUsage,
   monthlyTransactionCount,
   productUsageStats,
+  riskTransitionMatrix,
+  usageChurnHistogram,
 } from '@/data/dummy';
 import type { Customer } from '@/types/churn';
 
@@ -36,4 +38,6 @@ export {
   monthlyTotalUsage,
   monthlyTransactionCount,
   productUsageStats,
+  riskTransitionMatrix,
+  usageChurnHistogram,
 };

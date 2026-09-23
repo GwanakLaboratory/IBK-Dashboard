@@ -20,6 +20,7 @@ import { MonthlyUsageTrendChart } from '@/features/dashboard/MonthlyUsageTrendCh
 import { NewSignupTrendChart } from '@/features/dashboard/NewSignupTrendChart';
 import { RiskDistributionChart } from '@/features/dashboard/RiskDistributionChart';
 import { RiskSummaryTable } from '@/features/dashboard/RiskSummaryTable';
+import { RiskTransitionMatrixTable } from '@/features/dashboard/RiskTransitionMatrixTable';
 import { TransactionCountTrendChart } from '@/features/dashboard/TransactionCountTrendChart';
 import { UsageVolatilityChart } from '@/features/dashboard/UsageVolatilityChart';
 import { ReasonImpactChart } from '@/features/reason-analysis/ReasonImpactChart';
@@ -35,6 +36,7 @@ import {
   monthlyTotalUsage,
   monthlyTransactionCount,
   productUsageStats,
+  riskTransitionMatrix,
 } from '@/data/customers';
 import type { RiskLevel } from '@/types/churn';
 
@@ -194,14 +196,6 @@ export function DashboardPage() {
           <NewSignupTrendChart monthlyMemberActivity={monthlyMemberActivity} />
         </Card>
         <Card
-          id="section-active-card-distribution"
-          title="이용 중인 카드 상품 비중"
-          description="현재 이용 회원 기준 발급 카드 상품 비중 상위 5개 (클릭 시 카드 상세로 이동)"
-          seeMoreHref="/card-list"
-        >
-          <ActiveCardDistributionChart stats={productUsageStats} />
-        </Card>
-        <Card
           id="section-risk-distribution-trend"
           title="위험도 상태별 회원 현황"
           description="위험 / 중위험 / 저위험 구성비 (최근 12개월)"
@@ -211,6 +205,20 @@ export function DashboardPage() {
           />
         </Card>
 
+        <Card
+          title="이탈 위험도 전이 매트릭스"
+          description="지난달 위험도 대비 이번달 위험도 변화 비율"
+        >
+          <RiskTransitionMatrixTable
+            rows={riskTransitionMatrix}
+            fromMonth={
+              monthlyRiskDistribution[monthlyRiskDistribution.length - 2].month
+            }
+            toMonth={
+              monthlyRiskDistribution[monthlyRiskDistribution.length - 1].month
+            }
+          />
+        </Card>
         <Card title="위험도 분포" description="전체 회원의 위험도별 구성비">
           <RiskDistributionChart
             countsByRiskLevel={latestRiskCounts}
@@ -229,16 +237,24 @@ export function DashboardPage() {
         </Card>
         <Card
           id="section-reason-impact"
-          title="이유별 평균 영향도"
+          title="이탈 사유별 평균 영향도"
           description="전체 회원 기준 이탈 이유별 평균 기여 점수 (높은 순)"
         >
           <ReasonImpactChart reasonImpacts={reasonImpacts} />
         </Card>
         <Card
-          title="예측점수 분포 (히스토그램)"
-          description="10점 구간별 회원 인원수 — 저위험(녹색) / 중위험(주황) / 위험(빨강)"
+          title="이탈 예측점수 분포"
+          description="구간별 회원 인원수 — 저위험(녹색) / 중위험(주황) / 위험(빨강)"
         >
           <ScoreDistributionChart buckets={scoreHistogramBuckets} />
+        </Card>
+        <Card
+          id="section-active-card-distribution"
+          title="이용 중인 카드 상품 비중"
+          description="현재 이용 회원 기준 발급 카드 상품 비중 상위 5개 (클릭 시 카드 상세로 이동)"
+          seeMoreHref="/card-list"
+        >
+          <ActiveCardDistributionChart stats={productUsageStats} />
         </Card>
       </CardGrid>
     </div>
