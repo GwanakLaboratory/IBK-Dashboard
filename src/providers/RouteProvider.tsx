@@ -11,6 +11,7 @@ import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { CustomerAnalysisPage } from '@/features/customer-detail/CustomerAnalysisPage';
 import { CustomerDetailPage } from '@/features/customer-detail/CustomerDetailPage';
 import { CustomerProfilePage } from '@/features/customer-detail/CustomerProfilePage';
+import { HighRiskExtractionPage } from '@/features/marketing/HighRiskExtractionPage';
 
 const DEFAULT_PATH = '/dashboard';
 
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
         path: '/customer-detail/:customerId',
         element: <CustomerProfilePage />,
       },
+      { path: '/marketing/extraction', element: <HighRiskExtractionPage /> },
       { path: '*', element: <Navigate to={DEFAULT_PATH} replace /> },
     ],
   },

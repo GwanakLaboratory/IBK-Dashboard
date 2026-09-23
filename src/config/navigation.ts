@@ -1,4 +1,10 @@
-import { CreditCard, FileSearch, Users, type LucideIcon } from 'lucide-react';
+import {
+  CreditCard,
+  FileSearch,
+  Megaphone,
+  Users,
+  type LucideIcon,
+} from 'lucide-react';
 import type { DashboardTabKey, NavGroupKey } from '@/types/navigation';
 
 export type DashboardNavItem = {
@@ -64,6 +70,19 @@ export const NAV_GROUPS: NavGroup[] = [
         path: '/card-analysis',
         label: '카테고리 분석',
         pageTitle: '카드 카테고리 분석',
+      },
+    ],
+  },
+  {
+    groupKey: 'marketing',
+    label: '마케팅',
+    icon: Megaphone,
+    items: [
+      {
+        tabKey: 'marketing-extraction',
+        path: '/marketing/extraction',
+        label: '고위험 회원 추출',
+        pageTitle: '고위험 회원 리스트 추출',
       },
     ],
   },

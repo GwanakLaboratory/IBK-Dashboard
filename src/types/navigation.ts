@@ -3,6 +3,7 @@ export type DashboardTabKey =
   | 'card-analysis'
   | 'card-list'
   | 'customer-list'
-  | 'customer-analysis';
+  | 'customer-analysis'
+  | 'marketing-extraction';
 
-export type NavGroupKey = 'inquiry' | 'card' | 'member';
+export type NavGroupKey = 'inquiry' | 'card' | 'member' | 'marketing';
