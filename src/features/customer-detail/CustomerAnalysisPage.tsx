@@ -6,6 +6,7 @@ import { ChurnRateComparisonChart } from '@/features/customer-detail/ChurnRateCo
 import { ChurnScoreHistogramChart } from '@/features/customer-detail/ChurnScoreHistogramChart';
 import { MemberSegmentAvgUsageChart } from '@/features/customer-detail/MemberSegmentAvgUsageChart';
 import { MemberSegmentUsageTrendChart } from '@/features/customer-detail/MemberSegmentUsageTrendChart';
+import { UsageSegmentChurnAnalysis } from '@/features/customer-detail/UsageSegmentChurnAnalysis';
 import {
   ageGroupChurnStats,
   genderChurnStats,
@@ -34,15 +35,6 @@ export function CustomerAnalysisPage() {
     <div>
       <PageHeading title="회원 이탈 스코어 분석" />
 
-      <CardGrid columns={1}>
-        <Card
-          title="회원 전체 이탈 스코어"
-          description="위험 / 중위험 / 저위험 구성 (최근 12개월)"
-        >
-          <ChurnScoreHistogramChart data={churnScoreHistogramData} />
-        </Card>
-      </CardGrid>
-
       <CardGrid columns={2} breakpoint="lg">
         <Card
           title="이용 가능 회원 카드 사용액 추이"
@@ -61,6 +53,21 @@ export function CustomerAnalysisPage() {
             monthlyTotalUsage={monthlyTotalUsage}
             monthlyMemberActivity={monthlyMemberActivity}
           />
+        </Card>
+      </CardGrid>
+
+      <CardGrid columns={2} breakpoint="lg">
+        <Card
+          title="회원 전체 이탈 스코어"
+          description="위험 / 중위험 / 저위험 구성 (최근 12개월)"
+        >
+          <ChurnScoreHistogramChart data={churnScoreHistogramData} />
+        </Card>
+        <Card
+          title="카드 사용액 규모별 이탈 분석"
+          description="구간 경계값을 설정해 소액/중간/고액 이용자 이탈률 비교"
+        >
+          <UsageSegmentChurnAnalysis />
         </Card>
       </CardGrid>
 
