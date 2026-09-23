@@ -35,7 +35,7 @@ export function StatCard({
             }
           : undefined
       }
-      className={`flex flex-col gap-3 rounded-xl border border-border p-5 shadow-sm ${
+      className={`flex flex-col gap-3 rounded-xl border border-border bg-white p-5 shadow-sm ${
         onClick
           ? 'cursor-pointer transition-colors hover:border-gray-300 hover:bg-gray-50'
           : ''

@@ -21,11 +21,11 @@ export function DashboardLayout() {
   return (
     <div className="flex h-dvh flex-col gap-0.5 bg-slate-900">
       <Header />
-      <div className="flex min-w-0 flex-1 flex-row overflow-hidden bg-white">
+      <div className="flex min-w-0 flex-1 flex-row overflow-hidden bg-background">
         <Sidebar />
         <main
           ref={mainRef}
-          className="scrollbar-hide min-w-0 flex-1 overflow-y-auto overflow-x-hidden px-10 py-8"
+          className="scrollbar-hide min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-[#F5F6F8] px-10 py-8"
         >
           <Outlet />
         </main>

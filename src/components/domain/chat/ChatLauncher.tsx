@@ -187,7 +187,8 @@ export function ChatLauncher() {
                   </div>
                   {isAssistantAnswer && mentionsRiskBreakdown(message.text) && (
                     <Link
-                      to="/dashboard#section-risk-distribution-trend"
+                      to="/dashboard/trend"
+                      state={{ tab: 'churn' }}
                       onClick={() => setIsOpen(false)}
                       className="flex items-center justify-between rounded-full bg-gray-100 px-3 py-2 text-[12px] font-medium text-gray-700 hover:bg-gray-200"
                     >

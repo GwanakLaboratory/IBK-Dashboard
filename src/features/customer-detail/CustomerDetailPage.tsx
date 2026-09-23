@@ -2,8 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { Select } from '@/components/molecules/Select';
 import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
+import { EmptyState } from '@/components/molecules/EmptyState';
 import { PageHeading } from '@/components/molecules/PageHeading';
 import { Pagination } from '@/components/molecules/Pagination';
+import { Tabs } from '@/components/molecules/Tabs';
 import {
   CustomerSearchBar,
   type CustomerSearchField,
@@ -23,6 +25,7 @@ import type { RiskLevel } from '@/types/churn';
 
 type RiskLevelFilter = RiskLevel | 'all';
 type ProductNameFilter = string | 'all';
+type MemberListTab = 'all' | 'priority';
 
 const CUSTOMERS_PER_PAGE = 6;
 
@@ -31,6 +34,7 @@ const PRODUCT_NAME_OPTIONS = [...ibkCreditCards].sort((a, b) =>
 );
 
 export function CustomerDetailPage() {
+  const [activeTab, setActiveTab] = useState<MemberListTab>('all');
   const [searchKeyword, setSearchKeyword] = useState('');
   const [searchField, setSearchField] = useState<CustomerSearchField>('name');
   const [riskLevelFilter, setRiskLevelFilter] =
@@ -121,71 +125,95 @@ export function CustomerDetailPage() {
 
   return (
     <div>
-      <PageHeading title="회원 목록" />
-
-      <CustomerSearchBar
-        value={searchKeyword}
-        onValueChange={setSearchKeyword}
-        searchField={searchField}
-        onSearchFieldChange={setSearchField}
+      <PageHeading
+        title="회원 목록"
+        description="이탈 가능성이 높은 회원을 찾고 우선순위를 정합니다."
       />
 
-      <CardGrid columns={1}>
-        <Card
-          title="회원 목록"
-          description={`${filteredCustomers.length}명 / 총 ${customers.length}명`}
-        >
-          <div className="mb-4 flex flex-wrap items-center justify-end gap-3">
-            <Select
-              value={riskLevelFilter}
-              onChange={(event) =>
-                setRiskLevelFilter(event.target.value as RiskLevelFilter)
-              }
+      <Tabs
+        tabs={[
+          { key: 'all', label: '전체 회원' },
+          { key: 'priority', label: '위험군 우선순위' },
+        ]}
+        value={activeTab}
+        onChange={setActiveTab}
+      />
+
+      {activeTab === 'all' ? (
+        <>
+          <CustomerSearchBar
+            value={searchKeyword}
+            onValueChange={setSearchKeyword}
+            searchField={searchField}
+            onSearchFieldChange={setSearchField}
+          />
+
+          <CardGrid columns={1}>
+            <Card
+              title="회원 목록"
+              description={`${filteredCustomers.length}명 / 총 ${customers.length}명`}
             >
-              <option value="all">전체 위험도</option>
-              {RISK_LEVEL_DISPLAY_ORDER.map((riskLevel) => (
-                <option key={riskLevel} value={riskLevel}>
-                  {RISK_LEVEL_META[riskLevel].label}
-                </option>
-              ))}
-            </Select>
-            <Select
-              value={productNameFilter}
-              onChange={(event) =>
-                setProductNameFilter(event.target.value as ProductNameFilter)
-              }
-            >
-              <option value="all">전체 카드상품</option>
-              {PRODUCT_NAME_OPTIONS.map((productName) => (
-                <option key={productName} value={productName}>
-                  {productName}
-                </option>
-              ))}
-            </Select>
-          </div>
-          {hasFilteredCustomers ? (
-            <>
-              <CustomerTable
-                customers={paginatedCustomers}
-                sortColumnKey={sortColumnKey}
-                sortDirection={sortDirection}
-                onSortColumnClick={handleSortColumnClick}
-              />
-              <div className="mt-4 flex justify-center">
-                <Pagination
-                  currentPage={safeCurrentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                />
+              <div className="mb-4 flex flex-wrap items-center justify-end gap-3">
+                <Select
+                  value={riskLevelFilter}
+                  onChange={(event) =>
+                    setRiskLevelFilter(event.target.value as RiskLevelFilter)
+                  }
+                >
+                  <option value="all">전체 위험도</option>
+                  {RISK_LEVEL_DISPLAY_ORDER.map((riskLevel) => (
+                    <option key={riskLevel} value={riskLevel}>
+                      {RISK_LEVEL_META[riskLevel].label}
+                    </option>
+                  ))}
+                </Select>
+                <Select
+                  value={productNameFilter}
+                  onChange={(event) =>
+                    setProductNameFilter(
+                      event.target.value as ProductNameFilter,
+                    )
+                  }
+                >
+                  <option value="all">전체 카드상품</option>
+                  {PRODUCT_NAME_OPTIONS.map((productName) => (
+                    <option key={productName} value={productName}>
+                      {productName}
+                    </option>
+                  ))}
+                </Select>
               </div>
-            </>
-          ) : (
-            <p className="py-8 text-center text-sm text-gray-400">
-              검색 결과가 없습니다.
-            </p>
-          )}
-        </Card>
-      </CardGrid>
+              {hasFilteredCustomers ? (
+                <>
+                  <CustomerTable
+                    customers={paginatedCustomers}
+                    sortColumnKey={sortColumnKey}
+                    sortDirection={sortDirection}
+                    onSortColumnClick={handleSortColumnClick}
+                  />
+                  <div className="mt-4 flex justify-center">
+                    <Pagination
+                      currentPage={safeCurrentPage}
+                      totalPages={totalPages}
+                      onPageChange={setCurrentPage}
+                    />
+                  </div>
+                </>
+              ) : (
+                <p className="py-8 text-center text-sm text-gray-400">
+                  검색 결과가 없습니다.
+                </p>
+              )}
+            </Card>
+          </CardGrid>
+        </>
+      ) : (
+        <CardGrid columns={1}>
+          <Card title="위험군 우선순위">
+            <EmptyState />
+          </Card>
+        </CardGrid>
+      )}
     </div>
   );
 }
