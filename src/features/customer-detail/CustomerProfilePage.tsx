@@ -63,7 +63,7 @@ export function CustomerProfilePage() {
           value={`${customer.predictionScore}점`}
           Icon={Gauge}
         />
-        <div className="flex items-start justify-between gap-3 rounded-xl border border-border p-5 shadow-sm">
+        <div className="flex items-start justify-between gap-3 rounded-xl border border-border bg-white p-5 shadow-sm">
           <div className="flex flex-col gap-2">
             <p className="text-sm text-gray-500">위험도</p>
             <div className="flex items-center gap-2">

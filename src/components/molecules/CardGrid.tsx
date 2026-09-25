@@ -37,12 +37,12 @@ export function CardGrid({
   children,
 }: CardGridProps) {
   if (columns === 1) {
-    return <div className="mt-14">{children}</div>;
+    return <div className="mt-3">{children}</div>;
   }
 
   return (
     <div
-      className={`mt-14 grid grid-cols-1 gap-x-10 gap-y-14 ${COLUMNS_CLASS_NAME[breakpoint][columns]}`}
+      className={`mb-14 mt-3 grid grid-cols-1 gap-x-10 gap-y-14 ${COLUMNS_CLASS_NAME[breakpoint][columns]}`}
     >
       {children}
     </div>
