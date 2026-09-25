@@ -1,9 +1,14 @@
 export type DashboardTabKey =
-  | 'dashboard'
-  | 'card-analysis'
-  | 'card-list'
-  | 'customer-list'
-  | 'customer-analysis'
-  | 'marketing-extraction';
+  | 'status-overview'
+  | 'status-trend'
+  | 'status-cause'
+  | 'target-members'
+  | 'target-member-analysis'
+  | 'target-cards'
+  | 'target-card-category'
+  | 'marketing-extraction'
+  | 'marketing-campaign'
+  | 'performance-report';
 
-export type NavGroupKey = 'inquiry' | 'card' | 'member' | 'marketing';
+export type NavGroupKey =
+  'status' | 'risk-target' | 'marketing' | 'performance';

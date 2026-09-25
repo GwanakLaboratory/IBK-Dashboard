@@ -1,24 +1,43 @@
-import { useLocation } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { ChevronRight, Home } from 'lucide-react';
-import { NAV_GROUPS } from '@/config/navigation';
+import { findActiveNavItem } from '@/config/navigation';
 
 export function Breadcrumb() {
   const location = useLocation();
+  const active = findActiveNavItem(location.pathname);
 
-  const activeGroup = NAV_GROUPS.find((group) =>
-    group.items.some((item) => location.pathname.startsWith(item.path)),
-  );
-  const activeItem = activeGroup?.items.find((item) =>
-    location.pathname.startsWith(item.path),
-  );
+  if (!active) {
+    return null;
+  }
+
+  const rawDetailSegment =
+    active.item.hasDetailRoute &&
+    location.pathname.startsWith(`${active.item.path}/`)
+      ? location.pathname.slice(active.item.path.length + 1)
+      : null;
+  const detailSegment = rawDetailSegment
+    ? decodeURIComponent(rawDetailSegment)
+    : null;
 
   return (
     <span className="flex items-center gap-1 text-xs text-gray-500">
-      <Home className="h-3.5 w-3.5 text-gray-600" />
-      {activeGroup && <ChevronRight className="h-3.5 w-3.5 text-gray-200" />}
-      {activeGroup?.label}
-      {activeItem && <ChevronRight className="h-3.5 w-3.5 text-gray-200" />}
-      {activeItem?.label}
+      <Link
+        to="/"
+        aria-label="홈으로 이동"
+        className="flex items-center text-gray-400 hover:text-gray-600"
+      >
+        <Home className="h-3.5 w-3.5" />
+      </Link>
+      <ChevronRight className="h-3.5 w-3.5 text-gray-300" />
+      <span>{active.group.label}</span>
+      <ChevronRight className="h-3.5 w-3.5 text-gray-300" />
+      <span>{active.item.label}</span>
+      {detailSegment && (
+        <>
+          <ChevronRight className="h-3.5 w-3.5 text-gray-300" />
+          <span>{detailSegment}</span>
+        </>
+      )}
     </span>
   );
 }

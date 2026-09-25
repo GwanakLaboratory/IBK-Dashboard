@@ -34,6 +34,25 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        sidebar: {
+          DEFAULT: '#0C1426',
+          border: '#1A2440',
+          active: '#1B2A4A',
+          muted: '#8B95A8',
+          panel: '#F2F4F8',
+          'panel-border': '#E3E7EE',
+          'panel-muted': '#5B6472',
+        },
+        topbar: {
+          border: '#2A3550',
+          'button-border': '#3A4663',
+          muted: '#C7CEDB',
+        },
+        surface: '#F5F6F8',
+      },
+      boxShadow: {
+        panel: '0 16px 48px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.06)',
+        launcher: '0 4px 20px rgba(29, 78, 216, 0.45)',
       },
       fontFamily: {
         sans: [

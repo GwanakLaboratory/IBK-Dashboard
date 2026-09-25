@@ -7,7 +7,7 @@ type PageHeadingProps = {
 
 export function PageHeading({ title, description }: PageHeadingProps) {
   return (
-    <div>
+    <div className="mb-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-medium text-gray-900">{title}</h1>
         <Breadcrumb />
