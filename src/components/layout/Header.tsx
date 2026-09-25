@@ -11,26 +11,26 @@ export function Header() {
   };
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between bg-[#0C1426] px-6 text-white">
+    <header className="flex h-14 shrink-0 items-center justify-between bg-sidebar px-6 text-white">
       <div className="flex items-center gap-3">
         <span className="text-base font-bold tracking-wide">
           {DASHBOARD_TITLE}
         </span>
       </div>
 
-      <div className="flex items-center gap-5 text-[13px] text-[#C7CEDB]">
+      <div className="flex items-center gap-5 text-[13px] text-topbar-muted">
         <div className="flex items-center gap-1.5">
           <Phone className="h-3.5 w-3.5" />
           <span>{`고객센터 ${SUPPORT_CONTACT_NUMBER}`}</span>
         </div>
-        <span className="h-3.5 w-px bg-[#2A3550]" />
+        <span className="h-3.5 w-px bg-topbar-border" />
         <span>{CURRENT_USER_DEPARTMENT}</span>
-        <span className="h-3.5 w-px bg-[#2A3550]" />
+        <span className="h-3.5 w-px bg-topbar-border" />
         <span className="font-semibold text-white">{CURRENT_USER_NAME}님</span>
         <button
           type="button"
           onClick={handleLogoutClick}
-          className="h-8 rounded-md border border-[#3A4663] px-3.5 text-[13px] text-white transition-colors hover:bg-white/10"
+          className="h-8 rounded-md border border-topbar-button-border px-3.5 text-[13px] text-white transition-colors hover:bg-white/10"
         >
           로그아웃
         </button>

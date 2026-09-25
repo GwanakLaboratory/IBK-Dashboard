@@ -24,14 +24,14 @@ export function Sidebar() {
 
   return (
     <div className="flex h-full shrink-0">
-      <aside className="flex h-full w-16 shrink-0 flex-col items-center gap-1.5 border-t border-[#1A2440] bg-[#0C1426] py-3">
+      <aside className="flex h-full w-16 shrink-0 flex-col items-center gap-1.5 border-t border-sidebar-border bg-sidebar py-3">
         <button
           type="button"
           onClick={() =>
             setIsCollapsed((previousCollapsed) => !previousCollapsed)
           }
           aria-label={isCollapsed ? '사이드바 펼치기' : '사이드바 접기'}
-          className="mb-2 flex h-11 w-11 items-center justify-center rounded-lg text-[#8B95A8] transition-colors hover:bg-slate-800 hover:text-white"
+          className="mb-2 flex h-11 w-11 items-center justify-center rounded-lg text-sidebar-muted transition-colors hover:bg-slate-800 hover:text-white"
         >
           {isCollapsed ? (
             <ChevronRight className="h-4 w-4" />
@@ -52,8 +52,8 @@ export function Sidebar() {
               title={group.label}
               className={`flex h-14 w-[52px] flex-col items-center justify-center gap-1 rounded-[10px] text-[11px] font-medium transition-colors ${
                 isActiveGroup
-                  ? 'bg-[#1B2A4A] text-white'
-                  : 'text-[#8B95A8] hover:bg-slate-800 hover:text-slate-200'
+                  ? 'bg-sidebar-active text-white'
+                  : 'text-sidebar-muted hover:bg-slate-800 hover:text-slate-200'
               }`}
             >
               <GroupIcon className="h-5 w-5 shrink-0" strokeWidth={1.8} />
@@ -64,12 +64,12 @@ export function Sidebar() {
       </aside>
 
       {!isCollapsed && (
-        <aside className="flex h-full w-44 shrink-0 flex-col border-r border-[#E3E7EE] bg-[#F2F4F8] pb-4 pt-5">
+        <aside className="flex h-full w-44 shrink-0 flex-col border-r border-sidebar-panel-border bg-sidebar-panel pb-4 pt-5">
           <div className="flex flex-col gap-1.5 px-4 pb-3">
             <p className="text-[17px] font-bold text-gray-900">
               {activeGroup.label}
             </p>
-            <p className="text-xs leading-relaxed text-[#5B6472]">
+            <p className="text-xs leading-relaxed text-sidebar-panel-muted">
               {activeGroup.description}
             </p>
           </div>

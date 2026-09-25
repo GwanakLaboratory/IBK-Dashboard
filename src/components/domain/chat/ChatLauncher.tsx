@@ -106,8 +106,8 @@ export function ChatLauncher() {
   return (
     <>
       {isOpen && (
-        <div className="fixed bottom-24 right-7 z-50 flex h-[520px] w-[360px] max-w-[calc(100vw-3rem)] flex-col rounded-2xl border border-slate-200 bg-white shadow-[0_16px_48px_rgba(0,0,0,0.14),0_2px_8px_rgba(0,0,0,0.06)]">
-          <header className="flex items-center justify-between rounded-t-2xl bg-[#fafbff] px-4 py-3.5">
+        <div className="fixed bottom-24 right-7 z-50 flex h-[520px] w-[360px] max-w-[calc(100vw-3rem)] flex-col rounded-2xl border border-slate-200 bg-white shadow-panel">
+          <header className="flex items-center justify-between rounded-t-2xl bg-slate-50 px-4 py-3.5">
             <div className="flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-gradient-to-br from-blue-700 to-indigo-500">
                 <Sparkles className="h-4 w-4 text-white" />
@@ -232,7 +232,7 @@ export function ChatLauncher() {
         type="button"
         title="AI 어시스턴트"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="fixed bottom-7 right-7 z-50 flex h-[52px] w-[52px] items-center justify-center rounded-full bg-blue-700 text-white shadow-[0_4px_20px_rgba(29,78,216,0.45)] transition-transform hover:scale-105"
+        className="fixed bottom-7 right-7 z-50 flex h-[52px] w-[52px] items-center justify-center rounded-full bg-blue-700 text-white shadow-launcher transition-transform hover:scale-105"
       >
         <Sparkles className="h-5 w-5" />
       </button>
