@@ -63,8 +63,14 @@ export function Sidebar() {
         })}
       </aside>
 
-      {!isCollapsed && (
-        <aside className="flex h-full w-44 shrink-0 flex-col border-r border-sidebar-panel-border bg-sidebar-panel pb-4 pt-5">
+      <aside
+        className={`h-full shrink-0 overflow-hidden border-r bg-sidebar-panel transition-all duration-300 ease-in-out ${
+          isCollapsed
+            ? 'w-0 border-transparent opacity-0'
+            : 'w-44 border-sidebar-panel-border opacity-100'
+        }`}
+      >
+        <div className="flex h-full w-44 flex-col pb-4 pt-5">
           <div className="flex flex-col gap-1.5 px-4 pb-3">
             <p className="text-[17px] font-bold text-gray-900">
               {activeGroup.label}
@@ -124,8 +130,8 @@ export function Sidebar() {
               );
             })}
           </nav>
-        </aside>
-      )}
+        </div>
+      </aside>
     </div>
   );
 }
