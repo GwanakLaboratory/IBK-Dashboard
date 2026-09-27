@@ -21,6 +21,15 @@ export function formatDaysAgo(dateString: string, today: Date = new Date()) {
   return `${diffDays}일 전`;
 }
 
+export function maskPhoneNumber(phoneNumber: string) {
+  const segments = phoneNumber.split('-');
+  if (segments.length !== 3) {
+    return phoneNumber;
+  }
+  const [areaCode, middle, last] = segments;
+  return `${areaCode}-${'*'.repeat(middle.length)}-${last}`;
+}
+
 export function maskName(name: string) {
   if (name.length <= 1) {
     return name;

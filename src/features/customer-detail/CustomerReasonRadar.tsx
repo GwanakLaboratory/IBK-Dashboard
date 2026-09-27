@@ -38,8 +38,8 @@ export function CustomerReasonRadar({
           />
           <Radar
             dataKey="score"
-            stroke="#466CFF"
-            fill="#466CFF"
+            stroke="#DC2626"
+            fill="#EF4444"
             fillOpacity={0.25}
           />
         </RadarChart>

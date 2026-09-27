@@ -1,18 +1,16 @@
-import { useEffect, useState, type ReactNode } from 'react';
-import { AlertTriangle, Gauge } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Navigate, useParams } from 'react-router';
 import { RiskIndicator } from '@/components/domain/RiskIndicator';
 import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
-import { StatCard } from '@/components/molecules/StatCard';
 import { CustomerCreditScoreTrendChart } from '@/features/customer-detail/CustomerCreditScoreTrendChart';
 import { CustomerSearchBar } from '@/features/customer-detail/CustomerSearchBar';
 import { CustomerReasonRadar } from '@/features/customer-detail/CustomerReasonRadar';
 import { CustomerRiskScoreTrendChart } from '@/features/customer-detail/CustomerRiskScoreTrendChart';
 import { CustomerTrendChart } from '@/features/customer-detail/CustomerTrendChart';
 import { customers } from '@/data/customers';
-import { maskName } from '@/utils/format';
+import { maskName, maskPhoneNumber } from '@/utils/format';
 import { getLastUsedAt, RISK_LEVEL_META } from '@/utils/risk';
 
 export function CustomerProfilePage() {
@@ -29,21 +27,38 @@ export function CustomerProfilePage() {
   }
 
   const mostRecentUsedAt = getLastUsedAt(customer) ?? '-';
-
-  const memberInfoItems: { label: string; value?: string; node?: ReactNode }[] =
-    [
-      { label: '이름', value: maskName(customer.name) },
-      { label: '회원 고유번호', value: customer.id },
-      { label: '전화번호', value: customer.phoneNumber },
-      { label: '카드 상품', value: customer.cardProduct },
-      { label: '가입일', value: customer.joinedAt },
-      { label: '최근 이용일', value: mostRecentUsedAt },
-      { label: '성별', value: customer.gender },
-      { label: '나이', value: `${customer.age}세` },
-    ];
-  const riskIconColorClassName = RISK_LEVEL_META[
+  const latestCreditScore =
+    customer.creditScoreHistory[customer.creditScoreHistory.length - 1]?.score;
+  const latestMonthlyUsage =
+    customer.monthly[customer.monthly.length - 1]?.usage;
+  const profileChips = [
+    { label: '성별·나이', value: `${customer.gender} · ${customer.age}세` },
+    { label: '가입일', value: customer.joinedAt },
+    { label: '최근 이용일', value: mostRecentUsedAt },
+    {
+      label: '신용점수',
+      value: latestCreditScore === undefined ? '-' : `${latestCreditScore}점`,
+    },
+    {
+      label: '이번 달 사용액',
+      value:
+        latestMonthlyUsage === undefined
+          ? '-'
+          : `${latestMonthlyUsage.toLocaleString('ko-KR')}만원`,
+    },
+    { label: '전화번호', value: maskPhoneNumber(customer.phoneNumber) },
+  ];
+  const riskTextColorClassName = RISK_LEVEL_META[
     customer.riskLevel
   ].dotColorClassName.replace('bg-', 'text-');
+
+  const previousMonthScore =
+    customer.riskScoreTrend[customer.riskScoreTrend.length - 2]?.score;
+  const monthDelta =
+    previousMonthScore === undefined
+      ? null
+      : customer.predictionScore - previousMonthScore;
+  const earliestScore = customer.riskScoreTrend[0]?.score;
 
   return (
     <div>
@@ -57,44 +72,85 @@ export function CustomerProfilePage() {
         disabled
       />
 
-      <CardGrid columns={2} breakpoint="lg">
-        <StatCard
-          label="이탈 예측 점수"
-          value={`${customer.predictionScore}점`}
-          Icon={Gauge}
-        />
-        <div className="flex items-start justify-between gap-3 rounded-xl border border-border bg-white p-5 shadow-sm">
-          <div className="flex flex-col gap-2">
-            <p className="text-sm text-gray-500">위험도</p>
-            <div className="flex items-center gap-2">
+      <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div className="flex flex-col gap-4 rounded-xl border border-border bg-white p-5 shadow-sm lg:col-span-2">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-xl font-bold text-gray-900">
+              {maskName(customer.name)}
+            </span>
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                RISK_LEVEL_META[customer.riskLevel].badgeClassName
+              }`}
+            >
               <RiskIndicator riskLevel={customer.riskLevel} />
-              <p className="text-xl font-semibold text-gray-900">
-                {RISK_LEVEL_META[customer.riskLevel].label}
-              </p>
-            </div>
+              {RISK_LEVEL_META[customer.riskLevel].label}
+            </span>
           </div>
-          <AlertTriangle className={`h-6 w-6 ${riskIconColorClassName}`} />
-        </div>
-      </CardGrid>
-
-      <CardGrid columns={1}>
-        <Card title="회원 정보">
-          <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4">
-            {memberInfoItems.map((item) => (
-              <div key={item.label}>
-                <p className="text-xs text-gray-500">{item.label}</p>
-                {item.node ?? (
-                  <p className="mt-1 text-sm font-medium text-gray-900">
-                    {item.value}
-                  </p>
-                )}
+          <p className="-mt-2 text-sm text-gray-500">
+            {customer.id} · {customer.productName}
+          </p>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {profileChips.map((chip) => (
+              <div
+                key={chip.label}
+                className="flex flex-col gap-1 rounded-lg bg-gray-50 px-3 py-2.5"
+              >
+                <span className="text-xs text-gray-500">{chip.label}</span>
+                <span className="text-sm font-semibold text-gray-900">
+                  {chip.value}
+                </span>
               </div>
             ))}
           </div>
-        </Card>
-      </CardGrid>
+        </div>
 
-      <CardGrid columns={2} breakpoint="lg">
+        <div className="flex flex-col justify-center gap-2 rounded-xl border border-border bg-white p-5 shadow-sm lg:col-span-1">
+          <p className="text-sm font-semibold text-gray-500">이탈 예측 점수</p>
+          <div className="flex items-baseline gap-1.5">
+            <span
+              className={`text-[44px] font-bold leading-none ${riskTextColorClassName}`}
+            >
+              {customer.predictionScore}
+            </span>
+            <span className="text-lg font-semibold text-gray-400">/ 100</span>
+          </div>
+          <div className="relative mt-2">
+            <div className="flex h-2.5 w-full overflow-hidden rounded-full">
+              <div className="w-[40%] bg-green-200" />
+              <div className="w-[30%] bg-yellow-200" />
+              <div className="w-[30%] bg-red-200" />
+            </div>
+            <div
+              className="absolute top-full h-0 w-0 -translate-x-1/2 border-x-4 border-t-4 border-x-transparent border-t-gray-900"
+              style={{ left: `${customer.predictionScore}%` }}
+            />
+          </div>
+          <p className="mt-3 text-sm text-gray-500">
+            {monthDelta === null ? (
+              '이전 달 데이터 없음'
+            ) : (
+              <>
+                전월 대비{' '}
+                <strong
+                  className={monthDelta >= 0 ? 'text-red-600' : 'text-blue-600'}
+                >
+                  {monthDelta >= 0 ? '+' : ''}
+                  {monthDelta}점
+                </strong>
+                {earliestScore !== undefined && (
+                  <> · 3개월 전 {earliestScore}점</>
+                )}
+              </>
+            )}
+          </p>
+        </div>
+      </div>
+
+      <p className="mb-3 mt-10 text-base font-semibold text-gray-900">
+        이용 추이
+      </p>
+      <CardGrid columns={3} breakpoint="lg">
         <Card title="카드 사용량 추이" description="기간별 사용액 추이">
           <CustomerTrendChart monthly={customer.monthly} />
         </Card>
@@ -114,6 +170,9 @@ export function CustomerProfilePage() {
             riskScoreTrend={customer.riskScoreTrend}
           />
         </Card>
+      </CardGrid>
+
+      <CardGrid columns={2} breakpoint="lg">
         <Card title="이탈 이유 레이더" description="10개 이유별 기여 점수">
           <CustomerReasonRadar churnReasons={customer.churnReasons} />
         </Card>
@@ -130,7 +189,7 @@ export function CustomerProfilePage() {
                 <span className="flex-1 text-gray-700">{reason.label}</span>
                 <div className="h-1.5 w-20 overflow-hidden rounded-full bg-gray-100">
                   <div
-                    className="h-full rounded-full bg-gray-400"
+                    className="h-full rounded-full bg-red-400"
                     style={{ width: `${reason.score}%` }}
                   />
                 </div>

@@ -3,6 +3,7 @@ import type { Customer, RiskLevel } from '@/types/churn';
 type RiskLevelMeta = {
   label: string;
   dotColorClassName: string;
+  badgeClassName: string;
   chartColor: string;
 };
 
@@ -14,16 +15,19 @@ export const RISK_LEVEL_META: Record<RiskLevel, RiskLevelMeta> = {
   low: {
     label: '저위험',
     dotColorClassName: 'bg-emerald-500',
+    badgeClassName: 'bg-emerald-50 text-emerald-700',
     chartColor: '#10b981',
   },
   medium: {
     label: '중위험',
     dotColorClassName: 'bg-yellow-400',
+    badgeClassName: 'bg-yellow-50 text-yellow-700',
     chartColor: '#f59e0b',
   },
   high: {
     label: '위험',
     dotColorClassName: 'bg-red-500',
+    badgeClassName: 'bg-red-50 text-red-600',
     chartColor: '#ef4444',
   },
 };
