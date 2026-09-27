@@ -1,7 +1,4 @@
-import { RotateCcw, Search } from 'lucide-react';
 import { useNavigate } from 'react-router';
-import { Button } from '@/components/atoms/Button';
-import { Input } from '@/components/atoms/Input';
 import { customers } from '@/data/customers';
 
 export type CustomerSearchField = 'name' | 'phoneNumber' | 'id';
@@ -20,17 +17,22 @@ const SEARCH_FIELD_OPTIONS: {
   placeholder: string;
   inputMode: 'text' | 'tel';
 }[] = [
-  { key: 'name', label: '이름', placeholder: '예) 홍길동', inputMode: 'text' },
+  {
+    key: 'name',
+    label: '이름',
+    placeholder: '회원 이름을 입력하세요',
+    inputMode: 'text',
+  },
   {
     key: 'phoneNumber',
     label: '전화번호',
-    placeholder: '예) 010-1234-5678',
+    placeholder: '010-0000-0000',
     inputMode: 'tel',
   },
   {
     key: 'id',
     label: '회원번호',
-    placeholder: '예) CUS-10000',
+    placeholder: 'CUS-00000',
     inputMode: 'text',
   },
 ];
@@ -66,50 +68,63 @@ export function CustomerSearchBar({
   }
 
   return (
-    <div className="mt-6 space-y-3">
-      <div className="inline-flex gap-1 rounded-lg bg-gray-100 p-1">
+    <div className="mt-6 flex items-center gap-3 rounded-xl border border-border bg-white px-5 py-4">
+      <div
+        role="tablist"
+        aria-label="검색 기준"
+        className="flex gap-0.5 rounded-lg bg-gray-100 p-[3px]"
+      >
         {SEARCH_FIELD_OPTIONS.map((option) => (
           <button
             key={option.key}
             type="button"
+            role="tab"
+            aria-selected={option.key === searchField}
             disabled={disabled}
             onClick={() => onSearchFieldChange(option.key)}
-            className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
+            className={`h-[34px] rounded-md px-3.5 text-sm transition-colors ${
               option.key === searchField
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'bg-white font-bold text-primary shadow-sm'
+                : 'font-medium text-gray-500 hover:text-gray-700'
             } ${disabled && option.key !== searchField ? 'cursor-not-allowed opacity-50 hover:text-gray-500' : ''}`}
           >
             {option.label}
           </button>
         ))}
       </div>
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-          <Input
-            type="text"
-            inputMode={activeOption.inputMode}
-            value={value}
-            disabled={disabled}
-            onChange={(event) => onValueChange(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                handleLookup();
-              }
-            }}
-            placeholder={activeOption.placeholder}
-            className="w-full pl-9"
-          />
-        </div>
-        <Button onClick={handleLookup} disabled={disabled}>
-          조회
-        </Button>
-        <Button variant="outline" onClick={handleReset}>
-          <RotateCcw className="h-3.5 w-3.5" />
-          초기화
-        </Button>
-      </div>
+      <label htmlFor="customer-search-input" className="sr-only">
+        검색어
+      </label>
+      <input
+        id="customer-search-input"
+        type="text"
+        inputMode={activeOption.inputMode}
+        value={value}
+        disabled={disabled}
+        onChange={(event) => onValueChange(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            handleLookup();
+          }
+        }}
+        placeholder={activeOption.placeholder}
+        className="h-10 flex-1 rounded-lg border border-gray-300 px-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400"
+      />
+      <button
+        type="button"
+        onClick={handleLookup}
+        disabled={disabled}
+        className="h-10 shrink-0 rounded-lg bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400"
+      >
+        조회
+      </button>
+      <button
+        type="button"
+        onClick={handleReset}
+        className="h-10 shrink-0 rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+      >
+        초기화
+      </button>
     </div>
   );
 }

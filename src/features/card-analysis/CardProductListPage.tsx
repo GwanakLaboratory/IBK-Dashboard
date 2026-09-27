@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
 import { Select } from '@/components/molecules/Select';
@@ -89,41 +88,59 @@ export function CardProductListPage() {
         onValueChange={setSearchKeyword}
       />
 
-      <CardGrid columns={1}>
-        <Card
-          title="전체 카드 상품"
-          description={`${filteredStats.length}개 상품 / 총 ${productUsageStats.length}개`}
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <label
+          htmlFor="benefit-category-filter"
+          className="text-sm font-semibold text-gray-600"
         >
-          <div className="mb-4 flex flex-wrap items-center justify-end gap-3">
-            <Select
-              value={benefitCategoryFilter}
-              onChange={(event) =>
-                setBenefitCategoryFilter(
-                  event.target.value as BenefitCategoryFilter,
-                )
-              }
-            >
-              <option value="all">전체 혜택 카테고리</option>
-              {BENEFIT_CATEGORY_OPTIONS.map((benefitCategory) => (
-                <option key={benefitCategory} value={benefitCategory}>
-                  {benefitCategory}
-                </option>
-              ))}
-            </Select>
-            <Select
-              value={brandFilter}
-              onChange={(event) =>
-                setBrandFilter(event.target.value as BrandFilter)
-              }
-            >
-              <option value="all">전체 브랜드</option>
-              {BRAND_OPTIONS.map((brand) => (
-                <option key={brand} value={brand}>
-                  {brand}
-                </option>
-              ))}
-            </Select>
-          </div>
+          혜택 카테고리
+        </label>
+        <Select
+          id="benefit-category-filter"
+          value={benefitCategoryFilter}
+          onChange={(event) =>
+            setBenefitCategoryFilter(
+              event.target.value as BenefitCategoryFilter,
+            )
+          }
+        >
+          <option value="all">전체</option>
+          {BENEFIT_CATEGORY_OPTIONS.map((benefitCategory) => (
+            <option key={benefitCategory} value={benefitCategory}>
+              {benefitCategory}
+            </option>
+          ))}
+        </Select>
+        <label
+          htmlFor="brand-filter"
+          className="ml-2 text-sm font-semibold text-gray-600"
+        >
+          브랜드
+        </label>
+        <Select
+          id="brand-filter"
+          value={brandFilter}
+          onChange={(event) =>
+            setBrandFilter(event.target.value as BrandFilter)
+          }
+        >
+          <option value="all">전체</option>
+          {BRAND_OPTIONS.map((brand) => (
+            <option key={brand} value={brand}>
+              {brand}
+            </option>
+          ))}
+        </Select>
+        <span className="ml-auto text-sm text-gray-500">
+          전체{' '}
+          <strong className="text-gray-900">{productUsageStats.length}</strong>
+          개 중 <strong className="text-primary">{filteredStats.length}</strong>
+          개 표시
+        </span>
+      </div>
+
+      <CardGrid columns={1}>
+        <div className="rounded-lg border border-border bg-white p-6 shadow-sm">
           {hasFilteredStats ? (
             <CardProductTable
               stats={sortedStats}
@@ -138,7 +155,7 @@ export function CardProductListPage() {
               검색 결과가 없습니다.
             </p>
           )}
-        </Card>
+        </div>
       </CardGrid>
     </div>
   );

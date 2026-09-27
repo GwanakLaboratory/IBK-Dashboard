@@ -102,6 +102,13 @@ export function CustomerDetailPage() {
     (safeCurrentPage - 1) * CUSTOMERS_PER_PAGE,
     safeCurrentPage * CUSTOMERS_PER_PAGE,
   );
+  const displayRangeStart = hasFilteredCustomers
+    ? (safeCurrentPage - 1) * CUSTOMERS_PER_PAGE + 1
+    : 0;
+  const displayRangeEnd = Math.min(
+    safeCurrentPage * CUSTOMERS_PER_PAGE,
+    filteredCustomers.length,
+  );
 
   useEffect(() => {
     setCurrentPage(1);
@@ -148,41 +155,62 @@ export function CustomerDetailPage() {
             onSearchFieldChange={setSearchField}
           />
 
-          <CardGrid columns={1}>
-            <Card
-              title="회원 목록"
-              description={`${filteredCustomers.length}명 / 총 ${customers.length}명`}
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <label
+              htmlFor="risk-level-filter"
+              className="text-sm font-semibold text-gray-600"
             >
-              <div className="mb-4 flex flex-wrap items-center justify-end gap-3">
-                <Select
-                  value={riskLevelFilter}
-                  onChange={(event) =>
-                    setRiskLevelFilter(event.target.value as RiskLevelFilter)
-                  }
-                >
-                  <option value="all">전체 위험도</option>
-                  {RISK_LEVEL_DISPLAY_ORDER.map((riskLevel) => (
-                    <option key={riskLevel} value={riskLevel}>
-                      {RISK_LEVEL_META[riskLevel].label}
-                    </option>
-                  ))}
-                </Select>
-                <Select
-                  value={productNameFilter}
-                  onChange={(event) =>
-                    setProductNameFilter(
-                      event.target.value as ProductNameFilter,
-                    )
-                  }
-                >
-                  <option value="all">전체 카드상품</option>
-                  {PRODUCT_NAME_OPTIONS.map((productName) => (
-                    <option key={productName} value={productName}>
-                      {productName}
-                    </option>
-                  ))}
-                </Select>
-              </div>
+              위험도
+            </label>
+            <Select
+              id="risk-level-filter"
+              value={riskLevelFilter}
+              onChange={(event) =>
+                setRiskLevelFilter(event.target.value as RiskLevelFilter)
+              }
+            >
+              <option value="all">전체</option>
+              {RISK_LEVEL_DISPLAY_ORDER.map((riskLevel) => (
+                <option key={riskLevel} value={riskLevel}>
+                  {RISK_LEVEL_META[riskLevel].label}
+                </option>
+              ))}
+            </Select>
+            <label
+              htmlFor="product-name-filter"
+              className="ml-2 text-sm font-semibold text-gray-600"
+            >
+              카드상품
+            </label>
+            <Select
+              id="product-name-filter"
+              value={productNameFilter}
+              onChange={(event) =>
+                setProductNameFilter(event.target.value as ProductNameFilter)
+              }
+            >
+              <option value="all">전체 상품</option>
+              {PRODUCT_NAME_OPTIONS.map((productName) => (
+                <option key={productName} value={productName}>
+                  {productName}
+                </option>
+              ))}
+            </Select>
+            <span className="ml-auto text-sm text-gray-500">
+              전체{' '}
+              <strong className="text-gray-900">
+                {filteredCustomers.length}
+              </strong>
+              명 중{' '}
+              <strong className="text-primary">
+                {displayRangeStart}-{displayRangeEnd}
+              </strong>
+              명 표시
+            </span>
+          </div>
+
+          <CardGrid columns={1}>
+            <div className="rounded-lg border border-border bg-white p-6 shadow-sm">
               {hasFilteredCustomers ? (
                 <>
                   <CustomerTable
@@ -204,7 +232,7 @@ export function CustomerDetailPage() {
                   검색 결과가 없습니다.
                 </p>
               )}
-            </Card>
+            </div>
           </CardGrid>
         </>
       ) : (

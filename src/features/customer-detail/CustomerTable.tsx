@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronRight } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { Link } from 'react-router';
 import { RiskIndicator } from '@/components/domain/RiskIndicator';
 import { formatDaysAgo, maskName } from '@/utils/format';
@@ -46,12 +46,11 @@ export function CustomerTable({
         <colgroup>
           <col className="w-[13%]" />
           <col className="w-[8%]" />
-          <col className="w-[16%]" />
+          <col className="w-[18%]" />
           <col className="w-[10%]" />
           <col className="w-[9%]" />
-          <col className="w-[22%]" />
-          <col className="w-[12%]" />
-          <col className="w-[10%]" />
+          <col className="w-[26%]" />
+          <col className="w-[16%]" />
         </colgroup>
         <thead>
           <tr className="border-b border-gray-200 text-left text-xs text-gray-500">
@@ -85,7 +84,6 @@ export function CustomerTable({
             <th className="px-3 pb-2 text-center font-medium">
               최근 미이용일수
             </th>
-            <th className="px-3 pb-2 text-right font-medium" />
           </tr>
         </thead>
         <tbody>
@@ -129,15 +127,6 @@ export function CustomerTable({
                 </td>
                 <td className="px-3 py-3 text-center text-gray-700">
                   {lastUsedAt ? formatDaysAgo(lastUsedAt) : '-'}
-                </td>
-                <td className="px-3 py-3 text-right">
-                  <Link
-                    to={`/customer-detail/${customer.id}`}
-                    className="inline-flex items-center gap-0.5 text-xs font-medium text-gray-400 hover:text-gray-600"
-                  >
-                    상세보기
-                    <ChevronRight className="h-3 w-3" />
-                  </Link>
                 </td>
               </tr>
             );
