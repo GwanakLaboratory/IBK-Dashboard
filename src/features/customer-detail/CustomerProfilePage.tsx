@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { Phone } from 'lucide-react';
 import { Navigate, useParams } from 'react-router';
+import { Screen } from '@/components/layout/Screen';
 import { RiskIndicator } from '@/components/domain/RiskIndicator';
 import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
@@ -46,7 +48,6 @@ export function CustomerProfilePage() {
           ? '-'
           : `${latestMonthlyUsage.toLocaleString('ko-KR')}만원`,
     },
-    { label: '전화번호', value: maskPhoneNumber(customer.phoneNumber) },
   ];
   const riskTextColorClassName = RISK_LEVEL_META[
     customer.riskLevel
@@ -61,8 +62,8 @@ export function CustomerProfilePage() {
   const earliestScore = customer.riskScoreTrend[0]?.score;
 
   return (
-    <div>
-      <PageHeading title="회원 상세 정보" />
+    <Screen>
+      <PageHeading />
 
       <CustomerSearchBar
         value={lookupValue}
@@ -72,7 +73,7 @@ export function CustomerProfilePage() {
         disabled
       />
 
-      <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div className="flex flex-col gap-4 rounded-xl border border-border bg-white p-5 shadow-sm lg:col-span-2">
           <div className="flex flex-wrap items-center gap-3">
             <span className="text-xl font-bold text-gray-900">
@@ -87,10 +88,17 @@ export function CustomerProfilePage() {
               {RISK_LEVEL_META[customer.riskLevel].label}
             </span>
           </div>
-          <p className="-mt-2 text-sm text-gray-500">
-            {customer.id} · {customer.productName}
-          </p>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <div className="-mt-2 flex flex-wrap items-center gap-2.5 text-sm text-gray-500">
+            <span>{customer.id}</span>
+            <span className="h-3 w-px bg-gray-300" />
+            <span>{customer.productName}</span>
+            <span className="h-3 w-px bg-gray-300" />
+            <span className="inline-flex items-center gap-1.5 font-semibold text-gray-900">
+              <Phone className="h-3.5 w-3.5 text-gray-500" aria-hidden />
+              {maskPhoneNumber(customer.phoneNumber)}
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
             {profileChips.map((chip) => (
               <div
                 key={chip.label}
@@ -147,30 +155,30 @@ export function CustomerProfilePage() {
         </div>
       </div>
 
-      <p className="mb-3 mt-10 text-base font-semibold text-gray-900">
-        이용 추이
-      </p>
-      <CardGrid columns={3} breakpoint="lg">
-        <Card title="카드 사용량 추이" description="기간별 사용액 추이">
-          <CustomerTrendChart monthly={customer.monthly} />
-        </Card>
-        <Card
-          title="신용점수 변동 추이"
-          description="기간별 신용점수 추이 및 카드 발급 심사 기준선 (0~1000점)"
-        >
-          <CustomerCreditScoreTrendChart
-            creditScoreHistory={customer.creditScoreHistory}
-          />
-        </Card>
-        <Card
-          title="이탈 스코어 변동 추이"
-          description="최근 4개월 (과거 3개월 + 현재) 이탈 스코어 추이"
-        >
-          <CustomerRiskScoreTrendChart
-            riskScoreTrend={customer.riskScoreTrend}
-          />
-        </Card>
-      </CardGrid>
+      <div className="flex flex-col gap-3">
+        <p className="text-base font-semibold text-gray-900">이용 추이</p>
+        <CardGrid columns={3} breakpoint="lg">
+          <Card title="카드 사용량 추이" description="기간별 사용액 추이">
+            <CustomerTrendChart monthly={customer.monthly} />
+          </Card>
+          <Card
+            title="신용점수 변동 추이"
+            description="기간별 신용점수 추이 및 카드 발급 심사 기준선 (0~1000점)"
+          >
+            <CustomerCreditScoreTrendChart
+              creditScoreHistory={customer.creditScoreHistory}
+            />
+          </Card>
+          <Card
+            title="이탈 스코어 변동 추이"
+            description="최근 4개월 (과거 3개월 + 현재) 이탈 스코어 추이"
+          >
+            <CustomerRiskScoreTrendChart
+              riskScoreTrend={customer.riskScoreTrend}
+            />
+          </Card>
+        </CardGrid>
+      </div>
 
       <CardGrid columns={2} breakpoint="lg">
         <Card title="이탈 이유 레이더" description="10개 이유별 기여 점수">
@@ -201,6 +209,6 @@ export function CustomerProfilePage() {
           </ul>
         </Card>
       </CardGrid>
-    </div>
+    </Screen>
   );
 }

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Navigate, useParams } from 'react-router';
+import { Screen } from '@/components/layout/Screen';
 import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
@@ -94,8 +95,8 @@ export function CardDetailPage() {
   ];
 
   return (
-    <div>
-      <PageHeading title="카드 상세 정보" />
+    <Screen>
+      <PageHeading />
 
       <ProductSearchBar
         value={lookupValue}
@@ -182,6 +183,6 @@ export function CardDetailPage() {
           )}
         </Card>
       </CardGrid>
-    </div>
+    </Screen>
   );
 }

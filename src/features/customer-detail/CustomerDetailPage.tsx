@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Screen } from '@/components/layout/Screen';
 import { Select } from '@/components/molecules/Select';
 import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
@@ -131,117 +132,114 @@ export function CustomerDetailPage() {
   }
 
   return (
-    <div>
-      <PageHeading
-        title="회원 목록"
-        description="이탈 가능성이 높은 회원을 찾고 우선순위를 정합니다."
-      />
+    <Screen>
+      <PageHeading />
 
       <Tabs
         tabs={[
           { key: 'all', label: '전체 회원' },
-          { key: 'priority', label: '위험군 우선순위' },
+          // { key: 'priority', label: '위험군 우선순위' },
         ]}
         value={activeTab}
         onChange={setActiveTab}
-      />
+      >
+        {activeTab === 'all' ? (
+          <div className="grid gap-6">
+            <CustomerSearchBar
+              value={searchKeyword}
+              onValueChange={setSearchKeyword}
+              searchField={searchField}
+              onSearchFieldChange={setSearchField}
+            />
 
-      {activeTab === 'all' ? (
-        <>
-          <CustomerSearchBar
-            value={searchKeyword}
-            onValueChange={setSearchKeyword}
-            searchField={searchField}
-            onSearchFieldChange={setSearchField}
-          />
-
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <label
-              htmlFor="risk-level-filter"
-              className="text-sm font-semibold text-gray-600"
-            >
-              위험도
-            </label>
-            <Select
-              id="risk-level-filter"
-              value={riskLevelFilter}
-              onChange={(event) =>
-                setRiskLevelFilter(event.target.value as RiskLevelFilter)
-              }
-            >
-              <option value="all">전체</option>
-              {RISK_LEVEL_DISPLAY_ORDER.map((riskLevel) => (
-                <option key={riskLevel} value={riskLevel}>
-                  {RISK_LEVEL_META[riskLevel].label}
-                </option>
-              ))}
-            </Select>
-            <label
-              htmlFor="product-name-filter"
-              className="ml-2 text-sm font-semibold text-gray-600"
-            >
-              카드상품
-            </label>
-            <Select
-              id="product-name-filter"
-              value={productNameFilter}
-              onChange={(event) =>
-                setProductNameFilter(event.target.value as ProductNameFilter)
-              }
-            >
-              <option value="all">전체 상품</option>
-              {PRODUCT_NAME_OPTIONS.map((productName) => (
-                <option key={productName} value={productName}>
-                  {productName}
-                </option>
-              ))}
-            </Select>
-            <span className="ml-auto text-sm text-gray-500">
-              전체{' '}
-              <strong className="text-gray-900">
-                {filteredCustomers.length}
-              </strong>
-              명 중{' '}
-              <strong className="text-primary">
-                {displayRangeStart}-{displayRangeEnd}
-              </strong>
-              명 표시
-            </span>
-          </div>
-
-          <CardGrid columns={1}>
-            <div className="rounded-lg border border-border bg-white p-6 shadow-sm">
-              {hasFilteredCustomers ? (
-                <>
-                  <CustomerTable
-                    customers={paginatedCustomers}
-                    sortColumnKey={sortColumnKey}
-                    sortDirection={sortDirection}
-                    onSortColumnClick={handleSortColumnClick}
-                  />
-                  <div className="mt-4 flex justify-center">
-                    <Pagination
-                      currentPage={safeCurrentPage}
-                      totalPages={totalPages}
-                      onPageChange={setCurrentPage}
-                    />
-                  </div>
-                </>
-              ) : (
-                <p className="py-8 text-center text-sm text-gray-400">
-                  검색 결과가 없습니다.
-                </p>
-              )}
+            <div className="flex flex-wrap items-center gap-3">
+              <label
+                htmlFor="risk-level-filter"
+                className="text-sm font-semibold text-gray-600"
+              >
+                위험도
+              </label>
+              <Select
+                id="risk-level-filter"
+                value={riskLevelFilter}
+                onChange={(event) =>
+                  setRiskLevelFilter(event.target.value as RiskLevelFilter)
+                }
+              >
+                <option value="all">전체</option>
+                {RISK_LEVEL_DISPLAY_ORDER.map((riskLevel) => (
+                  <option key={riskLevel} value={riskLevel}>
+                    {RISK_LEVEL_META[riskLevel].label}
+                  </option>
+                ))}
+              </Select>
+              <label
+                htmlFor="product-name-filter"
+                className="ml-2 text-sm font-semibold text-gray-600"
+              >
+                카드상품
+              </label>
+              <Select
+                id="product-name-filter"
+                value={productNameFilter}
+                onChange={(event) =>
+                  setProductNameFilter(event.target.value as ProductNameFilter)
+                }
+              >
+                <option value="all">전체 상품</option>
+                {PRODUCT_NAME_OPTIONS.map((productName) => (
+                  <option key={productName} value={productName}>
+                    {productName}
+                  </option>
+                ))}
+              </Select>
+              <span className="ml-auto text-sm text-gray-500">
+                전체{' '}
+                <strong className="text-gray-900">
+                  {filteredCustomers.length}
+                </strong>
+                명 중{' '}
+                <strong className="text-primary">
+                  {displayRangeStart}-{displayRangeEnd}
+                </strong>
+                명 표시
+              </span>
             </div>
+
+            <CardGrid columns={1}>
+              <div className="rounded-lg border border-border bg-white p-6 shadow-sm">
+                {hasFilteredCustomers ? (
+                  <>
+                    <CustomerTable
+                      customers={paginatedCustomers}
+                      sortColumnKey={sortColumnKey}
+                      sortDirection={sortDirection}
+                      onSortColumnClick={handleSortColumnClick}
+                    />
+                    <div className="mt-4 flex justify-center">
+                      <Pagination
+                        currentPage={safeCurrentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <p className="py-8 text-center text-sm text-gray-400">
+                    검색 결과가 없습니다.
+                  </p>
+                )}
+              </div>
+            </CardGrid>
+          </div>
+        ) : (
+          <CardGrid columns={1}>
+            <Card title="위험군 우선순위">
+              <EmptyState />
+            </Card>
           </CardGrid>
-        </>
-      ) : (
-        <CardGrid columns={1}>
-          <Card title="위험군 우선순위">
-            <EmptyState />
-          </Card>
-        </CardGrid>
-      )}
-    </div>
+        )}
+      </Tabs>
+    </Screen>
   );
 }

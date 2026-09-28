@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Screen } from '@/components/layout/Screen';
 import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
@@ -32,8 +33,8 @@ export function CustomerAnalysisPage() {
   );
 
   return (
-    <div>
-      <PageHeading title="회원 이탈 스코어 분석" />
+    <Screen>
+      <PageHeading />
 
       <CardGrid columns={2} breakpoint="lg">
         <Card
@@ -91,6 +92,6 @@ export function CustomerAnalysisPage() {
           <ChurnRateComparisonChart items={genderChurnStats} />
         </Card>
       </CardGrid>
-    </div>
+    </Screen>
   );
 }
