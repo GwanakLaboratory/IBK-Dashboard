@@ -25,7 +25,7 @@ export function DashboardLayout() {
         <Sidebar />
         <main
           ref={mainRef}
-          className="scrollbar-hide min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-surface px-10 py-8"
+          className="scrollbar-hide min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-surface p-10"
         >
           <Outlet />
         </main>

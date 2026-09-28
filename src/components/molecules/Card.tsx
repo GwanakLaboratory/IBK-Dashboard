@@ -7,6 +7,7 @@ type CardProps = {
   title: string;
   description?: string;
   seeMoreHref?: string;
+  actions?: ReactNode;
   children: ReactNode;
 };
 
@@ -15,6 +16,7 @@ export function Card({
   title,
   description,
   seeMoreHref,
+  actions,
   children,
 }: CardProps) {
   return (
@@ -29,14 +31,19 @@ export function Card({
             <p className="mt-1 pl-5 text-sm text-gray-500">{description}</p>
           )}
         </div>
-        {seeMoreHref && (
-          <Link
-            to={seeMoreHref}
-            className="flex shrink-0 items-center gap-1 text-xs font-medium text-gray-400 hover:text-gray-600"
-          >
-            더보기
-            <ChevronsRight className="h-4 w-4" />
-          </Link>
+        {(actions || seeMoreHref) && (
+          <div className="flex shrink-0 items-center gap-3.5 self-end">
+            {actions}
+            {seeMoreHref && (
+              <Link
+                to={seeMoreHref}
+                className="flex shrink-0 items-center gap-1 text-xs font-medium text-gray-400 hover:text-gray-600"
+              >
+                더보기
+                <ChevronsRight className="h-4 w-4" />
+              </Link>
+            )}
+          </div>
         )}
       </header>
       <div className="flex flex-1 flex-col justify-center rounded-lg border border-border bg-white p-6 shadow-sm">

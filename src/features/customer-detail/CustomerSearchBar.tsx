@@ -68,7 +68,7 @@ export function CustomerSearchBar({
   }
 
   return (
-    <div className="mt-6 flex items-center gap-3 rounded-xl border border-border bg-white px-5 py-4">
+    <div className="flex items-center gap-3 rounded-xl border border-border bg-white p-3">
       <div
         role="tablist"
         aria-label="검색 기준"
