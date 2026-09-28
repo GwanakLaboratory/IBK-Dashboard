@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Screen } from '@/components/layout/Screen';
 import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { EmptyState } from '@/components/molecules/EmptyState';
@@ -11,11 +12,8 @@ export function MarketingCampaignPage() {
   const [activeTab, setActiveTab] = useState<CampaignTab>('send');
 
   return (
-    <div>
-      <PageHeading
-        title="캠페인 발송"
-        description="위험 세그먼트에 맞춰 메시지를 발송하고 반응을 추적합니다."
-      />
+    <Screen>
+      <PageHeading />
 
       <Tabs
         tabs={[
@@ -24,13 +22,13 @@ export function MarketingCampaignPage() {
         ]}
         value={activeTab}
         onChange={setActiveTab}
-      />
-
-      <CardGrid columns={1}>
-        <Card title={activeTab === 'send' ? '타겟 발송' : '접촉 이력'}>
-          <EmptyState />
-        </Card>
-      </CardGrid>
-    </div>
+      >
+        <CardGrid columns={1}>
+          <Card title={activeTab === 'send' ? '타겟 발송' : '접촉 이력'}>
+            <EmptyState />
+          </Card>
+        </CardGrid>
+      </Tabs>
+    </Screen>
   );
 }
