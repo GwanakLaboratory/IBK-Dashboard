@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
 import { findActiveNavItem, NAV_GROUPS } from '@/config/navigation';
 import type { NavGroupKey } from '@/types/navigation';
 
@@ -22,6 +22,12 @@ export function Sidebar() {
     setManualGroupKey(null);
   }, [location.pathname]);
 
+  useEffect(() => {
+    if (location.pathname === '/') {
+      setIsCollapsed(true);
+    }
+  }, [location.pathname]);
+
   return (
     <div className="flex h-full shrink-0">
       <aside className="flex h-full w-16 shrink-0 flex-col items-center gap-1.5 border-t border-sidebar-border bg-sidebar py-3">
@@ -40,15 +46,34 @@ export function Sidebar() {
           )}
         </button>
 
+        <NavLink
+          to="/"
+          end
+          className={({ isActive }) =>
+            `flex h-14 w-[52px] flex-col items-center justify-center gap-1 rounded-[10px] text-[11px] font-medium transition-colors ${
+              isActive && manualGroupKey === null
+                ? 'bg-sidebar-active text-white'
+                : 'text-sidebar-muted hover:bg-slate-800 hover:text-slate-200'
+            }`
+          }
+        >
+          <Home className="h-5 w-5 shrink-0" strokeWidth={1.8} />홈
+        </NavLink>
+
         {NAV_GROUPS.map((group) => {
-          const isActiveGroup = group.groupKey === activeGroupKey;
+          const isActiveGroup =
+            (location.pathname !== '/' || manualGroupKey !== null) &&
+            group.groupKey === activeGroupKey;
           const GroupIcon = group.icon;
 
           return (
             <button
               key={group.groupKey}
               type="button"
-              onClick={() => setManualGroupKey(group.groupKey)}
+              onClick={() => {
+                setManualGroupKey(group.groupKey);
+                setIsCollapsed(false);
+              }}
               title={group.label}
               className={`flex h-14 w-[52px] flex-col items-center justify-center gap-1 rounded-[10px] text-[11px] font-medium transition-colors ${
                 isActiveGroup
@@ -64,10 +89,10 @@ export function Sidebar() {
       </aside>
 
       <aside
-        className={`h-full shrink-0 overflow-hidden border-r bg-sidebar-panel transition-all duration-300 ease-in-out ${
+        className={`h-full shrink-0 overflow-hidden bg-sidebar-panel transition-all duration-300 ease-in-out ${
           isCollapsed
-            ? 'w-0 border-transparent opacity-0'
-            : 'w-44 border-sidebar-panel-border opacity-100'
+            ? 'w-0 border-r-0 opacity-0'
+            : 'w-44 border-r border-sidebar-panel-border opacity-100'
         }`}
       >
         <div className="flex h-full w-44 flex-col pb-4 pt-5">
@@ -89,8 +114,7 @@ export function Sidebar() {
                 item.sectionLabel !== previousSectionLabel;
 
               const rawDetailSegment =
-                item.hasDetailRoute &&
-                location.pathname.startsWith(`${item.path}/`)
+                item.detail && location.pathname.startsWith(`${item.path}/`)
                   ? location.pathname.slice(item.path.length + 1)
                   : null;
               const detailSegment = rawDetailSegment

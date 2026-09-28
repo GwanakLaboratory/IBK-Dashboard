@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router';
 import { ChevronRight, Home } from 'lucide-react';
-import { findActiveNavItem } from '@/config/navigation';
+import { findActiveNavItem, getPageMeta } from '@/config/navigation';
 
 export function Breadcrumb() {
   const location = useLocation();
@@ -10,14 +10,7 @@ export function Breadcrumb() {
     return null;
   }
 
-  const rawDetailSegment =
-    active.item.hasDetailRoute &&
-    location.pathname.startsWith(`${active.item.path}/`)
-      ? location.pathname.slice(active.item.path.length + 1)
-      : null;
-  const detailSegment = rawDetailSegment
-    ? decodeURIComponent(rawDetailSegment)
-    : null;
+  const detailSegment = getPageMeta(location.pathname)?.detailSegment ?? null;
 
   return (
     <span className="flex items-center gap-1 text-xs text-gray-500">

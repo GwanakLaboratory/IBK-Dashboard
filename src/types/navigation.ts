@@ -1,7 +1,7 @@
 export type DashboardTabKey =
   | 'status-overview'
   | 'status-trend'
-  | 'status-cause'
+  | 'status-churn'
   | 'target-members'
   | 'target-member-analysis'
   | 'target-cards'
