@@ -7,7 +7,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { CardAnalysisPage } from '@/features/card-analysis/CardAnalysisPage';
 import { CardDetailPage } from '@/features/card-analysis/CardDetailPage';
 import { CardProductListPage } from '@/features/card-analysis/CardProductListPage';
-import { DashboardCausePage } from '@/features/dashboard/DashboardCausePage';
+import { DashboardChurnPage } from '@/features/dashboard/DashboardChurnPage';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { DashboardTrendPage } from '@/features/dashboard/DashboardTrendPage';
 import { CustomerAnalysisPage } from '@/features/customer-detail/CustomerAnalysisPage';
@@ -27,7 +27,7 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: '/dashboard', element: <DashboardPage /> },
       { path: '/dashboard/trend', element: <DashboardTrendPage /> },
-      { path: '/dashboard/cause', element: <DashboardCausePage /> },
+      { path: '/dashboard/churn', element: <DashboardChurnPage /> },
       { path: '/card-analysis', element: <CardAnalysisPage /> },
       { path: '/card-list', element: <CardProductListPage /> },
       { path: '/card-list/:productName', element: <CardDetailPage /> },
