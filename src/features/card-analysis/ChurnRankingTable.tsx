@@ -1,7 +1,5 @@
 import type { ChurnRankingItem } from '@/features/card-analysis/churnRankingStats';
 
-// 이탈률이 이 값 이상이면 빨간색으로 강조한다.
-const HIGH_CHURN_RATE = 16;
 // 이탈률 막대의 최대치(%)
 const CHURN_BAR_MAX_RATE = 25;
 const HIGHLIGHTED_RANK_COUNT = 3;
@@ -33,7 +31,6 @@ export function ChurnRankingTable({
       <div className="mt-1 flex flex-col gap-0.5">
         {items.map((item, itemIndex) => {
           const isSelected = item.key === selectedKey;
-          const isHighChurn = item.churnRate >= HIGH_CHURN_RATE;
           const barWidth = Math.min(
             100,
             Math.round((item.churnRate / CHURN_BAR_MAX_RATE) * 100),
@@ -46,14 +43,16 @@ export function ChurnRankingTable({
               aria-pressed={isSelected}
               onClick={() => onSelectItem(item.key)}
               className={`grid ${GRID_COLUMNS} min-h-[46px] items-center gap-2 rounded-lg px-3 text-left transition-colors ${
-                isSelected ? 'bg-red-50' : 'hover:bg-gray-50'
+                isSelected ? 'bg-primary/[0.08]' : 'hover:bg-gray-50'
               }`}
             >
               <span
                 className={`text-[13px] font-bold ${
-                  itemIndex < HIGHLIGHTED_RANK_COUNT
-                    ? 'text-red-700'
-                    : 'text-gray-400'
+                  isSelected
+                    ? 'text-primary'
+                    : itemIndex < HIGHLIGHTED_RANK_COUNT
+                      ? 'text-gray-900'
+                      : 'text-gray-400'
                 }`}
               >
                 {itemIndex + 1}
@@ -61,7 +60,7 @@ export function ChurnRankingTable({
               <span
                 className={`truncate text-sm ${
                   isSelected
-                    ? 'font-bold text-red-700'
+                    ? 'font-bold text-primary'
                     : 'font-medium text-gray-900'
                 }`}
               >
@@ -74,14 +73,14 @@ export function ChurnRankingTable({
                 <div className="h-1.5 w-16 overflow-hidden rounded-full bg-gray-100">
                   <div
                     className={`h-full rounded-full ${
-                      isHighChurn || isSelected ? 'bg-red-400' : 'bg-gray-300'
+                      isSelected ? 'bg-primary' : 'bg-[#C3D0FF]'
                     }`}
                     style={{ width: `${barWidth}%` }}
                   />
                 </div>
                 <span
                   className={`w-12 text-right text-[13px] font-bold ${
-                    isHighChurn ? 'text-red-700' : 'text-gray-900'
+                    isSelected ? 'text-primary' : 'text-gray-900'
                   }`}
                 >
                   {item.churnRate.toFixed(1)}%

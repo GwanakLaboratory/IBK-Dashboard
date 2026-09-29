@@ -74,7 +74,6 @@ export function CardAnalysisPage() {
                   : 'border-border bg-white font-medium text-gray-700 hover:bg-gray-50'
               }`}
             >
-              {/* 선택 시 굵게 바뀌어도 칩 너비가 변하지 않도록 굵은 글씨 폭을 미리 확보한다. */}
               <span className="grid">
                 <span className="invisible col-start-1 row-start-1 font-bold">
                   {item.label}
@@ -87,7 +86,6 @@ export function CardAnalysisPage() {
       </div>
 
       <CardGrid columns={2} breakpoint="lg">
-        {/* 왼쪽 랭킹과 오른쪽 열의 높이를 맞추지 않고 각자 내용 높이만큼만 차지한다. */}
         <div className="self-start">
           <Card
             title="혜택 카테고리별 이탈률 랭킹"
@@ -115,18 +113,7 @@ export function CardAnalysisPage() {
             )}
           </Card>
 
-          <section className="flex shrink-0 flex-col gap-3 rounded-lg border border-border bg-white px-6 py-5 shadow-sm">
-            <div className="flex items-baseline justify-between">
-              <h2 className="text-[15px] font-bold text-gray-900">
-                이 혜택이 있는 카드상품
-              </h2>
-              <Link
-                to="/card-list"
-                className="text-xs font-semibold text-primary hover:underline"
-              >
-                카드 목록 전체 →
-              </Link>
-            </div>
+          <Card title="이 혜택이 있는 카드상품" seeMoreHref="/card-list">
             <div className="flex flex-wrap gap-2">
               {categoryProducts.map((stat) => (
                 <Link
@@ -139,7 +126,7 @@ export function CardAnalysisPage() {
                 </Link>
               ))}
             </div>
-          </section>
+          </Card>
         </div>
       </CardGrid>
     </Screen>

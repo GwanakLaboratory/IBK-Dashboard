@@ -149,7 +149,6 @@ export function CardDetailPage() {
             {productReasonImpacts.length > 0 ? (
               <CategoryReasonRanking
                 reasonImpacts={productReasonImpacts}
-                tone="primary"
                 sharedLabels={categoryReasonLabels}
               />
             ) : (
@@ -190,7 +189,6 @@ export function CardDetailPage() {
             {categoryReasonImpacts.length > 0 ? (
               <CategoryReasonRanking
                 reasonImpacts={categoryReasonImpacts}
-                tone="primary"
                 sharedLabels={productReasonLabels}
               />
             ) : (
