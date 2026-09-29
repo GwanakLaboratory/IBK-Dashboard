@@ -28,7 +28,7 @@ type RiskLevelFilter = RiskLevel | 'all';
 type ProductNameFilter = string | 'all';
 type MemberListTab = 'all' | 'priority';
 
-const CUSTOMERS_PER_PAGE = 6;
+const CUSTOMERS_PER_PAGE = 10;
 
 const PRODUCT_NAME_OPTIONS = [...ibkCreditCards].sort((a, b) =>
   a.localeCompare(b, 'ko'),
@@ -138,7 +138,7 @@ export function CustomerDetailPage() {
       <Tabs
         tabs={[
           { key: 'all', label: '전체 회원' },
-          // { key: 'priority', label: '위험군 우선순위' },
+          { key: 'priority', label: '위험군 우선순위' },
         ]}
         value={activeTab}
         onChange={setActiveTab}
@@ -207,7 +207,7 @@ export function CustomerDetailPage() {
             </div>
 
             <CardGrid columns={1}>
-              <div className="rounded-lg border border-border bg-white p-6 shadow-sm">
+              <div className="overflow-hidden rounded-xl border border-border bg-white shadow-sm">
                 {hasFilteredCustomers ? (
                   <>
                     <CustomerTable
@@ -216,7 +216,7 @@ export function CustomerDetailPage() {
                       sortDirection={sortDirection}
                       onSortColumnClick={handleSortColumnClick}
                     />
-                    <div className="mt-4 flex justify-center">
+                    <div className="flex justify-center border-t border-gray-100 p-3">
                       <Pagination
                         currentPage={safeCurrentPage}
                         totalPages={totalPages}
@@ -225,7 +225,7 @@ export function CustomerDetailPage() {
                     </div>
                   </>
                 ) : (
-                  <p className="py-8 text-center text-sm text-gray-400">
+                  <p className="py-14 text-center text-sm text-gray-400">
                     검색 결과가 없습니다.
                   </p>
                 )}

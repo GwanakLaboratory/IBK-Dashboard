@@ -1,8 +1,7 @@
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { Link } from 'react-router';
-import { RiskIndicator } from '@/components/domain/RiskIndicator';
 import { formatDaysAgo, maskName } from '@/utils/format';
-import { getLastUsedAt, getTopReason } from '@/utils/risk';
+import { getLastUsedAt, getTopReason, RISK_LEVEL_META } from '@/utils/risk';
 import type { Customer } from '@/types/churn';
 
 export type SortableColumnKey = 'predictionScore' | 'riskLevel';
@@ -15,9 +14,13 @@ type CustomerTableProps = {
   onSortColumnClick: (columnKey: SortableColumnKey) => void;
 };
 
-const SORTABLE_COLUMNS: { key: SortableColumnKey; label: string }[] = [
-  { key: 'predictionScore', label: '이탈예측점수' },
-  { key: 'riskLevel', label: '위험도' },
+const SORTABLE_COLUMNS: {
+  key: SortableColumnKey;
+  label: string;
+  align: 'left' | 'right';
+}[] = [
+  { key: 'predictionScore', label: '이탈예측점수', align: 'right' },
+  { key: 'riskLevel', label: '위험도', align: 'left' },
 ];
 
 function SortIndicatorIcon({
@@ -53,22 +56,31 @@ export function CustomerTable({
           <col className="w-[16%]" />
         </colgroup>
         <thead>
-          <tr className="border-b border-gray-200 text-left text-xs text-gray-500">
-            <th className="px-3 pb-2 font-medium">회원번호</th>
-            <th className="px-3 pb-2 font-medium">이름</th>
-            <th className="px-3 pb-2 font-medium">카드상품</th>
+          <tr className="bg-[#F7F8FA] text-left text-xs text-gray-600">
+            <th className="py-3 pl-5 pr-3 font-semibold">회원번호</th>
+            <th className="px-3 py-3 font-semibold">이름</th>
+            <th className="px-3 py-3 font-semibold">카드상품</th>
             {SORTABLE_COLUMNS.map((column) => {
               const isActiveColumn = sortColumnKey === column.key;
 
               return (
                 <th
                   key={column.key}
-                  className="px-3 pb-2 text-center font-medium"
+                  className={`px-3 py-3 font-semibold ${
+                    column.align === 'right' ? 'text-right' : 'text-left'
+                  }`}
+                  aria-sort={
+                    isActiveColumn
+                      ? sortDirection === 'asc'
+                        ? 'ascending'
+                        : 'descending'
+                      : 'none'
+                  }
                 >
                   <button
                     type="button"
                     onClick={() => onSortColumnClick(column.key)}
-                    className={`inline-flex items-center gap-1 hover:text-gray-700 ${
+                    className={`inline-flex items-center gap-1 hover:text-gray-900 ${
                       isActiveColumn ? 'text-gray-900' : ''
                     }`}
                   >
@@ -80,8 +92,8 @@ export function CustomerTable({
                 </th>
               );
             })}
-            <th className="px-3 pb-2 font-medium">주요 이유</th>
-            <th className="px-3 pb-2 text-center font-medium">
+            <th className="px-3 py-3 font-semibold">주요 이유</th>
+            <th className="py-3 pl-3 pr-5 text-right font-semibold">
               최근 미이용일수
             </th>
           </tr>
@@ -90,42 +102,50 @@ export function CustomerTable({
           {customers.map((customer) => {
             const topReason = getTopReason(customer);
             const lastUsedAt = getLastUsedAt(customer);
+            const riskLevelMeta = RISK_LEVEL_META[customer.riskLevel];
 
             return (
               <tr
                 key={customer.id}
-                className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50"
+                className="border-t border-gray-100 hover:bg-gray-50"
               >
-                <td className="truncate px-3 py-3 font-medium">
+                <td className="truncate py-3 pl-5 pr-3 font-semibold">
                   <Link
                     to={`/customer-detail/${customer.id}`}
-                    className="text-primary hover:underline"
+                    className="text-primary underline-offset-2 hover:underline"
                   >
                     {customer.id}
                   </Link>
                 </td>
-                <td className="truncate px-3 py-3 text-gray-700">
+                <td className="truncate px-3 py-3 text-gray-900">
                   {maskName(customer.name)}
                 </td>
                 <td
-                  className="truncate px-3 py-3 text-gray-700"
+                  className="truncate px-3 py-3 text-gray-600"
                   title={customer.productName}
                 >
                   {customer.productName}
                 </td>
-                <td className="px-3 py-3 text-center text-gray-700">
+                <td className="px-3 py-3 text-right font-bold text-gray-900">
                   {customer.predictionScore}
                 </td>
-                <td className="px-3 py-3 text-center">
-                  <RiskIndicator riskLevel={customer.riskLevel} />
+                <td className="px-3 py-3">
+                  <span
+                    className={`inline-flex h-6 items-center gap-1.5 rounded-full px-2.5 text-xs font-semibold ${riskLevelMeta.badgeClassName}`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${riskLevelMeta.dotColorClassName}`}
+                    />
+                    {riskLevelMeta.label}
+                  </span>
                 </td>
                 <td
-                  className="truncate px-3 py-3 text-gray-500"
+                  className="truncate px-3 py-3 text-gray-700"
                   title={topReason.label}
                 >
                   {topReason.label}
                 </td>
-                <td className="px-3 py-3 text-center text-gray-700">
+                <td className="py-3 pl-3 pr-5 text-right text-gray-900">
                   {lastUsedAt ? formatDaysAgo(lastUsedAt) : '-'}
                 </td>
               </tr>
