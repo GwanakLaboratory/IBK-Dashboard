@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Screen } from '@/components/layout/Screen';
 import { Select } from '@/components/molecules/Select';
-import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
-import { EmptyState } from '@/components/molecules/EmptyState';
 import { PageHeading } from '@/components/molecules/PageHeading';
 import { Pagination } from '@/components/molecules/Pagination';
 import { Tabs } from '@/components/molecules/Tabs';
@@ -11,6 +9,7 @@ import {
   CustomerSearchBar,
   type CustomerSearchField,
 } from '@/features/customer-detail/CustomerSearchBar';
+import { PriorityTargetPanel } from '@/features/customer-detail/PriorityTargetPanel';
 import {
   CustomerTable,
   type SortableColumnKey,
@@ -233,11 +232,7 @@ export function CustomerDetailPage() {
             </CardGrid>
           </div>
         ) : (
-          <CardGrid columns={1}>
-            <Card title="위험군 우선순위">
-              <EmptyState />
-            </Card>
-          </CardGrid>
+          <PriorityTargetPanel customers={customers} />
         )}
       </Tabs>
     </Screen>
