@@ -5,11 +5,14 @@ import type { RiskLevel } from '@/types/churn';
 type RiskSummaryTableProps = {
   countsByRiskLevel: Record<RiskLevel, number>;
   totalCustomerCount: number;
+  /** 하단 합계 행 라벨 */
+  totalLabel?: string;
 };
 
 export function RiskSummaryTable({
   countsByRiskLevel,
   totalCustomerCount,
+  totalLabel = '전체 회원',
 }: RiskSummaryTableProps) {
   return (
     <div>
@@ -54,7 +57,7 @@ export function RiskSummaryTable({
         </tbody>
       </table>
       <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
-        <span className="text-sm text-gray-500">전체 회원</span>
+        <span className="text-sm text-gray-500">{totalLabel}</span>
         <span className="text-base font-semibold text-gray-900">
           {totalCustomerCount.toLocaleString('ko-KR')}명
         </span>
