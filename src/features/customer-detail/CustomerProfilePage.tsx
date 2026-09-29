@@ -6,6 +6,7 @@ import { RiskIndicator } from '@/components/domain/RiskIndicator';
 import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
+import { CustomerPaymentSection } from '@/features/customer-detail/CustomerPaymentSection';
 import { CustomerCreditScoreTrendChart } from '@/features/customer-detail/CustomerCreditScoreTrendChart';
 import { CustomerSearchBar } from '@/features/customer-detail/CustomerSearchBar';
 import { CustomerReasonRadar } from '@/features/customer-detail/CustomerReasonRadar';
@@ -179,6 +180,8 @@ export function CustomerProfilePage() {
           </Card>
         </CardGrid>
       </div>
+
+      <CustomerPaymentSection customer={customer} />
 
       <CardGrid columns={2} breakpoint="lg">
         <Card title="이탈 이유 레이더" description="10개 이유별 기여 점수">

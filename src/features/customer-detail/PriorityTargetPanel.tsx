@@ -9,18 +9,15 @@ import {
   type ContactChannel,
   type ContactResponse,
 } from '@/features/customer-detail/priorityTargets';
+import {
+  CAMPAIGN_SEND_PATH,
+  type CampaignLinkState,
+} from '@/features/marketing/campaignLinkState';
 import { maskName } from '@/utils/format';
 import { getReasonShortLabel } from '@/utils/risk';
 import type { Customer } from '@/types/churn';
 
 const TARGETS_PER_PAGE = 10;
-const CAMPAIGN_SEND_PATH = '/marketing/extraction';
-
-/** 우선순위 화면에서 타겟 발송으로 넘길 때 router state 로 전달하는 값 */
-export type PriorityCampaignState = {
-  customerIds: string[];
-  sourceLabel: string;
-};
 const HIGHLIGHTED_RANK_COUNT = 3;
 
 const CHANNEL_TAG_CLASS_NAME: Record<ContactChannel, string> = {
@@ -142,7 +139,7 @@ export function PriorityTargetPanel({ customers }: PriorityTargetPanelProps) {
             {
               customerIds: topTargets.map((target) => target.customer.id),
               sourceLabel: `위험군 우선순위 ${topCount === priorityTargets.length ? '전체' : '상위'} ${topCount}명`,
-            } satisfies PriorityCampaignState
+            } satisfies CampaignLinkState
           }
           className="ml-auto inline-flex h-11 items-center gap-2 rounded-lg bg-primary px-[18px] text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
         >

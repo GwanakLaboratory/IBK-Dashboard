@@ -211,6 +211,20 @@ const HIGH_TXN: Transaction[] = [
     amount: 32000,
     status: '취소',
   },
+  {
+    date: '2024-09-06',
+    merchant: 'SK에너지 삼성주유소',
+    category: '주유',
+    amount: 62000,
+    status: '승인',
+  },
+  {
+    date: '2024-08-21',
+    merchant: '쿠팡',
+    category: '온라인쇼핑',
+    amount: 47300,
+    status: '승인',
+  },
 ];
 
 const MID_TXN: Transaction[] = [
