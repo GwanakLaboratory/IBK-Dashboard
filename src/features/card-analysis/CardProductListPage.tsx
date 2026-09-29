@@ -28,6 +28,10 @@ const BRAND_OPTIONS = Array.from(
   new Set(ibkCreditCardInfos.flatMap((cardInfo) => cardInfo.brands)),
 ).sort((a, b) => a.localeCompare(b, 'ko'));
 
+const MAX_CHURN_RATE = Math.max(
+  ...productUsageStats.map((stat) => stat.churnRate),
+);
+
 export function CardProductListPage() {
   const navigate = useNavigate();
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -145,18 +149,19 @@ export function CardProductListPage() {
         </div>
 
         <CardGrid columns={1}>
-          <div className="rounded-lg border border-border bg-white p-6 shadow-sm">
+          <div className="overflow-hidden rounded-xl border border-border bg-white shadow-sm">
             {hasFilteredStats ? (
               <CardProductTable
                 stats={sortedStats}
                 cardInfoByName={ibkCreditCardInfoByName}
+                maxChurnRate={MAX_CHURN_RATE}
                 sortColumnKey={sortColumnKey}
                 sortDirection={sortDirection}
                 onSortColumnClick={handleSortColumnClick}
                 onRowClick={handleRowClick}
               />
             ) : (
-              <p className="py-8 text-center text-sm text-gray-400">
+              <p className="py-14 text-center text-sm text-gray-400">
                 검색 결과가 없습니다.
               </p>
             )}

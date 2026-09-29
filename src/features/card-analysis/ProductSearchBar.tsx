@@ -1,4 +1,3 @@
-import { Search } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { productUsageStats } from '@/data/customers';
 
@@ -35,9 +34,7 @@ export function ProductSearchBar({
 
   return (
     <div className="flex items-center gap-3 rounded-xl border border-border bg-white px-5 py-4">
-      <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-lg">
-        <Search className="h-4 w-4 text-gray-500" />
-      </div>
+      <div className="text-sm font-medium text-gray-900">상품명</div>
       <label htmlFor="product-search-input" className="sr-only">
         검색어
       </label>
