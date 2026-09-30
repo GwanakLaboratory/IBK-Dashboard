@@ -4,33 +4,26 @@ import { Screen } from '@/components/layout/Screen';
 import { PageHeading } from '@/components/molecules/PageHeading';
 import { customers } from '@/data/customers';
 import {
-  AI_SEGMENT_PRESETS,
   buildMessageThemes,
   DEFAULT_SEGMENT_PICK,
   RISK_SEGMENT_VALUE,
   type MessageThemeKey,
-  type RecentCampaign,
   type SegmentGroupKey,
   type SegmentPick,
 } from '@/data/marketing';
 import { AiMessageStep } from '@/features/marketing/campaign/AiMessageStep';
+import { CampaignFormSection } from '@/features/marketing/campaign/CampaignFormSection';
 import {
   AI_GENERATING_MS,
   buildCampaignView,
+  fillPreviewName,
   getExtractPool,
+  getSectionState,
   type CampaignDraft,
+  type CampaignSectionStep,
   type CampaignStep,
+  type TargetMode,
 } from '@/features/marketing/campaign/campaignModel';
-import {
-  CampaignStartView,
-  type StartOptionKey,
-} from '@/features/marketing/campaign/CampaignStartView';
-import { CampaignStepActions } from '@/features/marketing/campaign/CampaignStepActions';
-import { CampaignStepper } from '@/features/marketing/campaign/CampaignStepper';
-import {
-  CampaignSummaryPanel,
-  SegmentInsight,
-} from '@/features/marketing/campaign/CampaignSummaryPanel';
 import { ChannelStep } from '@/features/marketing/campaign/ChannelStep';
 import { ReviewStep } from '@/features/marketing/campaign/ReviewStep';
 import { SendCompleteModal } from '@/features/marketing/campaign/SendCompleteModal';
@@ -41,8 +34,9 @@ import { RISK_LEVEL_ORDER } from '@/utils/risk';
 import type { RiskLevel } from '@/types/churn';
 
 const INITIAL_DRAFT: CampaignDraft = {
-  step: 0,
-  targetMode: 'filter',
+  step: 1,
+  maxStep: 1,
+  targetMode: 'ai',
   segmentPick: DEFAULT_SEGMENT_PICK,
   extractRiskLevels: ['high'],
   extractSize: 1000,
@@ -67,11 +61,30 @@ const RESET_AFTER_TARGET_CHANGE: Partial<CampaignDraft> = {
   isSent: false,
 };
 
-const NEXT_LABEL: Partial<Record<CampaignStep, string>> = {
-  1: '다음: 문구 생성 →',
-  2: '다음: 발송 채널 →',
-  3: '다음: 확인 및 발송 →',
-};
+/** 텔레마케팅은 전화 상담이라 "문구"가 아니라 상담원이 참고할 스크립트로 부른다. */
+function getSectionTitle(step: CampaignSectionStep, isScript: boolean) {
+  if (step === 1) return '대상 선택';
+  if (step === 2) return isScript ? '스크립트 생성' : '문구 생성';
+  return '채널 · 시점';
+}
+
+function getSectionNextLabel(step: CampaignSectionStep, isScript: boolean) {
+  if (step === 1) {
+    return isScript
+      ? '이 대상으로 스크립트 만들기 →'
+      : '이 대상으로 문구 만들기 →';
+  }
+  if (step === 2) {
+    return isScript ? '이 스크립트로 채널 선택 →' : '이 문구로 채널 선택 →';
+  }
+  return '발송 내용 확인 →';
+}
+
+const THEME_KEYS = buildMessageThemes('', '').map((theme) => theme.key);
+
+function isThemeKey(value: string | undefined): value is MessageThemeKey {
+  return THEME_KEYS.some((key) => key === value);
+}
 
 function getRiskLevelsFromPick(pick: SegmentPick): RiskLevel[] {
   const values = pick.risk ?? [];
@@ -80,12 +93,6 @@ function getRiskLevelsFromPick(pick: SegmentPick): RiskLevel[] {
         values.includes(RISK_SEGMENT_VALUE[riskLevel]),
       )
     : RISK_LEVEL_ORDER;
-}
-
-const THEME_KEYS = buildMessageThemes('', '').map((theme) => theme.key);
-
-function isThemeKey(value: string | undefined): value is MessageThemeKey {
-  return THEME_KEYS.some((key) => key === value);
 }
 
 /**
@@ -101,6 +108,8 @@ function createInitialDraft(
   return {
     ...INITIAL_DRAFT,
     step: 2,
+    maxStep: 2,
+    targetMode: 'filter',
     segmentPick: {},
     linkedTarget: {
       customerIds: linkState.customerIds,
@@ -150,47 +159,23 @@ export function TargetSendPage() {
     }, AI_GENERATING_MS);
   }
 
+  /**
+   * 문구 생성 단계는 처음 도달할 때만 생성 연출을 보여준다. 이미 한 번
+   * 지나간 뒤 "변경"으로 되돌아올 때는 만들어둔 문구를 바로 보여준다.
+   */
   function goToStep(step: CampaignStep) {
-    if (step === 2 && draft.step !== 2) {
-      runAi({ step });
+    const nextMaxStep = Math.max(draft.maxStep, step) as CampaignStep;
+    if (step === 2 && draft.step !== 2 && draft.maxStep < 3) {
+      runAi({ step, maxStep: nextMaxStep });
       return;
     }
-    updateDraft({ step, isSent: false });
+    updateDraft({ step, maxStep: nextMaxStep, isSent: false });
   }
 
-  function handleStart(option: StartOptionKey) {
-    const base = { ...INITIAL_DRAFT, ...RESET_AFTER_TARGET_CHANGE };
-    if (option === 'ai') {
-      const [topPreset] = AI_SEGMENT_PRESETS;
-      setDraft({
-        ...base,
-        targetMode: 'filter',
-        segmentPick: topPreset.pick,
-        theme: topPreset.theme,
-        channel: topPreset.channel,
-      });
-      runAi({ step: 2 });
-      return;
-    }
-    setDraft({
-      ...base,
-      step: 1,
-      targetMode: option === 'random' ? 'random' : 'filter',
-    });
-  }
-
-  function handleNewCampaign() {
-    setIsSendModalOpen(false);
-    setDraft(INITIAL_DRAFT);
-  }
-
-  function handleReuse(campaign: RecentCampaign) {
-    setDraft({
-      ...INITIAL_DRAFT,
-      step: 4,
-      segmentPick: campaign.pick,
-      theme: campaign.theme,
-      channel: campaign.channel,
+  function handleSelectTargetMode(mode: TargetMode) {
+    updateDraft({
+      targetMode: mode,
+      ...RESET_AFTER_TARGET_CHANGE,
     });
   }
 
@@ -247,28 +232,50 @@ export function TargetSendPage() {
     downloadCustomerCsv(rows);
   }
 
-  const isNextDisabled =
-    draft.step === 1 &&
-    draft.targetMode === 'random' &&
-    draft.extractedCount === null;
+  const isStep1NextDisabled =
+    draft.targetMode === 'random' && draft.extractedCount === null;
   const targetCountLabel = view.targetCount.toLocaleString('ko-KR');
+  const isScript = view.channel.key === 'tm';
 
-  function renderStepActions(layout: 'panel' | 'bar') {
+  const sectionSummary: Record<CampaignSectionStep, string> = {
+    1: `${targetCountLabel}명 · ${
+      draft.linkedTarget
+        ? draft.linkedTarget.label
+        : draft.targetMode === 'random'
+          ? '무작위 추출'
+          : (view.matchedPreset?.label ?? view.segmentLabel)
+    }`,
+    2: `${view.theme.label} 테마 · ${fillPreviewName(view.message).slice(0, 36)}…`,
+    3: `${view.channel.label} · ${draft.timing === 'now' ? '즉시 발송' : '예약 발송'}`,
+  };
+  const sectionFootHint: Record<CampaignSectionStep, string> = {
+    1: `선택한 대상 ${targetCountLabel}명`,
+    2: `${isScript ? '스크립트' : '문구'} ${view.message.length}자 · {이름}은 회원별로 바뀌어요`,
+    3: `${view.channel.label} · ${draft.timing === 'now' ? '즉시 발송' : '예약 발송'}`,
+  };
+
+  function renderSection(step: CampaignSectionStep, children: React.ReactNode) {
+    const state = getSectionState(draft, step);
     return (
-      <CampaignStepActions
-        layout={layout}
-        isLastStep={draft.step === 4}
-        nextLabel={NEXT_LABEL[draft.step] ?? ''}
-        isNextDisabled={isNextDisabled}
-        sendLabel={`${targetCountLabel}명에게 ${draft.timing === 'now' ? '발송하기' : '예약하기'}`}
-        onPrev={() => goToStep((draft.step - 1) as CampaignStep)}
-        onNext={() => goToStep((draft.step + 1) as CampaignStep)}
-        onDownload={handleDownloadCsv}
-        onSend={() => {
-          updateDraft({ isSent: true });
-          setIsSendModalOpen(true);
-        }}
-      />
+      <CampaignFormSection
+        step={step}
+        title={getSectionTitle(step, isScript)}
+        state={state}
+        summary={
+          state === 'done'
+            ? sectionSummary[step]
+            : state === 'locked'
+              ? '이전 단계를 마치면 열려요'
+              : undefined
+        }
+        onReopen={() => goToStep(step)}
+        footHint={sectionFootHint[step]}
+        nextLabel={getSectionNextLabel(step, isScript)}
+        isNextDisabled={step === 1 ? isStep1NextDisabled : false}
+        onNext={() => goToStep((step + 1) as CampaignStep)}
+      >
+        {children}
+      </CampaignFormSection>
     );
   }
 
@@ -276,105 +283,97 @@ export function TargetSendPage() {
     <Screen>
       <PageHeading />
 
-      {draft.step === 0 ? (
-        <CampaignStartView onStart={handleStart} onReuse={handleReuse} />
-      ) : (
-        <div className="flex flex-col gap-10">
-          <CampaignStepper currentStep={draft.step} onStepClick={goToStep} />
+      <div className="flex flex-col gap-3">
+        {renderSection(
+          1,
+          <TargetSegmentStep
+            draft={draft}
+            view={view}
+            onClearLinkedTarget={() =>
+              updateDraft({ ...RESET_AFTER_TARGET_CHANGE })
+            }
+            onSelectTargetMode={handleSelectTargetMode}
+            onToggleSegment={handleToggleSegment}
+            onApplyPreset={(preset) =>
+              updateDraft({
+                ...RESET_AFTER_TARGET_CHANGE,
+                segmentPick: preset.pick,
+                theme: preset.theme,
+                channel: preset.channel,
+              })
+            }
+            onToggleExtractRisk={handleToggleExtractRisk}
+            onExtractSizeChange={(size) =>
+              updateDraft({ extractSize: size, extractedCount: null })
+            }
+            onApplyRandom={handleApplyRandom}
+            onDownloadCsv={handleDownloadCsv}
+          />,
+        )}
 
-          <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,8fr)_minmax(0,4fr)]">
-            <div className="flex flex-col gap-4">
-              {draft.step === 1 && (
-                <TargetSegmentStep
-                  draft={draft}
-                  onClearLinkedTarget={() =>
-                    updateDraft({ ...RESET_AFTER_TARGET_CHANGE })
-                  }
-                  onToggleSegment={handleToggleSegment}
-                  onApplyPreset={(preset) =>
-                    updateDraft({
-                      ...RESET_AFTER_TARGET_CHANGE,
-                      segmentPick: preset.pick,
-                      theme: preset.theme,
-                      channel: preset.channel,
-                    })
-                  }
-                  onToggleExtractRisk={handleToggleExtractRisk}
-                  onExtractSizeChange={(size) =>
-                    updateDraft({ extractSize: size, extractedCount: null })
-                  }
-                  onApplyRandom={handleApplyRandom}
-                  onDownloadCsv={handleDownloadCsv}
-                />
-              )}
-              {draft.step === 2 && (
-                <AiMessageStep
-                  draft={draft}
-                  view={view}
-                  onRegenerate={() =>
-                    runAi({
-                      variantIndex:
-                        (view.variantIndex + 1) % view.theme.variants.length,
-                      editedMessage: null,
-                    })
-                  }
-                  onSelectTheme={(theme) =>
-                    runAi({ theme, variantIndex: 0, editedMessage: null })
-                  }
-                  onSelectVariant={(variantIndex) =>
-                    updateDraft({
-                      variantIndex,
-                      editedMessage: null,
-                      isSent: false,
-                    })
-                  }
-                  onMessageChange={(message) =>
-                    updateDraft({ editedMessage: message, isSent: false })
-                  }
-                />
-              )}
-              {draft.step === 3 && (
-                <ChannelStep
-                  draft={draft}
-                  view={view}
-                  onSelectChannel={(channel) =>
-                    updateDraft({ channel, isSent: false })
-                  }
-                  onSelectTiming={(timing) => updateDraft({ timing })}
-                />
-              )}
-              {draft.step === 4 && (
-                <ReviewStep draft={draft} view={view} onEditStep={goToStep} />
-              )}
+        {renderSection(
+          2,
+          <AiMessageStep
+            draft={draft}
+            view={view}
+            onRegenerate={() =>
+              runAi({
+                variantIndex:
+                  (view.variantIndex + 1) % view.theme.variants.length,
+                editedMessage: null,
+              })
+            }
+            onSelectTheme={(theme) =>
+              runAi({ theme, variantIndex: 0, editedMessage: null })
+            }
+            onSelectVariant={(variantIndex) =>
+              updateDraft({
+                variantIndex,
+                editedMessage: null,
+                isSent: false,
+              })
+            }
+            onMessageChange={(message) =>
+              updateDraft({ editedMessage: message, isSent: false })
+            }
+          />,
+        )}
 
-              <div className="sticky bottom-0 -mx-1 border-t border-border bg-surface/95 px-1 py-3 backdrop-blur lg:hidden">
-                {renderStepActions('bar')}
-              </div>
-            </div>
+        {renderSection(
+          3,
+          <ChannelStep
+            draft={draft}
+            view={view}
+            onSelectChannel={(channel) =>
+              updateDraft({ channel, isSent: false })
+            }
+            onSelectTiming={(timing) => updateDraft({ timing })}
+          />,
+        )}
 
-            <CampaignSummaryPanel
-              view={view}
-              insight={
-                draft.step === 1 && draft.targetMode !== 'random' ? (
-                  <SegmentInsight view={view} />
-                ) : null
-              }
-              actions={
-                <div className="hidden lg:block">
-                  {renderStepActions('panel')}
-                </div>
-              }
-            />
-          </div>
-        </div>
-      )}
+        {draft.step === 4 && (
+          <ReviewStep
+            draft={draft}
+            view={view}
+            onEditStep={goToStep}
+            onDownloadCsv={handleDownloadCsv}
+            onSend={() => {
+              updateDraft({ isSent: true });
+              setIsSendModalOpen(true);
+            }}
+          />
+        )}
+      </div>
 
       {isSendModalOpen && (
         <SendCompleteModal
           view={view}
           timing={draft.timing}
           onClose={() => setIsSendModalOpen(false)}
-          onNewCampaign={handleNewCampaign}
+          onNewCampaign={() => {
+            setIsSendModalOpen(false);
+            setDraft(INITIAL_DRAFT);
+          }}
         />
       )}
     </Screen>

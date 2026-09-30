@@ -12,6 +12,8 @@ type AiGeneratingStateProps = {
   durationMs: number;
   personaLabel: string;
   themeLabel: string;
+  /** 텔레마케팅 채널은 "문구"가 아니라 상담원이 참고할 "스크립트"로 부른다. */
+  isScript?: boolean;
 };
 
 const SHIMMER_CLASS_NAME =
@@ -21,6 +23,7 @@ export function AiGeneratingState({
   durationMs,
   personaLabel,
   themeLabel,
+  isScript,
 }: AiGeneratingStateProps) {
   const [stageIndex, setStageIndex] = useState(0);
 
@@ -38,9 +41,9 @@ export function AiGeneratingState({
     <div
       role="status"
       aria-live="polite"
-      className="rounded-xl bg-[linear-gradient(90deg,#C4B5FD,#818CF8,#F0ABFC,#A78BFA,#C4B5FD)] bg-[length:300%_100%] p-px shadow-lg shadow-violet-500/10 motion-safe:animate-ai-gradient"
+      className="flex min-h-[264px] rounded-xl bg-[linear-gradient(90deg,#C4B5FD,#818CF8,#F0ABFC,#A78BFA,#C4B5FD)] bg-[length:300%_100%] p-px shadow-lg shadow-violet-500/10 motion-safe:animate-ai-gradient"
     >
-      <div className="flex flex-col gap-5 rounded-[11px] bg-white px-6 py-[22px]">
+      <div className="flex w-full flex-col justify-between gap-4 rounded-[11px] bg-white px-6 py-4">
         <div className="flex items-center gap-3.5">
           <span className="relative flex h-10 w-10 shrink-0 items-center justify-center">
             <span className="absolute inset-0 rounded-full bg-violet-400/40 motion-safe:animate-ping" />
@@ -50,7 +53,8 @@ export function AiGeneratingState({
           </span>
           <div className="flex flex-col gap-0.5">
             <span className="flex items-center gap-1 text-sm font-bold text-violet-900">
-              AI가 {themeLabel} 문구를 만들고 있어요
+              AI가 {themeLabel} {isScript ? '스크립트를' : '문구를'} 만들고
+              있어요
               <span className="inline-flex gap-0.5" aria-hidden>
                 {[0, 150, 300].map((delay) => (
                   <span

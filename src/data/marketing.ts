@@ -306,46 +306,6 @@ export const SEND_CHANNELS: SendChannel[] = [
 
 export const SCHEDULED_SEND_LABEL = '2026.10.01 (목) 10:00';
 
-export type RecentCampaign = {
-  name: string;
-  date: string;
-  count: number;
-  channel: SendChannelKey;
-  theme: MessageThemeKey;
-  responseRate: number;
-  pick: SegmentPick;
-};
-
-export const RECENT_CAMPAIGNS: RecentCampaign[] = [
-  {
-    name: '고가치 회원 이용 급감',
-    date: '09.18',
-    count: 1284,
-    channel: 'tm',
-    theme: 'benefit',
-    responseRate: 12.4,
-    pick: AI_SEGMENT_PRESETS[0].pick,
-  },
-  {
-    name: '연회비 청구 D-30 · 혜택 미사용',
-    date: '09.11',
-    count: 862,
-    channel: 'kakao',
-    theme: 'fee',
-    responseRate: 18.1,
-    pick: AI_SEGMENT_PRESETS[1].pick,
-  },
-  {
-    name: '20대 · 혜택 이용 저하',
-    date: '09.04',
-    count: 2105,
-    channel: 'sms',
-    theme: 'persona',
-    responseRate: 8.7,
-    pick: { risk: ['2'], gender: [], age: ['20'], reason: ['benefit'] },
-  },
-];
-
 // ---------- 접촉 이력 ----------
 
 export type ContactChannel = '문자' | '텔레마케팅' | '카카오';

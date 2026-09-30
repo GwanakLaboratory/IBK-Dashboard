@@ -27,7 +27,9 @@ export function SendCompleteModal({
           <CheckCircle2 className="h-7 w-7 text-green-600" />
         </span>
         <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-bold text-gray-900">발송을 완료했어요</h2>
+          <h2 className="text-lg font-bold text-gray-900">
+            {timing === 'now' ? '발송을 완료했어요' : '발송을 예약했어요'}
+          </h2>
           <p className="text-sm text-gray-600">
             &lsquo;{campaignLabel}&rsquo; ·{' '}
             {view.targetCount.toLocaleString('ko-KR')}명
@@ -38,7 +40,7 @@ export function SendCompleteModal({
           </p>
         </div>
         <div className="w-full rounded-lg bg-gray-50 px-4 py-3 text-xs text-gray-600">
-          반응 여부는 접촉 이력 및 성과 리포트에서 확인할 수 있어요
+          반응 결과는 접촉 이력과 성과 리포트에서 확인할 수 있어요
         </div>
         <div className="flex w-full gap-2">
           <Link

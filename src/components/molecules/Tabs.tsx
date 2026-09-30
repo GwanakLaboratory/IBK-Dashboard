@@ -22,7 +22,10 @@ export function Tabs<TabKey extends string>({
 }: TabsProps<TabKey>) {
   const tabList =
     variant === 'segmented' ? (
-      <div role="tablist" className="flex rounded-lg bg-[#E9EDF3] p-[3px]">
+      <div
+        role="tablist"
+        className="flex w-fit shrink-0 self-start rounded-lg bg-[#E9EDF3] p-[3px]"
+      >
         {tabs.map((tab) => (
           <button
             key={tab.key}

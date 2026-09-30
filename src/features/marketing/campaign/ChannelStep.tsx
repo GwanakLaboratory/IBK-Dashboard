@@ -67,7 +67,7 @@ export function ChannelStep({
                 <div className="flex w-full items-center justify-between">
                   <span className="text-[15px] font-bold">{channel.label}</span>
                   {channel.key === view.recommendedChannel.key && (
-                    <span className="inline-flex h-5 items-center rounded-full bg-violet-600 px-1.5 text-[10px] font-bold text-white">
+                    <span className="inline-flex h-5 items-center rounded-full bg-violet-100 px-1.5 text-[10px] font-bold text-violet-600">
                       AI 추천
                     </span>
                   )}

@@ -19,9 +19,12 @@ import {
 import { RISK_LEVEL_DISPLAY_ORDER, RISK_LEVEL_META } from '@/utils/risk';
 import type { RiskLevel } from '@/types/churn';
 
-export type CampaignStep = 0 | 1 | 2 | 3 | 4;
-export type TargetMode = 'filter' | 'random';
+export type CampaignStep = 1 | 2 | 3 | 4;
+/** fs1 · fs2 · fs3 아코디언 섹션 번호 (STEP 4는 아코디언이 아니라 하단에 이어 붙는 확인 블록). */
+export type CampaignSectionStep = 1 | 2 | 3;
+export type TargetMode = 'ai' | 'filter' | 'random';
 export type SendTiming = 'now' | 'schedule';
+export type SectionState = 'open' | 'done' | 'locked';
 
 export type LinkedTarget = {
   customerIds: string[];
@@ -32,6 +35,8 @@ export type LinkedTarget = {
 
 export type CampaignDraft = {
   step: CampaignStep;
+  /** 지금까지 도달한 가장 먼 단계. 완료(done)/잠김(locked) 아코디언 상태를 가른다. */
+  maxStep: CampaignStep;
   targetMode: TargetMode;
   segmentPick: SegmentPick;
   /** 무작위 추출 대상 그룹 */
@@ -167,6 +172,15 @@ function getRecommendedChannel(
   if ((prefersCall || isHighValue) && segmentCount <= 20000) return 'tm';
   if ((pick.idle ?? []).length) return 'sms';
   return 'kakao';
+}
+
+/** fs1/fs2/fs3 아코디언 섹션 하나의 열림·완료·잠김 상태. */
+export function getSectionState(
+  draft: Pick<CampaignDraft, 'step' | 'maxStep'>,
+  section: CampaignSectionStep,
+): SectionState {
+  if (draft.step === section) return 'open';
+  return draft.maxStep > section ? 'done' : 'locked';
 }
 
 export function isSamePick(pickA: SegmentPick, pickB: SegmentPick) {
