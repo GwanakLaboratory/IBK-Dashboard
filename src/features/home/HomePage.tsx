@@ -175,15 +175,13 @@ export function HomePage() {
             })}
           </div>
 
-          <div className="mt-6 grid grid-cols-2 border-t border-gray-100 sm:grid-cols-4">
-            {metrics.map((metric, index) => (
+          <div className="mt-6 grid grid-cols-2 sm:grid-cols-4">
+            {metrics.map((metric) => (
               <button
                 key={metric.label}
                 type="button"
                 onClick={metric.onClick}
-                className={`flex min-h-[128px] flex-col items-center justify-center gap-1.5 py-5 transition-colors hover:bg-gray-50 ${
-                  index > 0 ? 'sm:border-l sm:border-gray-100' : ''
-                }`}
+                className="flex min-h-[128px] flex-col items-center justify-center gap-1.5 rounded-2xl py-5 transition-colors hover:bg-gray-50"
               >
                 <span className="text-[13px] font-medium text-gray-500">
                   {metric.label}

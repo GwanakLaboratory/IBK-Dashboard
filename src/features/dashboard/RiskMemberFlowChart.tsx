@@ -45,7 +45,7 @@ export function RiskMemberFlowChart({
   const lastIndex = flowData.length - 1;
 
   return (
-    <div className="h-[190px]">
+    <div className="h-[250px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={flowData}

@@ -12,12 +12,16 @@ type SummaryMetricTrendChartProps = {
   valueFormatter: (value: number) => string;
 };
 
+function dataMax(data: { value: number }[]) {
+  return Math.max(...data.map((point) => point.value));
+}
+
 export function SummaryMetricTrendChart({
   data,
   valueFormatter,
 }: SummaryMetricTrendChartProps) {
   return (
-    <div className="h-[170px]">
+    <div className="h-[200px]">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           data={data}
@@ -29,8 +33,15 @@ export function SummaryMetricTrendChart({
             axisLine={{ stroke: '#e3e7ee' }}
             tickLine={false}
             interval={0}
+            padding={{ left: 20, right: 20 }}
           />
-          <YAxis hide domain={['dataMin', 'dataMax']} />
+          <YAxis
+            hide
+            domain={[
+              (dataMin: number) => dataMin - (dataMax(data) - dataMin) * 0.15,
+              'dataMax',
+            ]}
+          />
           <Tooltip
             content={({ active, label, payload }) => {
               if (!active || !payload?.length) {

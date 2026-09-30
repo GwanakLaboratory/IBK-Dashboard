@@ -37,9 +37,7 @@ export function StatCard({
           : undefined
       }
       className={`flex flex-col gap-2 rounded-xl border border-border bg-white p-5 shadow-sm ${
-        onClick
-          ? 'cursor-pointer transition-colors hover:border-gray-300 hover:bg-gray-50'
-          : ''
+        onClick ? 'cursor-pointer transition-colors hover:bg-gray-50' : ''
       }`}
     >
       <div className="flex w-full items-center justify-between gap-2">
