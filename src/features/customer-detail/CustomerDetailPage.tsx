@@ -20,6 +20,7 @@ import {
   RISK_LEVEL_META,
   RISK_LEVEL_DISPLAY_ORDER,
   getRiskLevelRank,
+  interleaveByRiskLevel,
 } from '@/utils/risk';
 import type { RiskLevel } from '@/types/churn';
 
@@ -75,7 +76,7 @@ export function CustomerDetailPage() {
 
   const sortedCustomers = useMemo(() => {
     if (!sortColumnKey) {
-      return filteredCustomers;
+      return interleaveByRiskLevel(filteredCustomers);
     }
 
     const directionMultiplier = sortDirection === 'asc' ? 1 : -1;

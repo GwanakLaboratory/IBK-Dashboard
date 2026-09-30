@@ -1,6 +1,6 @@
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { Link } from 'react-router';
-import { formatDaysAgo, maskName } from '@/utils/format';
+import { maskName } from '@/utils/format';
 import { getLastUsedAt, getTopReason, RISK_LEVEL_META } from '@/utils/risk';
 import type { Customer } from '@/types/churn';
 
@@ -94,7 +94,7 @@ export function CustomerTable({
             })}
             <th className="px-3 py-3 font-semibold">주요 이유</th>
             <th className="py-3 pl-3 pr-5 text-right font-semibold">
-              최근 미이용일수
+              최근 이용 날짜
             </th>
           </tr>
         </thead>
@@ -146,7 +146,7 @@ export function CustomerTable({
                   {topReason.label}
                 </td>
                 <td className="py-3 pl-3 pr-5 text-right text-gray-900">
-                  {lastUsedAt ? formatDaysAgo(lastUsedAt) : '-'}
+                  {lastUsedAt ? lastUsedAt.replace(/-/g, '.') : '-'}
                 </td>
               </tr>
             );
