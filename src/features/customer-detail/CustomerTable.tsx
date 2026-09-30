@@ -4,7 +4,7 @@ import { maskName } from '@/utils/format';
 import { getLastUsedAt, getTopReason, RISK_LEVEL_META } from '@/utils/risk';
 import type { Customer } from '@/types/churn';
 
-export type SortableColumnKey = 'predictionScore' | 'riskLevel';
+export type SortableColumnKey = 'id' | 'predictionScore' | 'riskLevel';
 export type SortDirection = 'asc' | 'desc';
 
 type CustomerTableProps = {
@@ -15,7 +15,7 @@ type CustomerTableProps = {
 };
 
 const SORTABLE_COLUMNS: {
-  key: SortableColumnKey;
+  key: Exclude<SortableColumnKey, 'id'>;
   label: string;
   align: 'left' | 'right';
 }[] = [
@@ -35,6 +35,52 @@ function SortIndicatorIcon({
     return <ArrowDown className="h-3 w-3 shrink-0" />;
   }
   return <ArrowUpDown className="h-3 w-3 shrink-0" />;
+}
+
+type SortableHeaderCellProps = {
+  columnKey: SortableColumnKey;
+  label: string;
+  className: string;
+  sortColumnKey: SortableColumnKey | null;
+  sortDirection: SortDirection;
+  onSortColumnClick: (columnKey: SortableColumnKey) => void;
+};
+
+function SortableHeaderCell({
+  columnKey,
+  label,
+  className,
+  sortColumnKey,
+  sortDirection,
+  onSortColumnClick,
+}: SortableHeaderCellProps) {
+  const isActiveColumn = sortColumnKey === columnKey;
+
+  return (
+    <th
+      className={className}
+      aria-sort={
+        isActiveColumn
+          ? sortDirection === 'asc'
+            ? 'ascending'
+            : 'descending'
+          : 'none'
+      }
+    >
+      <button
+        type="button"
+        onClick={() => onSortColumnClick(columnKey)}
+        className={`inline-flex items-center gap-1 hover:text-gray-900 ${
+          isActiveColumn ? 'text-gray-900' : ''
+        }`}
+      >
+        {label}
+        <SortIndicatorIcon
+          direction={isActiveColumn ? sortDirection : 'none'}
+        />
+      </button>
+    </th>
+  );
 }
 
 export function CustomerTable({
@@ -57,41 +103,29 @@ export function CustomerTable({
         </colgroup>
         <thead>
           <tr className="bg-[#F7F8FA] text-left text-xs text-gray-600">
-            <th className="py-3 pl-5 pr-3 font-semibold">회원번호</th>
+            <SortableHeaderCell
+              columnKey="id"
+              label="회원번호"
+              className="py-3 pl-5 pr-3 font-semibold"
+              sortColumnKey={sortColumnKey}
+              sortDirection={sortDirection}
+              onSortColumnClick={onSortColumnClick}
+            />
             <th className="px-3 py-3 font-semibold">이름</th>
             <th className="px-3 py-3 font-semibold">카드상품</th>
-            {SORTABLE_COLUMNS.map((column) => {
-              const isActiveColumn = sortColumnKey === column.key;
-
-              return (
-                <th
-                  key={column.key}
-                  className={`px-3 py-3 font-semibold ${
-                    column.align === 'right' ? 'text-right' : 'text-left'
-                  }`}
-                  aria-sort={
-                    isActiveColumn
-                      ? sortDirection === 'asc'
-                        ? 'ascending'
-                        : 'descending'
-                      : 'none'
-                  }
-                >
-                  <button
-                    type="button"
-                    onClick={() => onSortColumnClick(column.key)}
-                    className={`inline-flex items-center gap-1 hover:text-gray-900 ${
-                      isActiveColumn ? 'text-gray-900' : ''
-                    }`}
-                  >
-                    {column.label}
-                    <SortIndicatorIcon
-                      direction={isActiveColumn ? sortDirection : 'none'}
-                    />
-                  </button>
-                </th>
-              );
-            })}
+            {SORTABLE_COLUMNS.map((column) => (
+              <SortableHeaderCell
+                key={column.key}
+                columnKey={column.key}
+                label={column.label}
+                className={`px-3 py-3 font-semibold ${
+                  column.align === 'right' ? 'text-right' : 'text-left'
+                }`}
+                sortColumnKey={sortColumnKey}
+                sortDirection={sortDirection}
+                onSortColumnClick={onSortColumnClick}
+              />
+            ))}
             <th className="px-3 py-3 font-semibold">주요 이유</th>
             <th className="py-3 pl-3 pr-5 text-right font-semibold">
               최근 이용 날짜

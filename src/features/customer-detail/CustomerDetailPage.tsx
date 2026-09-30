@@ -42,10 +42,11 @@ export function CustomerDetailPage() {
     useState<RiskLevelFilter>('all');
   const [productNameFilter, setProductNameFilter] =
     useState<ProductNameFilter>('all');
+  // 처음에는 회원번호 오름차순으로 보여준다.
   const [sortColumnKey, setSortColumnKey] = useState<SortableColumnKey | null>(
-    null,
+    'id',
   );
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [currentPage, setCurrentPage] = useState(1);
 
   const normalizedSearchKeyword = searchKeyword.trim().toLowerCase();
@@ -81,6 +82,12 @@ export function CustomerDetailPage() {
 
     const directionMultiplier = sortDirection === 'asc' ? 1 : -1;
     return [...filteredCustomers].sort((customerA, customerB) => {
+      if (sortColumnKey === 'id') {
+        return (
+          customerA.id.localeCompare(customerB.id, 'ko', { numeric: true }) *
+          directionMultiplier
+        );
+      }
       const valueA =
         sortColumnKey === 'predictionScore'
           ? customerA.predictionScore
@@ -123,7 +130,8 @@ export function CustomerDetailPage() {
   function handleSortColumnClick(columnKey: SortableColumnKey) {
     if (sortColumnKey !== columnKey) {
       setSortColumnKey(columnKey);
-      setSortDirection('desc');
+      // 회원번호는 작은 번호부터, 점수·위험도는 높은 순부터 보는 게 자연스럽다.
+      setSortDirection(columnKey === 'id' ? 'asc' : 'desc');
       return;
     }
     setSortDirection((previousDirection) =>
