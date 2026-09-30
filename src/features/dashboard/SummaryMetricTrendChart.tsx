@@ -21,7 +21,7 @@ export function SummaryMetricTrendChart({
   valueFormatter,
 }: SummaryMetricTrendChartProps) {
   return (
-    <div className="h-[200px]">
+    <div className="h-[280px]">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           data={data}

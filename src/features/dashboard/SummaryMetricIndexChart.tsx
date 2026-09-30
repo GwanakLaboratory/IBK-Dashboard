@@ -81,8 +81,8 @@ export function SummaryMetricIndexChart({
         </li>
       </ul>
 
-      {/* 범례 줄만큼 줄여서 단일 지표 차트(200px)와 카드 높이를 맞춘다 */}
-      <div className="h-[172px]">
+      {/* 범례 줄만큼 줄여서 단일 지표 차트(280px)와 카드 높이를 맞춘다 */}
+      <div className="h-[252px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={chartData}
