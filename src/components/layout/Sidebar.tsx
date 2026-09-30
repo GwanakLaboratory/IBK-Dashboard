@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router';
 import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
-import { findActiveNavItem, NAV_GROUPS } from '@/config/navigation';
+import {
+  findActiveNavItem,
+  getDetailSegmentLabel,
+  NAV_GROUPS,
+} from '@/config/navigation';
 import type { NavGroupKey } from '@/types/navigation';
 
 export function Sidebar() {
@@ -113,13 +117,10 @@ export function Sidebar() {
                 item.sectionLabel !== undefined &&
                 item.sectionLabel !== previousSectionLabel;
 
-              const rawDetailSegment =
-                item.detail && location.pathname.startsWith(`${item.path}/`)
-                  ? location.pathname.slice(item.path.length + 1)
-                  : null;
-              const detailSegment = rawDetailSegment
-                ? decodeURIComponent(rawDetailSegment)
-                : null;
+              const detailSegment = getDetailSegmentLabel(
+                item,
+                location.pathname,
+              );
 
               return (
                 <div key={item.tabKey} className="flex flex-col">

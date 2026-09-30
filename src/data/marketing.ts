@@ -373,6 +373,8 @@ export type CampaignHistoryEntry = {
   sourceLabel: string;
   channel: ContactChannel;
   message: string;
+  targetCount: number;
+  respondedCount: number;
   members: CampaignHistoryMember[];
 };
 
@@ -687,6 +689,8 @@ export const CAMPAIGN_HISTORY: CampaignHistoryEntry[] = [
       message:
         CAMPAIGN_MESSAGE_OVERRIDE[entry.name] ??
         GENERIC_MESSAGE_BY_CHANNEL[channel],
+      targetCount: entry.targetCount,
+      respondedCount: entry.respondedCount,
       members: buildCampaignMembers(index, channel, responseRatio, date),
     };
   });

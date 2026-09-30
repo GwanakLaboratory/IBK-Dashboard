@@ -9,6 +9,9 @@ type CustomerSearchBarProps = {
   searchField: CustomerSearchField;
   onSearchFieldChange: (searchField: CustomerSearchField) => void;
   disabled?: boolean;
+  /** 넘기면 회원 상세로 이동하는 대신 이 함수를 호출한다. */
+  onLookup?: () => void;
+  onReset?: () => void;
 };
 
 const SEARCH_FIELD_OPTIONS: {
@@ -43,6 +46,8 @@ export function CustomerSearchBar({
   searchField,
   onSearchFieldChange,
   disabled = false,
+  onLookup,
+  onReset,
 }: CustomerSearchBarProps) {
   const navigate = useNavigate();
   const activeOption =
@@ -50,6 +55,10 @@ export function CustomerSearchBar({
     SEARCH_FIELD_OPTIONS[0];
 
   function handleLookup() {
+    if (onLookup) {
+      onLookup();
+      return;
+    }
     const trimmedValue = value.trim();
     if (!trimmedValue) {
       return;
@@ -64,6 +73,10 @@ export function CustomerSearchBar({
 
   function handleReset() {
     onValueChange('');
+    if (onReset) {
+      onReset();
+      return;
+    }
     navigate('/customer-detail');
   }
 

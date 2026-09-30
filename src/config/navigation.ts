@@ -1,5 +1,6 @@
 import { BarChart3, Target, TrendingUp, type LucideIcon } from 'lucide-react';
 import { MegaphoneIcon } from '@/components/atoms/MegaphoneIcon';
+import { CAMPAIGN_HISTORY } from '@/data/marketing';
 import type { DashboardTabKey, NavGroupKey } from '@/types/navigation';
 
 export type DashboardPageTab = {
@@ -17,7 +18,12 @@ export type DashboardNavItem = {
   /** Only match this item's NavLink exactly; needed when its path is a prefix of sibling paths. */
   end?: boolean;
   /** This item's page also has an unlisted dynamic detail route nested under its path. */
-  detail?: { label: string; description: string };
+  detail?: {
+    label: string;
+    description: string;
+    /** URL 조각(id 등)을 사이드바·브레드크럼에 보여줄 이름으로 바꾼다. 없으면 조각을 그대로 쓴다. */
+    getSegmentLabel?: (segment: string) => string | undefined;
+  };
   /** In-page tab bar; all tabs render under this one route. */
   tabs?: DashboardPageTab[];
 };
@@ -146,6 +152,9 @@ export const NAV_GROUPS: NavGroup[] = [
           label: '캠페인 상세',
           description:
             '캠페인 대상 세그먼트와 발송 문구, 회원별 반응 결과를 확인합니다.',
+          getSegmentLabel: (segment) =>
+            CAMPAIGN_HISTORY.find((campaign) => campaign.id === segment)
+              ?.segmentLabel,
         },
       },
     ],
@@ -201,6 +210,18 @@ export function findActiveNavItem(
   return best;
 }
 
+/** Detail route의 URL 조각을 화면에 보여줄 이름으로 바꾼다. detail 경로가 아니면 null. */
+export function getDetailSegmentLabel(
+  item: DashboardNavItem,
+  pathname: string,
+): string | null {
+  if (!item.detail || !pathname.startsWith(`${item.path}/`)) {
+    return null;
+  }
+  const segment = decodeURIComponent(pathname.slice(item.path.length + 1));
+  return item.detail.getSegmentLabel?.(segment) ?? segment;
+}
+
 /**
  * Page heading text for the given pathname, taken from the same nav item the
  * sidebar renders so the two never drift apart. A path nested under an item
@@ -219,7 +240,7 @@ export function getPageMeta(
     return {
       title: item.detail.label,
       description: item.detail.description,
-      detailSegment: decodeURIComponent(pathname.slice(item.path.length + 1)),
+      detailSegment: getDetailSegmentLabel(item, pathname),
     };
   }
 
