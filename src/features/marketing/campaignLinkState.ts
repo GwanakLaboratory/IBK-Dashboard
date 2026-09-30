@@ -1,4 +1,4 @@
-export const CAMPAIGN_SEND_PATH = '/marketing/extraction';
+export const CAMPAIGN_SEND_PATH = '/marketing/campaign';
 
 /** 다른 화면에서 타겟 발송으로 넘어올 때 router state 로 전달하는 값 */
 export type CampaignLinkState = {

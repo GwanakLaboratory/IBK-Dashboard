@@ -14,9 +14,11 @@ import { CustomerAnalysisPage } from '@/features/customer-detail/CustomerAnalysi
 import { CustomerDetailPage } from '@/features/customer-detail/CustomerDetailPage';
 import { CustomerProfilePage } from '@/features/customer-detail/CustomerProfilePage';
 import { HomePage } from '@/features/home/HomePage';
-import { HighRiskExtractionPage } from '@/features/marketing/HighRiskExtractionPage';
-import { MarketingCampaignPage } from '@/features/marketing/MarketingCampaignPage';
-import { PerformanceReportPage } from '@/features/performance/PerformanceReportPage';
+import { CampaignHistoryDetailPage } from '@/features/marketing/CampaignHistoryDetailPage';
+import { ContactHistoryPage } from '@/features/marketing/ContactHistoryPage';
+import { TargetSendPage } from '@/features/marketing/TargetSendPage';
+import { ConversionPage } from '@/features/performance/ConversionPage';
+import { EconomicImpactPage } from '@/features/performance/EconomicImpactPage';
 
 const DEFAULT_PATH = '/dashboard';
 
@@ -37,9 +39,18 @@ const router = createBrowserRouter([
         path: '/customer-detail/:customerId',
         element: <CustomerProfilePage />,
       },
-      { path: '/marketing/extraction', element: <HighRiskExtractionPage /> },
-      { path: '/marketing/campaign', element: <MarketingCampaignPage /> },
-      { path: '/performance', element: <PerformanceReportPage /> },
+      { path: '/marketing/campaign', element: <TargetSendPage /> },
+      { path: '/marketing/history', element: <ContactHistoryPage /> },
+      {
+        path: '/marketing/history/:campaignId',
+        element: <CampaignHistoryDetailPage />,
+      },
+      {
+        path: '/performance',
+        element: <Navigate to="/performance/conversion" replace />,
+      },
+      { path: '/performance/conversion', element: <ConversionPage /> },
+      { path: '/performance/economic', element: <EconomicImpactPage /> },
       { path: '*', element: <Navigate to={DEFAULT_PATH} replace /> },
     ],
   },

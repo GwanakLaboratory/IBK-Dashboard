@@ -50,6 +50,21 @@ export default {
         },
         surface: '#F5F6F8',
       },
+      keyframes: {
+        // AI 문구 생성 로딩: 테두리 그라데이션이 흐르고 스켈레톤 위로 빛이 지나간다
+        'ai-gradient': {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
+        'ai-shimmer': {
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' },
+        },
+      },
+      animation: {
+        'ai-gradient': 'ai-gradient 3s ease infinite',
+        'ai-shimmer': 'ai-shimmer 1.8s linear infinite',
+      },
       boxShadow: {
         panel: '0 16px 48px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.06)',
         launcher: '0 4px 20px rgba(29, 78, 216, 0.45)',

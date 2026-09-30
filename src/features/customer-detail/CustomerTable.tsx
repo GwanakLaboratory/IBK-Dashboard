@@ -1,7 +1,8 @@
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { Link } from 'react-router';
+import { RiskBadge } from '@/components/domain/RiskBadge';
 import { maskName } from '@/utils/format';
-import { getLastUsedAt, getTopReason, RISK_LEVEL_META } from '@/utils/risk';
+import { getLastUsedAt, getTopReason } from '@/utils/risk';
 import type { Customer } from '@/types/churn';
 
 export type SortableColumnKey = 'id' | 'predictionScore' | 'riskLevel';
@@ -136,7 +137,6 @@ export function CustomerTable({
           {customers.map((customer) => {
             const topReason = getTopReason(customer);
             const lastUsedAt = getLastUsedAt(customer);
-            const riskLevelMeta = RISK_LEVEL_META[customer.riskLevel];
 
             return (
               <tr
@@ -164,14 +164,7 @@ export function CustomerTable({
                   {customer.predictionScore}
                 </td>
                 <td className="px-3 py-3">
-                  <span
-                    className={`inline-flex h-6 items-center gap-1.5 rounded-full px-2.5 text-xs font-semibold ${riskLevelMeta.badgeClassName}`}
-                  >
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full ${riskLevelMeta.dotColorClassName}`}
-                    />
-                    {riskLevelMeta.label}
-                  </span>
+                  <RiskBadge riskLevel={customer.riskLevel} />
                 </td>
                 <td
                   className="truncate px-3 py-3 text-gray-700"

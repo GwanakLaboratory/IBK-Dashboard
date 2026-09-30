@@ -6,9 +6,10 @@ export type DashboardTabKey =
   | 'target-member-analysis'
   | 'target-cards'
   | 'target-card-category'
-  | 'marketing-extraction'
   | 'marketing-campaign'
-  | 'performance-report';
+  | 'marketing-history'
+  | 'performance-conversion'
+  | 'performance-economic';
 
 export type NavGroupKey =
   'status' | 'risk-target' | 'marketing' | 'performance';

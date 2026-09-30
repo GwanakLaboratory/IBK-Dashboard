@@ -15,6 +15,7 @@ import { PageHeading } from '@/components/molecules/PageHeading';
 import { Tabs } from '@/components/molecules/Tabs';
 import { RiskDistributionChart } from '@/features/dashboard/RiskDistributionChart';
 import { RiskMemberFlowChart } from '@/features/dashboard/RiskMemberFlowChart';
+import { SummaryMetricIndexChart } from '@/features/dashboard/SummaryMetricIndexChart';
 import { SummaryMetricTrendChart } from '@/features/dashboard/SummaryMetricTrendChart';
 import {
   monthlyMemberActivity,
@@ -24,7 +25,19 @@ import {
 import type { RiskLevel } from '@/types/churn';
 import { StatCard } from '@/components/molecules/StatCard';
 
-type SummaryMetricTab = 'usage' | 'members' | 'signup';
+type SummaryMetricKey = 'usage' | 'members' | 'signup';
+type SummaryMetricTab = 'all' | SummaryMetricKey;
+
+// 전체 보기에서 지표마다 쓰는 고정 색 (카드 사용액은 단일 차트와 같은 파랑)
+const SUMMARY_METRIC_OPTIONS: {
+  key: SummaryMetricKey;
+  label: string;
+  color: string;
+}[] = [
+  { key: 'usage', label: '카드 사용액', color: '#1B4FD8' },
+  { key: 'members', label: '이용 가능 회원', color: '#EB6834' },
+  { key: 'signup', label: '신규 가입자', color: '#1BAF7A' },
+];
 
 function scrollToSection(sectionId: string) {
   document
@@ -36,7 +49,7 @@ export function DashboardPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [summaryMetricTab, setSummaryMetricTab] =
-    useState<SummaryMetricTab>('usage');
+    useState<SummaryMetricTab>('all');
 
   useEffect(() => {
     if (!location.hash) {
@@ -160,7 +173,7 @@ export function DashboardPage() {
   ];
 
   const summaryTrendData: Record<
-    SummaryMetricTab,
+    SummaryMetricKey,
     {
       data: { month: string; value: number }[];
       valueFormatter: (value: number) => string;
@@ -216,20 +229,25 @@ export function DashboardPage() {
           actions={
             <Tabs
               variant="segmented"
-              tabs={[
-                { key: 'usage', label: '카드 사용액' },
-                { key: 'members', label: '이용 가능 회원' },
-                { key: 'signup', label: '신규 가입자' },
-              ]}
+              tabs={[{ key: 'all', label: '전체' }, ...SUMMARY_METRIC_OPTIONS]}
               value={summaryMetricTab}
               onChange={setSummaryMetricTab}
             />
           }
         >
-          <SummaryMetricTrendChart
-            data={summaryTrendData[summaryMetricTab].data}
-            valueFormatter={summaryTrendData[summaryMetricTab].valueFormatter}
-          />
+          {summaryMetricTab === 'all' ? (
+            <SummaryMetricIndexChart
+              series={SUMMARY_METRIC_OPTIONS.map((option) => ({
+                ...option,
+                ...summaryTrendData[option.key],
+              }))}
+            />
+          ) : (
+            <SummaryMetricTrendChart
+              data={summaryTrendData[summaryMetricTab].data}
+              valueFormatter={summaryTrendData[summaryMetricTab].valueFormatter}
+            />
+          )}
         </Card>
       </CardGrid>
 

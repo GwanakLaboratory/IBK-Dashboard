@@ -79,6 +79,13 @@ export function interleaveByRiskLevel<T extends { riskLevel: RiskLevel }>(
   return result;
 }
 
+/** 이탈 예측 점수로 위험도를 구한다. 기준은 회원 목데이터의 riskLevel 분포와 맞춘 값. */
+export function getRiskLevelFromScore(score: number): RiskLevel {
+  if (score >= 70) return 'high';
+  if (score >= 50) return 'medium';
+  return 'low';
+}
+
 export function getTopReason(customer: Customer) {
   return customer.churnReasons[0];
 }

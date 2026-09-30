@@ -131,23 +131,23 @@ export const NAV_GROUPS: NavGroup[] = [
     icon: MegaphoneIcon,
     items: [
       {
-        tabKey: 'marketing-extraction',
-        path: '/marketing/extraction',
-        label: '고위험 회원 추출',
+        tabKey: 'marketing-campaign',
+        path: '/marketing/campaign',
+        label: '타겟 발송',
         description:
-          '그룹과 인원수 조건으로 대상을 무작위 추출해 CSV로 받습니다.',
+          '발송 대상을 선택하고, AI로 맞춤 문구를 만들어 캠페인을 발송해 보세요.',
       },
-      // {
-      //   tabKey: 'marketing-campaign',
-      //   path: '/marketing/campaign',
-      //   label: '캠페인 발송',
-      //   description:
-      //     '위험 세그먼트에 맞춰 메시지를 발송하고 반응을 추적합니다.',
-      //   tabs: [
-      //     { key: 'send', label: '타겟 발송' },
-      //     { key: 'history', label: '접촉 이력' },
-      //   ],
-      // },
+      {
+        tabKey: 'marketing-history',
+        path: '/marketing/history',
+        label: '접촉 이력',
+        description: '회원별 마케팅 접촉 내역과 반응 여부를 확인합니다.',
+        detail: {
+          label: '캠페인 상세',
+          description:
+            '캠페인 대상 세그먼트와 발송 문구, 회원별 반응 결과를 확인합니다.',
+        },
+      },
     ],
   },
   {
@@ -157,14 +157,17 @@ export const NAV_GROUPS: NavGroup[] = [
     icon: TrendingUp,
     items: [
       {
-        tabKey: 'performance-report',
-        path: '/performance',
-        label: '성과 리포트',
-        description: '이탈 방지 활동의 전환율과 경제적 효과를 확인합니다.',
-        tabs: [
-          { key: 'conversion', label: '전환율' },
-          { key: 'economic', label: '경제적 효과' },
-        ],
+        tabKey: 'performance-conversion',
+        path: '/performance/conversion',
+        label: '전환율',
+        description:
+          '마케팅 전후 이탈률 추이와 세그먼트별 반응률·위험도 분포를 확인합니다.',
+      },
+      {
+        tabKey: 'performance-economic',
+        path: '/performance/economic',
+        label: '경제적 효과',
+        description: '마케팅 전후 이용대금 변화와 손실 방지 효과를 확인합니다.',
       },
     ],
   },
