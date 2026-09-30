@@ -52,7 +52,7 @@ export function AiMessageStep({
           <button
             type="button"
             onClick={onRegenerate}
-            className="flex h-9 items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3.5 text-[13px] font-semibold text-gray-700 hover:bg-gray-50"
+            className="flex h-9 items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3.5 text-xs font-semibold text-gray-700 hover:bg-gray-50"
           >
             <RotateCw className="h-3.5 w-3.5" />
             다시 생성
@@ -84,7 +84,7 @@ export function AiMessageStep({
                   role="tab"
                   aria-selected={isSelected}
                   onClick={() => onSelectTheme(theme.key)}
-                  className={`inline-flex h-[34px] items-center rounded-full px-3.5 text-[13px] ${
+                  className={`inline-flex h-[34px] items-center rounded-full px-3.5 text-xs ${
                     isSelected
                       ? 'border border-violet-600 bg-white font-bold text-violet-600'
                       : 'border border-border bg-white font-medium text-gray-700 hover:bg-gray-50'
@@ -93,7 +93,7 @@ export function AiMessageStep({
                   {theme.label}
                 </button>
                 {isRecommended && (
-                  <span className="absolute -right-1.5 -top-1.5 inline-flex h-[16px] items-center rounded-full bg-violet-600 px-1.5 text-[9px] font-bold text-white">
+                  <span className="absolute -right-1.5 -top-1.5 inline-flex h-[16px] items-center rounded-full bg-violet-600 px-1.5 text-[10px] font-bold text-white">
                     추천
                   </span>
                 )}
@@ -136,7 +136,7 @@ export function AiMessageStep({
                   >
                     <div className="flex w-full items-center justify-between">
                       <span
-                        className={`inline-flex h-[22px] items-center rounded-full px-2 text-[11px] font-bold ${
+                        className={`inline-flex h-[22px] items-center rounded-full px-2 text-[12px] font-bold ${
                           isSelected
                             ? 'bg-violet-100 text-violet-600'
                             : 'bg-gray-100 text-gray-600'

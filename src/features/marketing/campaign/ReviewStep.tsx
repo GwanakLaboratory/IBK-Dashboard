@@ -73,16 +73,16 @@ export function ReviewStep({
             key={row.id}
             className="grid grid-cols-[160px_minmax(0,1fr)_auto] items-center gap-6 px-6 py-4 transition-colors hover:bg-gray-50"
           >
-            <span className="text-[13px] font-semibold text-gray-500">
+            <span className="text-xs font-semibold text-gray-500">
               {row.label}
             </span>
-            <span className="text-[15px] font-semibold leading-relaxed text-gray-900">
+            <span className="text-sm font-semibold leading-relaxed text-gray-900">
               {row.value}
             </span>
             <button
               type="button"
               onClick={() => onEditStep(row.step)}
-              className="h-9 shrink-0 rounded-lg border border-gray-300 bg-white px-3.5 text-[13px] font-medium text-gray-700 hover:border-gray-400 hover:bg-gray-50"
+              className="h-9 shrink-0 rounded-lg border border-gray-300 bg-white px-3.5 text-xs font-medium text-gray-700 hover:border-gray-400 hover:bg-gray-50"
             >
               수정
             </button>
@@ -101,7 +101,7 @@ export function ReviewStep({
         <button
           type="button"
           onClick={onSend}
-          className="h-[46px] rounded-[10px] bg-primary px-6 text-[15px] font-bold text-white hover:opacity-90"
+          className="h-[46px] rounded-[10px] bg-primary px-6 text-sm font-bold text-white hover:opacity-90"
         >
           {sendLabel}
         </button>

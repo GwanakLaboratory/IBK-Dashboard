@@ -35,7 +35,7 @@ function RiskShareDonut({ period }: RiskShareDonutProps) {
   return (
     <div className="flex flex-col items-center gap-2.5">
       <span
-        className={`text-[13px] font-bold ${isAfter ? 'text-primary' : 'text-gray-600'}`}
+        className={`text-xs font-bold ${isAfter ? 'text-primary' : 'text-gray-600'}`}
       >
         {isAfter
           ? `AFTER · ${CONVERSION_AFTER_PERIOD}`
@@ -91,7 +91,7 @@ function RiskShareDiff({ riskLevel }: { riskLevel: RiskLevel }) {
         {before}% → <strong className="text-lg text-gray-900">{after}%</strong>
       </span>
       <span
-        className={`text-[13px] font-bold ${isImproved ? 'text-green-700' : 'text-gray-600'}`}
+        className={`text-xs font-bold ${isImproved ? 'text-green-700' : 'text-gray-600'}`}
       >
         {diff > 0 ? '▲' : '▼'} {Math.abs(diff)}%p
       </span>
@@ -152,7 +152,7 @@ export function ConversionReport() {
                   }}
                 />
               </div>
-              <div className="flex justify-between text-[13px]">
+              <div className="flex justify-between text-xs">
                 <span className="flex items-center gap-1.5 text-gray-900">
                   <span className="h-2.5 w-2.5 rounded-sm bg-green-500" />
                   반응{' '}

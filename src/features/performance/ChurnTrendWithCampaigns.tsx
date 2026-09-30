@@ -90,7 +90,7 @@ function MarkerBadge({ viewBox, count }: MarkerBadgeProps) {
         x={x}
         y={y - 8}
         textAnchor="middle"
-        fontSize={10}
+        fontSize={11}
         fontWeight={700}
         fill="#FFFFFF"
       >
@@ -120,7 +120,7 @@ export function ChurnTrendWithCampaigns() {
             미발송 대조군
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-gray-800 text-[9px] font-bold text-white">
+            <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-gray-800 text-[10px] font-bold text-white">
               n
             </span>
             그 달 발송 캠페인 수
@@ -136,7 +136,7 @@ export function ChurnTrendWithCampaigns() {
               <CartesianGrid stroke="#f1f5f9" vertical={false} />
               <XAxis
                 dataKey="month"
-                tick={{ fontSize: 12, fill: '#4b5563' }}
+                tick={{ fontSize: 13, fill: '#4b5563' }}
                 axisLine={{ stroke: '#e3e7ee' }}
                 tickLine={false}
                 interval={0}
@@ -145,7 +145,7 @@ export function ChurnTrendWithCampaigns() {
                 domain={[0, 4]}
                 ticks={[0, 1, 2, 3, 4]}
                 tickFormatter={(value: number) => `${value}%`}
-                tick={{ fontSize: 12, fill: '#9ca3af' }}
+                tick={{ fontSize: 13, fill: '#9ca3af' }}
                 axisLine={false}
                 tickLine={false}
               />
@@ -176,12 +176,12 @@ export function ChurnTrendWithCampaigns() {
                   return (
                     <div className="w-[260px] rounded-lg border border-white/40 bg-white/95 px-3 py-2.5 shadow-lg backdrop-blur-md">
                       <div className="flex items-baseline justify-between gap-2">
-                        <p className="text-[13px] font-bold text-gray-900">
+                        <p className="text-xs font-bold text-gray-900">
                           {point.month}
                           {entries.length > 0 &&
                             ` · 캠페인 ${entries.length}건`}
                         </p>
-                        <p className="text-[11px] text-gray-500">
+                        <p className="text-[12px] text-gray-500">
                           이탈률 {point.targetRate.toFixed(1)}%
                         </p>
                       </div>
@@ -196,7 +196,7 @@ export function ChurnTrendWithCampaigns() {
                               className="grid grid-cols-[52px_minmax(0,1fr)_auto] items-center gap-2 text-xs"
                             >
                               <span
-                                className={`inline-flex h-[18px] shrink-0 items-center justify-center rounded px-1 text-[10px] font-bold ${CAMPAIGN_TYPE_TAG_CLASS_NAME[entry.type]}`}
+                                className={`inline-flex h-[18px] shrink-0 items-center justify-center rounded px-1 text-[11px] font-bold ${CAMPAIGN_TYPE_TAG_CLASS_NAME[entry.type]}`}
                               >
                                 {CAMPAIGN_TYPE_LABEL[entry.type]}
                               </span>

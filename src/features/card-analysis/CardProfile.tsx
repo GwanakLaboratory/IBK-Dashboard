@@ -78,7 +78,7 @@ export function CardProfile({ stat, cardInfo, imageUrl }: CardProfileProps) {
             ))}
           </div>
           <p className="flex items-center gap-2.5 text-sm leading-normal text-gray-700">
-            <span className="inline-flex h-[22px] shrink-0 items-center rounded bg-gray-100 px-2 text-[11px] font-bold text-gray-600">
+            <span className="inline-flex h-[22px] shrink-0 items-center rounded bg-gray-100 px-2 text-[12px] font-bold text-gray-600">
               주요 혜택
             </span>
             {cardInfo.summary}
@@ -101,9 +101,7 @@ export function CardProfile({ stat, cardInfo, imageUrl }: CardProfileProps) {
                 <span className="text-2xl font-bold tracking-tight text-gray-900">
                   {item.value.toLocaleString('ko-KR')}
                 </span>
-                <span className="text-[13px] font-semibold text-gray-600">
-                  명
-                </span>
+                <span className="text-xs font-semibold text-gray-600">명</span>
               </div>
               <span className={`text-xs font-semibold ${item.subClassName}`}>
                 {item.sub}
@@ -120,7 +118,7 @@ export function CardProfile({ stat, cardInfo, imageUrl }: CardProfileProps) {
             />
             <span className="h-full flex-1 bg-red-400" />
           </div>
-          <div className="flex justify-between text-[11px] text-gray-500">
+          <div className="flex justify-between text-[12px] text-gray-500">
             <span>발급 대비 이용 {useRate.toFixed(1)}%</span>
             <span>해지 {closeRate.toFixed(1)}%</span>
           </div>

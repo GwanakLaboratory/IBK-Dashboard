@@ -45,7 +45,7 @@ export function ChurnRateComparisonChart({
             type="number"
             domain={[0, 'dataMax + 5']}
             tickFormatter={(value: number) => `${value}%`}
-            tick={{ fontSize: 12, fill: '#9ca3af' }}
+            tick={{ fontSize: 13, fill: '#9ca3af' }}
             axisLine={false}
             tickLine={false}
           />
@@ -53,7 +53,7 @@ export function ChurnRateComparisonChart({
             type="category"
             dataKey="label"
             width="auto"
-            tick={{ fontSize: 12, fill: '#374151' }}
+            tick={{ fontSize: 13, fill: '#374151' }}
             axisLine={false}
             tickLine={false}
           />
@@ -95,7 +95,7 @@ export function ChurnRateComparisonChart({
               dataKey="churnRate"
               position="right"
               formatter={(value: unknown) => `${value}%`}
-              style={{ fontSize: 12, fill: '#374151' }}
+              style={{ fontSize: 13, fill: '#374151' }}
             />
           </Bar>
         </BarChart>

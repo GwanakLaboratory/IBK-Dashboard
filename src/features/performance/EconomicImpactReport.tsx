@@ -46,7 +46,7 @@ export function EconomicImpactReport() {
             </span>
             <span className="text-xl font-semibold text-gray-900">억 원</span>
           </div>
-          <span className="text-[13px] text-gray-600">
+          <span className="text-xs text-gray-600">
             마케팅 대상 전후 6개월 누적 ·{' '}
             <strong className="text-primary">
               +{ECONOMIC_IMPACT.spendDeltaPercent}%
@@ -63,7 +63,7 @@ export function EconomicImpactReport() {
             </span>
             <span className="text-xl font-semibold text-gray-900">명</span>
           </div>
-          <span className="text-[13px] text-gray-600">
+          <span className="text-xs text-gray-600">
             이탈 예측 대비 이용을 유지한 회원
           </span>
         </div>
@@ -77,7 +77,7 @@ export function EconomicImpactReport() {
             </span>
             <span className="text-xl font-semibold">억 원</span>
           </div>
-          <span className="text-[13px] text-topbar-muted">
+          <span className="text-xs text-topbar-muted">
             유지 회원 {ECONOMIC_IMPACT.retainedMembers.toLocaleString('ko-KR')}
             명 × 1인당 연간 수익 기여{' '}
             {ECONOMIC_IMPACT.annualContributionPerMemberManwon}만 원
@@ -115,7 +115,7 @@ export function EconomicImpactReport() {
               >
                 <XAxis
                   dataKey="month"
-                  tick={{ fontSize: 12, fill: '#4b5563' }}
+                  tick={{ fontSize: 13, fill: '#4b5563' }}
                   axisLine={{ stroke: '#e3e7ee' }}
                   tickLine={false}
                   interval={0}
@@ -140,7 +140,7 @@ export function EconomicImpactReport() {
                         x={Number(x) + Number(width) / 2}
                         y={Number(y) - 6}
                         textAnchor="middle"
-                        fontSize={12}
+                        fontSize={13}
                         fontWeight={600}
                         fill={
                           MONTHLY_TARGET_SPEND[Number(index)]?.isAfter
@@ -160,7 +160,7 @@ export function EconomicImpactReport() {
 
         <Card title="산출 기준">
           <div className="flex h-full flex-col gap-3">
-            <div className="flex flex-col gap-3 text-[13px] leading-relaxed text-gray-700">
+            <div className="flex flex-col gap-3 text-xs leading-relaxed text-gray-700">
               {CALCULATION_BASIS.map((item) => (
                 <div key={item.label} className="flex flex-col gap-0.5">
                   <strong className="text-gray-900">{item.label}</strong>

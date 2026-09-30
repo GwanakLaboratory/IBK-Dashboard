@@ -111,14 +111,14 @@ export function HomePage() {
         <div className="relative flex min-h-[180px] flex-1 items-center justify-between px-11">
           <div className="pointer-events-none absolute inset-x-0 -bottom-[100px] top-0 -z-10 bg-sidebar bg-[image:radial-gradient(1200px_400px_at_88%_0%,#1D2C5E_0%,rgba(29,44,94,0)_70%)]" />
           <div className="flex flex-col gap-3.5">
-            <span className="text-[15px] font-semibold tracking-wide text-topbar-muted">
+            <span className="text-sm font-semibold tracking-wide text-topbar-muted">
               이탈 리스크 관리의 시작
             </span>
             <span className="text-4xl font-bold tracking-tight text-white">
               IBK 카드 리스크 인사이트
             </span>
           </div>
-          <span className="inline-flex h-[34px] shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 text-[13px] text-topbar-muted">
+          <span className="inline-flex h-[34px] shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 text-xs text-topbar-muted">
             <span className="h-1.5 w-1.5 rounded-full bg-green-400" />
             기준월 {formatReferenceMonth(latestActivity.month)} · 매월 5일 갱신
           </span>
@@ -127,7 +127,7 @@ export function HomePage() {
         <div className="mx-11 rounded-2xl bg-white px-9 pb-3 pt-8 shadow-lg">
           <div className="flex items-baseline justify-between">
             <div className="flex items-baseline gap-2.5">
-              <span className="text-[17px] font-bold text-gray-900">
+              <span className="text-base font-bold text-gray-900">
                 위험군 회원 추이
               </span>
               {monthDelta !== null && (
@@ -183,7 +183,7 @@ export function HomePage() {
                 onClick={metric.onClick}
                 className="flex min-h-[128px] flex-col items-center justify-center gap-1.5 rounded-2xl py-5 transition-colors hover:bg-gray-50"
               >
-                <span className="text-[13px] font-medium text-gray-500">
+                <span className="text-xs font-medium text-gray-500">
                   {metric.label}
                 </span>
                 <span className="flex items-baseline gap-1">
@@ -205,7 +205,7 @@ export function HomePage() {
         </div>
 
         <div className="mx-11 flex flex-col gap-3.5">
-          <span className="text-[17px] font-bold text-gray-900">바로가기</span>
+          <span className="text-base font-bold text-gray-900">바로가기</span>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {NAV_GROUPS.map((group) => {
               const GroupIcon = group.icon;

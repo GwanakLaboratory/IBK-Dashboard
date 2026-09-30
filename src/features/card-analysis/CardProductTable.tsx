@@ -188,7 +188,7 @@ export function CardProductTable({
                     {(cardInfo?.brands ?? []).map((brand) => (
                       <span
                         key={brand}
-                        className="inline-flex h-[22px] items-center rounded border border-gray-200 bg-white px-1.5 text-[11px] font-bold text-gray-600"
+                        className="inline-flex h-[22px] items-center rounded border border-gray-200 bg-white px-1.5 text-[12px] font-bold text-gray-600"
                       >
                         {brand}
                       </span>

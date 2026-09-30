@@ -50,7 +50,7 @@ export function Tabs<TabKey extends string>({
             key={tab.key}
             type="button"
             onClick={() => onChange(tab.key)}
-            className={`-mb-px border-b-2 px-4 py-2.5 text-[15px] transition-colors ${
+            className={`-mb-px border-b-2 px-4 py-2.5 text-sm transition-colors ${
               tab.key === value
                 ? 'border-primary font-bold text-primary'
                 : 'border-transparent font-medium text-gray-600 hover:text-gray-900'

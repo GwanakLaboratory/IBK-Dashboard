@@ -91,7 +91,7 @@ export function SummaryMetricIndexChart({
             <CartesianGrid stroke="#f1f5f9" vertical={false} />
             <XAxis
               dataKey="month"
-              tick={{ fontSize: 11, fill: '#9ca3af' }}
+              tick={{ fontSize: 12, fill: '#9ca3af' }}
               axisLine={{ stroke: '#e3e7ee' }}
               tickLine={false}
               interval={0}

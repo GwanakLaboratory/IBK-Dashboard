@@ -79,7 +79,7 @@ export function TargetSegmentStep({
       {draft.linkedTarget && (
         <div
           role="status"
-          className="flex items-center gap-2.5 rounded-lg bg-blue-50 px-3.5 py-3 text-[13px] font-semibold text-blue-900"
+          className="flex items-center gap-2.5 rounded-lg bg-blue-50 px-3.5 py-3 text-xs font-semibold text-blue-900"
         >
           <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
           <span className="flex-1">
@@ -108,7 +108,7 @@ export function TargetSegmentStep({
         <div className="flex flex-col gap-3 rounded-2xl border border-[#ECEEF3] bg-[#FAFAFC] p-5 text-gray-900">
           <div className="flex flex-wrap items-center gap-2">
             <Sparkles className="h-[18px] w-[18px] text-violet-600" />
-            <span className="text-[15px] font-bold">AI 추천 세그먼트</span>
+            <span className="text-sm font-bold">AI 추천 세그먼트</span>
             <span className="text-xs text-gray-500">
               이탈 위험 · 반응 가능성 · 연간 이용금액을 함께 분석했어요
             </span>
@@ -143,10 +143,10 @@ export function TargetSegmentStep({
                         <span className="h-1.5 w-1.5 rounded-full bg-white" />
                       )}
                     </span>
-                    <span className="min-w-0 flex-1 text-[15px] font-bold text-gray-900">
+                    <span className="min-w-0 flex-1 text-sm font-bold text-gray-900">
                       {preset.label}
                     </span>
-                    <span className="shrink-0 self-start rounded-md bg-violet-100 px-2 text-[11px] font-bold leading-[22px] text-violet-600">
+                    <span className="shrink-0 self-start rounded-md bg-violet-100 px-2 text-[12px] font-bold leading-[22px] text-violet-600">
                       {preset.recommendation}
                     </span>
                   </div>
@@ -191,7 +191,7 @@ export function TargetSegmentStep({
             return (
               <div key={group.key} className="flex flex-col gap-2">
                 <div className="flex items-baseline gap-1.5">
-                  <span className="text-[13px] font-bold text-gray-900">
+                  <span className="text-xs font-bold text-gray-900">
                     {group.label}
                   </span>
                   <span className="text-xs text-gray-500">
@@ -212,7 +212,7 @@ export function TargetSegmentStep({
                         type="button"
                         aria-pressed={isSelected}
                         onClick={() => onToggleSegment(group.key, option.value)}
-                        className={`inline-flex h-9 items-center gap-1.5 rounded-full border px-3.5 text-[13px] ${getOptionClassName(
+                        className={`inline-flex h-9 items-center gap-1.5 rounded-full border px-3.5 text-xs ${getOptionClassName(
                           isSelected,
                           riskLevel,
                         )}`}
@@ -263,7 +263,7 @@ function SegmentInsight({ view }: { view: CampaignView }) {
       <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-violet-600" />
       <div className="flex flex-col gap-1">
         <span className="text-xs font-bold text-violet-600">AI 분석</span>
-        <span className="text-[13px] leading-relaxed text-gray-900">
+        <span className="text-xs leading-relaxed text-gray-900">
           {view.matchedPreset && `${view.matchedPreset.basis}. `}
           {segmentName} 세그먼트 {view.segmentCount.toLocaleString('ko-KR')}명은{' '}
           {view.pickedCategoryLabel
@@ -311,7 +311,7 @@ function RandomExtractPanel({
         구성에 활용
       </span>
       <div className="flex flex-col gap-2">
-        <span className="text-[13px] font-bold text-gray-900">
+        <span className="text-xs font-bold text-gray-900">
           대상 그룹{' '}
           <span className="font-medium text-gray-500">(복수 선택)</span>
         </span>
@@ -324,7 +324,7 @@ function RandomExtractPanel({
                 type="button"
                 aria-pressed={isSelected}
                 onClick={() => onToggleExtractRisk(riskLevel)}
-                className={`inline-flex h-9 items-center gap-1.5 rounded-lg px-3.5 text-[13px] ${
+                className={`inline-flex h-9 items-center gap-1.5 rounded-lg px-3.5 text-xs ${
                   isSelected
                     ? 'border border-primary bg-blue-50 font-bold text-primary'
                     : 'border border-gray-300 bg-white font-medium text-gray-700'
@@ -347,7 +347,7 @@ function RandomExtractPanel({
         <div className="flex w-[220px] flex-col gap-2">
           <label
             htmlFor="extract-size"
-            className="text-[13px] font-bold text-gray-900"
+            className="text-xs font-bold text-gray-900"
           >
             추출 인원수
           </label>
@@ -383,7 +383,7 @@ function RandomExtractPanel({
       {draft.extractedCount !== null && (
         <div
           role="status"
-          className="flex items-center gap-2.5 rounded-lg bg-blue-50 px-3.5 py-3 text-[13px] font-semibold text-blue-900"
+          className="flex items-center gap-2.5 rounded-lg bg-blue-50 px-3.5 py-3 text-xs font-semibold text-blue-900"
         >
           <CheckCircle2 className="h-4 w-4 text-primary" />
           {selectedLabel} · {draft.extractedCount.toLocaleString('ko-KR')}명

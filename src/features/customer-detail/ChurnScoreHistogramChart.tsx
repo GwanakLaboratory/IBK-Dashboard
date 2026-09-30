@@ -30,12 +30,12 @@ export function ChurnScoreHistogramChart({
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
           <XAxis
             dataKey="month"
-            tick={{ fontSize: 12, fill: '#9ca3af' }}
+            tick={{ fontSize: 13, fill: '#9ca3af' }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
-            tick={{ fontSize: 12, fill: '#9ca3af' }}
+            tick={{ fontSize: 13, fill: '#9ca3af' }}
             axisLine={false}
             tickLine={false}
             width={40}

@@ -18,7 +18,7 @@ export function Header() {
         </span>
       </div>
 
-      <div className="flex items-center gap-5 text-[13px] text-topbar-muted">
+      <div className="flex items-center gap-5 text-xs text-topbar-muted">
         <div className="flex items-center gap-1.5">
           <Phone className="h-3.5 w-3.5" />
           <span>{`고객센터 ${SUPPORT_CONTACT_NUMBER}`}</span>
@@ -30,7 +30,7 @@ export function Header() {
         <button
           type="button"
           onClick={handleLogoutClick}
-          className="h-8 rounded-md border border-topbar-button-border px-3.5 text-[13px] text-white transition-colors hover:bg-white/10"
+          className="h-8 rounded-md border border-topbar-button-border px-3.5 text-xs text-white transition-colors hover:bg-white/10"
         >
           로그아웃
         </button>

@@ -102,7 +102,7 @@ export function RiskDistributionChart({
           </PieChart>
         </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-[11px] text-gray-500">위험군</span>
+          <span className="text-[12px] text-gray-500">위험군</span>
           <span className="text-[22px] font-bold text-red-700">
             {getRatio(countsByRiskLevel.high).toFixed(1)}%
           </span>

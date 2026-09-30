@@ -29,7 +29,7 @@ export function SummaryMetricTrendChart({
         >
           <XAxis
             dataKey="month"
-            tick={{ fontSize: 11, fill: '#9ca3af' }}
+            tick={{ fontSize: 12, fill: '#9ca3af' }}
             axisLine={{ stroke: '#e3e7ee' }}
             tickLine={false}
             interval={0}

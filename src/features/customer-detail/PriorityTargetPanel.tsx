@@ -95,7 +95,7 @@ export function PriorityTargetPanel({ customers }: PriorityTargetPanelProps) {
                   type="button"
                   aria-pressed={isSelected}
                   onClick={() => handleTopCountChange(count)}
-                  className={`h-9 rounded-lg border px-3.5 text-[13px] transition-colors ${
+                  className={`h-9 rounded-lg border px-3.5 text-xs transition-colors ${
                     isSelected
                       ? 'border-primary bg-primary/10 font-bold text-primary'
                       : 'border-gray-300 bg-white font-medium text-gray-700 hover:bg-gray-50'
@@ -207,7 +207,7 @@ export function PriorityTargetPanel({ customers }: PriorityTargetPanelProps) {
                         </span>
                         {target.scoreDelta !== 0 && (
                           <span
-                            className={`inline-flex h-5 items-center rounded px-1.5 text-[11px] font-bold ${
+                            className={`inline-flex h-5 items-center rounded px-1.5 text-[12px] font-bold ${
                               isRising
                                 ? 'bg-red-100 text-red-700'
                                 : 'bg-gray-100 text-gray-600'
@@ -236,19 +236,17 @@ export function PriorityTargetPanel({ customers }: PriorityTargetPanelProps) {
                     <td className="px-3 py-2.5">
                       {recentContact ? (
                         <div className="flex items-center gap-1.5 whitespace-nowrap">
-                          <span className="text-[13px] text-gray-700">
+                          <span className="text-xs text-gray-700">
                             {recentContact.date} {recentContact.channel}
                           </span>
                           <span
-                            className={`inline-flex h-5 items-center rounded-md px-1.5 text-[11px] font-semibold ${RESPONSE_TAG_CLASS_NAME[recentContact.response]}`}
+                            className={`inline-flex h-5 items-center rounded-md px-1.5 text-[12px] font-semibold ${RESPONSE_TAG_CLASS_NAME[recentContact.response]}`}
                           >
                             {recentContact.response}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-[13px] text-gray-400">
-                          미접촉
-                        </span>
+                        <span className="text-xs text-gray-400">미접촉</span>
                       )}
                     </td>
                     <td className="py-2.5 pl-3 pr-5">
@@ -258,7 +256,7 @@ export function PriorityTargetPanel({ customers }: PriorityTargetPanelProps) {
                         >
                           {target.recommendedChannel}
                         </span>
-                        <span className="text-[13px] font-semibold text-gray-700">
+                        <span className="text-xs font-semibold text-gray-700">
                           {target.recommendedBenefit}
                         </span>
                       </div>
@@ -270,7 +268,7 @@ export function PriorityTargetPanel({ customers }: PriorityTargetPanelProps) {
           </table>
         </div>
         <div className="flex items-center justify-between border-t border-gray-100 px-5 py-3">
-          <span className="text-[13px] text-gray-600">
+          <span className="text-xs text-gray-600">
             {topCount === priorityTargets.length ? '전체' : '상위'} {topCount}명
             중 {pageTargets.length}명 표시
           </span>

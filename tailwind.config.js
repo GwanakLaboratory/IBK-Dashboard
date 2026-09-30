@@ -4,6 +4,17 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      // 기본 Tailwind 스케일보다 1~2px씩 키워서, 앱 전체 텍스트 크기를 여기 한 곳에서 관리한다.
+      fontSize: {
+        xs: ['13px', { lineHeight: '18px' }],
+        sm: ['15px', { lineHeight: '21px' }],
+        base: ['17px', { lineHeight: '25px' }],
+        lg: ['19px', { lineHeight: '27px' }],
+        xl: ['21px', { lineHeight: '29px' }],
+        '2xl': ['25px', { lineHeight: '33px' }],
+        '3xl': ['31px', { lineHeight: '37px' }],
+        '4xl': ['37px', { lineHeight: '41px' }],
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',

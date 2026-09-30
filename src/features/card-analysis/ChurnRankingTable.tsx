@@ -47,7 +47,7 @@ export function ChurnRankingTable({
               }`}
             >
               <span
-                className={`text-[13px] font-bold ${
+                className={`text-xs font-bold ${
                   isSelected
                     ? 'text-primary'
                     : itemIndex < HIGHLIGHTED_RANK_COUNT
@@ -66,7 +66,7 @@ export function ChurnRankingTable({
               >
                 {item.label}
               </span>
-              <span className="text-right text-[13px] text-gray-700">
+              <span className="text-right text-xs text-gray-700">
                 {item.issuedCount.toLocaleString('ko-KR')}명
               </span>
               <div className="flex items-center justify-end gap-2">
@@ -79,7 +79,7 @@ export function ChurnRankingTable({
                   />
                 </div>
                 <span
-                  className={`w-12 text-right text-[13px] font-bold ${
+                  className={`w-12 text-right text-xs font-bold ${
                     isSelected ? 'text-primary' : 'text-gray-900'
                   }`}
                 >

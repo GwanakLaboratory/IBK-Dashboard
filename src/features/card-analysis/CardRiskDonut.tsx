@@ -67,7 +67,7 @@ export function CardRiskDonut({
             key={slice.riskLevel}
             className={`flex h-10 items-center justify-between rounded-lg px-3 ${RISK_ROW_TINT[slice.riskLevel]}`}
           >
-            <span className="inline-flex items-center gap-2 text-[13px] font-semibold text-gray-900">
+            <span className="inline-flex items-center gap-2 text-xs font-semibold text-gray-900">
               <span
                 className="h-2.5 w-2.5 rounded-full"
                 style={{
@@ -77,7 +77,7 @@ export function CardRiskDonut({
               {RISK_LEVEL_META[slice.riskLevel].label}
             </span>
             <span
-              className="text-[15px] font-bold"
+              className="text-sm font-bold"
               style={{ color: RISK_LEVEL_META[slice.riskLevel].chartColor }}
             >
               {slice.ratio.toFixed(1)}%

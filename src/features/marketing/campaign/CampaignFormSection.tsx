@@ -61,17 +61,17 @@ export function CampaignFormSection({
           {isDone ? <Check className="h-3 w-3" strokeWidth={3} /> : step}
         </span>
         <span
-          className={`shrink-0 text-[15px] ${
+          className={`shrink-0 text-sm ${
             isLocked ? 'font-semibold text-gray-400' : 'font-bold text-gray-900'
           }`}
         >
           {title}
         </span>
-        <span className="min-w-0 flex-1 truncate text-[13px] text-gray-500">
+        <span className="min-w-0 flex-1 truncate text-xs text-gray-500">
           {summary}
         </span>
         {isDone && (
-          <span className="shrink-0 text-[13px] font-semibold text-primary">
+          <span className="shrink-0 text-xs font-semibold text-primary">
             변경
           </span>
         )}
@@ -81,12 +81,12 @@ export function CampaignFormSection({
         <div className="flex flex-col gap-4 px-6 pb-6 pt-1">
           {children}
           <div className="flex items-center justify-between gap-3 border-t border-gray-100 pt-4">
-            <span className="text-[13px] text-gray-600">{footHint}</span>
+            <span className="text-xs text-gray-600">{footHint}</span>
             <button
               type="button"
               disabled={isNextDisabled}
               onClick={onNext}
-              className="h-11 rounded-[10px] bg-primary px-5 text-[15px] font-semibold text-white hover:opacity-90 disabled:opacity-40"
+              className="h-11 rounded-[10px] bg-primary px-5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-40"
             >
               {nextLabel}
             </button>

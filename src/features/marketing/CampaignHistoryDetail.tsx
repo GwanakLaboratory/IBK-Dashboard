@@ -93,7 +93,7 @@ export function CampaignHistoryDetail({
               {campaign.sourceLabel}
             </span>
           </div>
-          <div className="flex flex-wrap items-center gap-2.5 text-[13px] text-gray-600">
+          <div className="flex flex-wrap items-center gap-2.5 text-xs text-gray-600">
             <span>{campaign.date} 발송</span>
             <span className="h-3 w-px bg-gray-300" />
             <ChannelBadge channel={campaign.channel} />
@@ -127,7 +127,7 @@ export function CampaignHistoryDetail({
                   <span className="text-lg font-semibold text-primary">%</span>
                 </div>
               </div>
-              <span className="text-[13px] text-gray-500">
+              <span className="text-xs text-gray-500">
                 {formatCount(respondedCount)} / {formatCount(targetCount)}명
               </span>
             </div>

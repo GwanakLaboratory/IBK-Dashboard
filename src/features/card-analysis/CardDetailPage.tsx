@@ -139,7 +139,7 @@ export function CardDetailPage() {
         >
           <div className="flex flex-col gap-4">
             <div className="flex h-9 items-center gap-2">
-              <span className="text-[13px] font-bold text-gray-900">
+              <span className="text-xs font-bold text-gray-900">
                 {stat.productName}
               </span>
               <span className="text-xs text-gray-500">

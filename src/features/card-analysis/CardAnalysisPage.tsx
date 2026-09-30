@@ -68,7 +68,7 @@ export function CardAnalysisPage() {
               role="tab"
               aria-selected={isSelected}
               onClick={() => setPickedCategory(item.key)}
-              className={`h-9 rounded-full border px-4 text-[13px] transition-colors ${
+              className={`h-9 rounded-full border px-4 text-xs transition-colors ${
                 isSelected
                   ? 'border-primary bg-primary font-bold text-primary-foreground shadow-[0_4px_10px_rgba(70,108,255,0.25)]'
                   : 'border-border bg-white font-medium text-gray-700 hover:bg-gray-50'
@@ -119,7 +119,7 @@ export function CardAnalysisPage() {
                 <Link
                   key={stat.productName}
                   to={`/card-list/${encodeURIComponent(stat.productName)}`}
-                  className="inline-flex h-[38px] items-center gap-2 rounded-lg border border-border bg-gray-50 px-3.5 text-[13px] font-semibold text-gray-900 transition-colors hover:bg-gray-100"
+                  className="inline-flex h-[38px] items-center gap-2 rounded-lg border border-border bg-gray-50 px-3.5 text-xs font-semibold text-gray-900 transition-colors hover:bg-gray-100"
                 >
                   {stat.productName}
                   <ChevronRight className="h-3 w-3 text-gray-500" />

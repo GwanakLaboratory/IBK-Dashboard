@@ -54,7 +54,7 @@ export function Sidebar() {
           to="/"
           end
           className={({ isActive }) =>
-            `flex h-14 w-[52px] flex-col items-center justify-center gap-1 rounded-[10px] text-[11px] font-medium transition-colors ${
+            `flex h-14 w-[52px] flex-col items-center justify-center gap-1 rounded-[10px] text-[12px] font-medium transition-colors ${
               isActive && manualGroupKey === null
                 ? 'bg-sidebar-active text-white'
                 : 'text-sidebar-muted hover:bg-slate-800 hover:text-slate-200'
@@ -79,7 +79,7 @@ export function Sidebar() {
                 setIsCollapsed(false);
               }}
               title={group.label}
-              className={`flex h-14 w-[52px] flex-col items-center justify-center gap-1 rounded-[10px] text-[11px] font-medium transition-colors ${
+              className={`flex h-14 w-[52px] flex-col items-center justify-center gap-1 rounded-[10px] text-[12px] font-medium transition-colors ${
                 isActiveGroup
                   ? 'bg-sidebar-active text-white'
                   : 'text-sidebar-muted hover:bg-slate-800 hover:text-slate-200'
@@ -101,7 +101,7 @@ export function Sidebar() {
       >
         <div className="flex h-full w-44 flex-col pb-4 pt-5">
           <div className="flex flex-col gap-1.5 px-4 pb-3">
-            <p className="text-[17px] font-bold text-gray-900">
+            <p className="text-base font-bold text-gray-900">
               {activeGroup.label}
             </p>
             <p className="text-xs leading-relaxed text-sidebar-panel-muted">
@@ -125,7 +125,7 @@ export function Sidebar() {
               return (
                 <div key={item.tabKey} className="flex flex-col">
                   {showSectionLabel && (
-                    <p className="mt-3 px-4 pb-1 pt-3 text-[11px] font-bold text-gray-500 first:pt-0">
+                    <p className="mt-3 px-4 pb-1 pt-3 text-[12px] font-bold text-gray-500 first:pt-0">
                       {item.sectionLabel}
                     </p>
                   )}

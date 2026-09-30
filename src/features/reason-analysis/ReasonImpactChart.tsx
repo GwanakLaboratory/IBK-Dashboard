@@ -32,7 +32,7 @@ export function ReasonImpactChart({ reasonImpacts }: ReasonImpactChartProps) {
           <XAxis
             type="number"
             domain={[0, 100]}
-            tick={{ fontSize: 12, fill: '#9ca3af' }}
+            tick={{ fontSize: 13, fill: '#9ca3af' }}
             axisLine={false}
             tickLine={false}
           />
@@ -40,7 +40,7 @@ export function ReasonImpactChart({ reasonImpacts }: ReasonImpactChartProps) {
             type="category"
             dataKey="label"
             width="auto"
-            tick={{ fontSize: 12, fill: '#374151' }}
+            tick={{ fontSize: 13, fill: '#374151' }}
             axisLine={false}
             tickLine={false}
           />
@@ -48,7 +48,7 @@ export function ReasonImpactChart({ reasonImpacts }: ReasonImpactChartProps) {
             <LabelList
               dataKey="averageScore"
               position="right"
-              style={{ fontSize: 12, fill: '#374151' }}
+              style={{ fontSize: 13, fill: '#374151' }}
             />
           </Bar>
         </BarChart>

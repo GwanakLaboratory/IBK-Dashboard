@@ -132,10 +132,10 @@ export function CardShareSummary({
                 className="h-2.5 w-2.5 shrink-0 rounded-full"
                 style={{ backgroundColor: slice.color }}
               />
-              <span className="flex-1 truncate text-left text-[13px]">
+              <span className="flex-1 truncate text-left text-xs">
                 {slice.label}
               </span>
-              <span className="shrink-0 text-[13px] font-bold">
+              <span className="shrink-0 text-xs font-bold">
                 {slice.ratio.toFixed(1)}%
               </span>
             </>

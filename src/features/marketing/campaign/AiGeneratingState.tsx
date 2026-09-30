@@ -117,7 +117,7 @@ export function AiGeneratingState({
               className="flex min-h-[130px] flex-col gap-3 rounded-xl border border-violet-100 bg-violet-50 px-[18px] py-4"
             >
               <div className="flex items-center justify-between">
-                <span className="inline-flex h-[22px] items-center rounded-full bg-violet-100 px-2 text-[11px] font-bold text-violet-400">
+                <span className="inline-flex h-[22px] items-center rounded-full bg-violet-100 px-2 text-[12px] font-bold text-violet-400">
                   AI 생성 {variant}
                 </span>
                 <span className={`h-3 w-20 ${SHIMMER_CLASS_NAME}`} />

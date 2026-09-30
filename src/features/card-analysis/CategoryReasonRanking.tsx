@@ -26,7 +26,7 @@ export function CategoryReasonRanking({
         return (
           <div key={reason.label} className="flex items-center gap-3">
             <span
-              className={`flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
+              className={`flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full text-[12px] font-bold ${
                 isTopReason
                   ? 'bg-primary text-white'
                   : 'bg-gray-100 text-gray-600'
@@ -36,7 +36,7 @@ export function CategoryReasonRanking({
             </span>
             <div className="flex w-[150px] shrink-0 items-center gap-1.5">
               <span
-                className={`truncate text-[13px] ${
+                className={`truncate text-xs ${
                   isTopReason
                     ? 'font-bold text-gray-900'
                     : 'font-medium text-gray-700'
@@ -45,7 +45,7 @@ export function CategoryReasonRanking({
                 {reason.label}
               </span>
               {isShared && (
-                <span className="inline-flex h-[18px] shrink-0 items-center rounded bg-violet-50 px-1.5 text-[10px] font-bold text-violet-700">
+                <span className="inline-flex h-[18px] shrink-0 items-center rounded bg-violet-50 px-1.5 text-[11px] font-bold text-violet-700">
                   공통
                 </span>
               )}
@@ -57,7 +57,7 @@ export function CategoryReasonRanking({
               />
             </div>
             <span
-              className={`w-8 text-right text-[13px] font-bold ${
+              className={`w-8 text-right text-xs font-bold ${
                 isTopReason ? 'text-primary' : 'text-gray-900'
               }`}
             >
@@ -67,7 +67,7 @@ export function CategoryReasonRanking({
         );
       })}
 
-      <div className="flex justify-between pl-[184px] pr-11 text-[10px] text-gray-400">
+      <div className="flex justify-between pl-[184px] pr-11 text-[11px] text-gray-400">
         {SCORE_AXIS_TICKS.map((tick) => (
           <span key={tick}>{tick}</span>
         ))}

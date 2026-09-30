@@ -45,14 +45,14 @@ export function CustomerCreditScoreTrendChart({
             <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
             <XAxis
               dataKey="month"
-              tick={{ fontSize: 12, fill: '#9ca3af' }}
+              tick={{ fontSize: 13, fill: '#9ca3af' }}
               axisLine={false}
               tickLine={false}
               interval={0}
             />
             <YAxis
               domain={[0, 1000]}
-              tick={{ fontSize: 12, fill: '#9ca3af' }}
+              tick={{ fontSize: 13, fill: '#9ca3af' }}
               axisLine={false}
               tickLine={false}
               width={40}
@@ -81,7 +81,7 @@ export function CustomerCreditScoreTrendChart({
               label={{
                 value: `안정 승인 ${STABLE_APPROVAL_SCORE}점`,
                 position: 'insideBottomRight',
-                fontSize: 11,
+                fontSize: 12,
                 fill: STABLE_APPROVAL_COLOR,
               }}
             />
@@ -92,7 +92,7 @@ export function CustomerCreditScoreTrendChart({
               label={{
                 value: `발급 최소기준 ${MIN_ISSUANCE_SCORE}점`,
                 position: 'insideBottomRight',
-                fontSize: 11,
+                fontSize: 12,
                 fill: MIN_ISSUANCE_COLOR,
               }}
             />

@@ -59,10 +59,10 @@ export function RiskMemberFlowChart({
             height={40}
             tick={({ x, y, payload, index }) => (
               <g transform={`translate(${x},${y})`}>
-                <text dy={12} textAnchor="middle" fontSize={11} fill="#4b5563">
+                <text dy={12} textAnchor="middle" fontSize={12} fill="#4b5563">
                   {payload.value}
                 </text>
-                <text dy={27} textAnchor="middle" fontSize={11} fill="#6b7280">
+                <text dy={27} textAnchor="middle" fontSize={12} fill="#6b7280">
                   {flowData[index]?.highRiskRatio}%
                 </text>
               </g>
@@ -103,7 +103,7 @@ export function RiskMemberFlowChart({
                     x={Number(x) + Number(width) / 2}
                     y={Number(y) - 6}
                     textAnchor="middle"
-                    fontSize={13}
+                    fontSize={14}
                     fontWeight={isCurrent ? 700 : 600}
                     fill={isCurrent ? '#b91c1c' : '#4b5563'}
                   >

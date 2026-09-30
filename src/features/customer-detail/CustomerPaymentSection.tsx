@@ -108,7 +108,7 @@ export function CustomerPaymentSection({
         <div className="flex-1 overflow-hidden rounded-lg border border-border bg-white shadow-sm">
           {recentPayments.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="w-full text-[13px]">
+              <table className="w-full text-xs">
                 <thead>
                   <tr className="bg-[#F7F8FA] text-left text-xs text-gray-600">
                     <th className="py-2.5 pl-4 pr-3 font-semibold">결제일</th>
@@ -214,7 +214,7 @@ export function CustomerPaymentSection({
                   className="grid grid-cols-[22px_76px_minmax(0,1fr)_84px_36px] items-center gap-2.5"
                 >
                   <span
-                    className={`flex h-[22px] w-[22px] items-center justify-center rounded-full text-[11px] font-bold ${
+                    className={`flex h-[22px] w-[22px] items-center justify-center rounded-full text-[12px] font-bold ${
                       isTop
                         ? 'bg-violet-700 text-white'
                         : 'bg-gray-100 text-gray-600'
@@ -222,7 +222,7 @@ export function CustomerPaymentSection({
                   >
                     {categoryIndex + 1}
                   </span>
-                  <span className="truncate text-[13px] font-semibold text-gray-900">
+                  <span className="truncate text-xs font-semibold text-gray-900">
                     {category.label}
                   </span>
                   <div className="h-2 overflow-hidden rounded bg-gray-100">
@@ -236,7 +236,7 @@ export function CustomerPaymentSection({
                   <span className="whitespace-nowrap text-right text-xs text-gray-500">
                     {category.amount.toLocaleString('ko-KR')}원
                   </span>
-                  <span className="text-right text-[13px] font-bold text-gray-900">
+                  <span className="text-right text-xs font-bold text-gray-900">
                     {Math.round(category.share)}%
                   </span>
                 </div>

@@ -12,7 +12,7 @@ export function AiInsightBox({ title, children }: AiInsightBoxProps) {
         {title && (
           <span className="text-xs font-bold text-violet-600">{title}</span>
         )}
-        <span className="text-[13px] leading-relaxed text-gray-700">
+        <span className="text-xs leading-relaxed text-gray-700">
           {children}
         </span>
       </div>
