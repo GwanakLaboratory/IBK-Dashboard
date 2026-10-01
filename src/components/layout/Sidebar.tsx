@@ -96,10 +96,10 @@ export function Sidebar() {
         className={`h-full shrink-0 overflow-hidden bg-sidebar-panel transition-all duration-300 ease-in-out ${
           isCollapsed
             ? 'w-0 border-r-0 opacity-0'
-            : 'w-44 border-r border-sidebar-panel-border opacity-100'
+            : 'w-48 border-r border-sidebar-panel-border opacity-100'
         }`}
       >
-        <div className="flex h-full w-44 flex-col pb-4 pt-5">
+        <div className="flex h-full w-48 flex-col pb-4 pt-5">
           <div className="flex flex-col gap-1.5 px-4 pb-3">
             <p className="text-base font-bold text-gray-900">
               {activeGroup.label}

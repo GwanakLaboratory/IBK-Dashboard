@@ -28,6 +28,8 @@
 
   body {
     @apply bg-background font-sans text-foreground;
+    /* 한글 단어 중간(예: '식별' → '식'/'별')에서 줄바꿈되지 않도록 어절 단위로만 줄바꿈한다. */
+    word-break: keep-all;
   }
 
   #root {
