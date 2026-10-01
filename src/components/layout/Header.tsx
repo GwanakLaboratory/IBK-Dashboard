@@ -12,7 +12,8 @@ export function Header() {
 
   return (
     <header className="flex h-14 shrink-0 items-center justify-between bg-sidebar px-6 text-white">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
+        <img src="/logo-rising-bar.svg" alt="" className="h-6 w-6" />
         <span className="text-base font-bold tracking-wide">
           {DASHBOARD_TITLE}
         </span>
