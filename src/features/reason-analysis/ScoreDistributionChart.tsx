@@ -27,13 +27,13 @@ export function ScoreDistributionChart({
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
           <XAxis
             dataKey="rangeLabel"
-            tick={{ fontSize: 11, fill: '#9ca3af' }}
+            tick={{ fontSize: 12, fill: '#9ca3af' }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
             allowDecimals={false}
-            tick={{ fontSize: 12, fill: '#9ca3af' }}
+            tick={{ fontSize: 13, fill: '#9ca3af' }}
             axisLine={false}
             tickLine={false}
             width={24}

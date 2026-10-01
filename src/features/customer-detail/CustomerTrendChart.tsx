@@ -71,14 +71,14 @@ export function CustomerTrendChart({ monthly }: CustomerTrendChartProps) {
             <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
             <XAxis
               dataKey="month"
-              tick={{ fontSize: 12, fill: '#9ca3af' }}
+              tick={{ fontSize: 13, fill: '#9ca3af' }}
               axisLine={false}
               tickLine={false}
               interval={0}
             />
             <YAxis
               domain={[0, yAxisUpperBound]}
-              tick={{ fontSize: 12, fill: '#9ca3af' }}
+              tick={{ fontSize: 13, fill: '#9ca3af' }}
               axisLine={false}
               tickLine={false}
               width={48}
@@ -109,7 +109,7 @@ export function CustomerTrendChart({ monthly }: CustomerTrendChartProps) {
               label={{
                 value: `평균 ${averageUsage}만`,
                 position: 'insideBottomRight',
-                fontSize: 11,
+                fontSize: 12,
                 fill: AVERAGE_COLOR,
               }}
             />
@@ -120,7 +120,7 @@ export function CustomerTrendChart({ monthly }: CustomerTrendChartProps) {
               label={{
                 value: `하한 ${lowerBoundUsage}만`,
                 position: 'insideBottomRight',
-                fontSize: 11,
+                fontSize: 12,
                 fill: LOWER_BOUND_COLOR,
               }}
             />

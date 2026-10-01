@@ -211,6 +211,20 @@ const HIGH_TXN: Transaction[] = [
     amount: 32000,
     status: '취소',
   },
+  {
+    date: '2024-09-06',
+    merchant: 'SK에너지 삼성주유소',
+    category: '주유',
+    amount: 62000,
+    status: '승인',
+  },
+  {
+    date: '2024-08-21',
+    merchant: '쿠팡',
+    category: '온라인쇼핑',
+    amount: 47300,
+    status: '승인',
+  },
 ];
 
 const MID_TXN: Transaction[] = [
@@ -1306,30 +1320,63 @@ function mkCreditScoreHistory(
   });
 }
 
-export const customers: Customer[] = RAW_CUSTOMERS.map((customer, index) => {
-  const age = 24 + ((index * 13) % 42);
-  const gender = GENDERS[index % 2];
+const customersInRiskOrder: Customer[] = RAW_CUSTOMERS.map(
+  (customer, index) => {
+    const age = 24 + ((index * 13) % 42);
+    const gender = GENDERS[index % 2];
 
-  return {
-    ...customer,
-    name: NAMES[index % NAMES.length],
-    phoneNumber: buildPhoneNumber(index),
-    cardProduct: ibkCreditCards[index % ibkCreditCards.length],
-    productName: ibkCreditCards[index % ibkCreditCards.length],
-    joinedAt: buildJoinedAt(index),
-    gender,
-    age,
-    riskScoreTrend: mkRiskScoreTrend(
-      customer.predictionScore,
-      customer.monthly,
-    ),
-    creditScoreHistory: mkCreditScoreHistory(
-      customer.riskLevel,
-      customer.monthly,
-      index,
-    ),
+    return {
+      ...customer,
+      name: NAMES[index % NAMES.length],
+      phoneNumber: buildPhoneNumber(index),
+      cardProduct: ibkCreditCards[index % ibkCreditCards.length],
+      productName: ibkCreditCards[index % ibkCreditCards.length],
+      joinedAt: buildJoinedAt(index),
+      gender,
+      age,
+      riskScoreTrend: mkRiskScoreTrend(
+        customer.predictionScore,
+        customer.monthly,
+      ),
+      creditScoreHistory: mkCreditScoreHistory(
+        customer.riskLevel,
+        customer.monthly,
+        index,
+      ),
+    };
+  },
+);
+
+// 시드가 고정된 난수 (mulberry32). 새로고침해도 같은 순서가 나온다.
+function createSeededRandom(seed: number) {
+  let state = seed;
+  return () => {
+    state = (state + 0x6d2b79f5) | 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
-});
+}
+
+function seededShuffle<T>(items: T[], seed: number): T[] {
+  const random = createSeededRandom(seed);
+  const result = [...items];
+  for (let index = result.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(random() * (index + 1));
+    [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+  }
+  return result;
+}
+
+// RAW_CUSTOMERS 는 위험 → 중위험 → 저위험 순으로 적혀 있어서, 그대로 두면 회원번호
+// 순서가 위험도 순서와 같아진다. 고정 시드로 섞은 뒤 회원번호를 다시 매겨,
+// 회원번호로 정렬해도 위험도가 불규칙하게 섞여 보이게 한다.
+const CUSTOMER_SHUFFLE_SEED = 49;
+
+export const customers: Customer[] = seededShuffle(
+  customersInRiskOrder,
+  CUSTOMER_SHUFFLE_SEED,
+).map((customer, index) => ({ ...customer, id: `CUS-${10000 + index}` }));
 
 /* ── 카드 상품별 이용 현황 (Home 집계 데이터) ───────────────────── */
 export const productUsageStats: ProductUsageStat[] = ibkCreditCards.map(

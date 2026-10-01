@@ -88,7 +88,7 @@ export function MemberSegmentUsageTrendChart({
             />
             <XAxis dataKey="month" hide />
             <YAxis
-              tick={{ fontSize: 11, fill: '#9ca3af' }}
+              tick={{ fontSize: 12, fill: '#9ca3af' }}
               axisLine={false}
               tickLine={false}
               width={Y_AXIS_WIDTH}
@@ -141,13 +141,13 @@ export function MemberSegmentUsageTrendChart({
             />
             <XAxis
               dataKey="month"
-              tick={{ fontSize: 12, fill: '#9ca3af' }}
+              tick={{ fontSize: 13, fill: '#9ca3af' }}
               axisLine={false}
               tickLine={false}
               interval={0}
             />
             <YAxis
-              tick={{ fontSize: 11, fill: '#9ca3af' }}
+              tick={{ fontSize: 12, fill: '#9ca3af' }}
               axisLine={false}
               tickLine={false}
               width={Y_AXIS_WIDTH}

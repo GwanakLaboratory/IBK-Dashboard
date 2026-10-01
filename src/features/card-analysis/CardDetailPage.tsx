@@ -1,13 +1,18 @@
+import { ChevronRight } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { Navigate, useParams } from 'react-router';
+import { Link, Navigate, useParams } from 'react-router';
+import { Screen } from '@/components/layout/Screen';
 import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
+import { Tabs } from '@/components/molecules/Tabs';
+import { CardProfile } from '@/features/card-analysis/CardProfile';
+import { CardRiskDonut } from '@/features/card-analysis/CardRiskDonut';
+import { CategoryReasonRanking } from '@/features/card-analysis/CategoryReasonRanking';
 import { ProductSearchBar } from '@/features/card-analysis/ProductSearchBar';
-import { RiskDistributionChart } from '@/features/dashboard/RiskDistributionChart';
 import { RiskSummaryTable } from '@/features/dashboard/RiskSummaryTable';
-import { ReasonImpactChart } from '@/features/reason-analysis/ReasonImpactChart';
 import { getAverageReasonImpact } from '@/features/reason-analysis/reasonAnalytics';
+import { CARD_IMAGE_URLS } from '@/data/cardImages';
 import {
   customers,
   ibkCreditCardInfoByName,
@@ -75,27 +80,16 @@ export function CardDetailPage() {
     low: stat.lowRiskCount,
   };
 
-  const cardInfoItems = [
-    { label: '카드 이름', value: stat.productName },
-    {
-      label: '발급 회원 수',
-      value: `${stat.issuedCount.toLocaleString('ko-KR')}명`,
-    },
-    {
-      label: '이용 회원 수',
-      value: `${stat.activeCount.toLocaleString('ko-KR')}명`,
-    },
-    {
-      label: '해지 회원 수',
-      value: `${stat.canceledCount.toLocaleString('ko-KR')}명`,
-    },
-    { label: '브랜드', value: cardInfo.brands.join(', ') },
-    { label: '혜택 카테고리', value: cardInfo.benefitCategories.join(', ') },
-  ];
+  const productReasonLabels = productReasonImpacts.map(
+    (reason) => reason.label,
+  );
+  const categoryReasonLabels = categoryReasonImpacts.map(
+    (reason) => reason.label,
+  );
 
   return (
-    <div>
-      <PageHeading title="카드 상세 정보" />
+    <Screen>
+      <PageHeading />
 
       <ProductSearchBar
         value={lookupValue}
@@ -104,84 +98,107 @@ export function CardDetailPage() {
       />
 
       <CardGrid columns={1}>
-        <Card title="카드 정보">
-          <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3">
-            {cardInfoItems.map((item) => (
-              <div key={item.label}>
-                <p className="text-xs text-gray-500">{item.label}</p>
-                <p className="mt-1 text-sm font-medium text-gray-900">
-                  {item.value}
-                </p>
-              </div>
-            ))}
-          </div>
+        <Card
+          title="카드 기본 정보"
+          description="상품 정보와 발급·이용·해지 회원 현황"
+        >
+          <CardProfile
+            stat={stat}
+            cardInfo={cardInfo}
+            imageUrl={CARD_IMAGE_URLS[stat.productName]}
+          />
         </Card>
       </CardGrid>
 
-      <CardGrid columns={2} breakpoint="lg">
-        <Card title="위험도 구성비" description="이용 회원 기준 위험도별 비중">
-          <RiskDistributionChart
+      <div className="grid grid-cols-1 gap-x-10 gap-y-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        <Card
+          title="이용 회원 위험도 비중"
+          description={`이용 회원 ${stat.activeCount.toLocaleString('ko-KR')}명을 위험도 등급별로 나눈 비중`}
+        >
+          <CardRiskDonut
             countsByRiskLevel={riskCounts}
             totalCustomerCount={stat.activeCount}
           />
         </Card>
         <Card
-          title="위험도별 인원 현황"
-          description="이용 회원 기준 위험도별 인원수와 비율"
+          title="위험도별 회원 수"
+          description="위험·중위험·저위험 등급별 이용 회원 수와 비율"
         >
           <RiskSummaryTable
             countsByRiskLevel={riskCounts}
             totalCustomerCount={stat.activeCount}
+            totalLabel="전체 이용 회원"
           />
         </Card>
-      </CardGrid>
+      </div>
 
-      <CardGrid columns={2}>
+      <CardGrid columns={2} breakpoint="lg">
         <Card
-          title="이 카드를 소유한 사람들의 이탈 사유"
-          description={`이 카드 회원 ${productCustomers.length}명 기준 평균 기여 점수 (높은 순)`}
+          title={`카드 보유 회원 이탈 사유 Top ${TOP_REASON_COUNT}`}
+          description="이 카드 회원의 사유별 평균 기여 점수 (0–100점, 높은 순)"
         >
-          {productReasonImpacts.length > 0 ? (
-            <ReasonImpactChart reasonImpacts={productReasonImpacts} />
-          ) : (
-            <p className="py-8 text-center text-sm text-gray-400">
-              해당 상품을 보유한 회원 데이터가 없습니다.
-            </p>
-          )}
-        </Card>
-
-        <Card
-          title="이 카드가 속한 카테고리의 이탈 사유"
-          description={`이 카테고리 회원 ${categoryCustomers.length}명 기준 평균 기여 점수 (높은 순)`}
-          seeMoreHref="/card-analysis"
-        >
-          {cardInfo.benefitCategories.length > 1 && (
-            <div className="mb-4 flex flex-wrap gap-1.5">
-              {cardInfo.benefitCategories.map((category) => (
-                <button
-                  key={category}
-                  type="button"
-                  onClick={() => setSelectedCategory(category)}
-                  className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
-                    selectedCategory === category
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-gray-500 hover:bg-gray-100'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
+          <div className="flex flex-col gap-4">
+            <div className="flex h-9 items-center gap-2">
+              <span className="text-xs font-bold text-gray-900">
+                {stat.productName}
+              </span>
+              <span className="text-xs text-gray-500">
+                보유 회원 {productCustomers.length.toLocaleString('ko-KR')}명
+              </span>
             </div>
-          )}
-          {categoryReasonImpacts.length > 0 ? (
-            <ReasonImpactChart reasonImpacts={categoryReasonImpacts} />
-          ) : (
-            <p className="py-8 text-center text-sm text-gray-400">
-              선택한 카테고리에 해당하는 회원 데이터가 없습니다.
-            </p>
-          )}
+            {productReasonImpacts.length > 0 ? (
+              <CategoryReasonRanking
+                reasonImpacts={productReasonImpacts}
+                sharedLabels={categoryReasonLabels}
+              />
+            ) : (
+              <p className="py-8 text-center text-sm text-gray-400">
+                해당 상품을 보유한 회원 데이터가 없습니다.
+              </p>
+            )}
+          </div>
+        </Card>
+
+        <Card
+          title={`혜택 카테고리 이탈 사유 Top ${TOP_REASON_COUNT}`}
+          description={`같은 혜택 카테고리 회원 ${categoryCustomers.length.toLocaleString('ko-KR')}명의 사유별 평균 기여 점수`}
+          actions={
+            <Link
+              to="/card-analysis"
+              className="flex items-center gap-0.5 text-xs font-semibold text-gray-600 hover:text-gray-900"
+            >
+              카테고리 분석
+              <ChevronRight className="h-3 w-3" strokeWidth={2.4} />
+            </Link>
+          }
+        >
+          <div className="flex flex-col gap-4">
+            {selectedCategory && (
+              <div className="self-start">
+                <Tabs
+                  variant="segmented"
+                  tabs={cardInfo.benefitCategories.map((category) => ({
+                    key: category,
+                    label: category,
+                  }))}
+                  value={selectedCategory}
+                  onChange={setSelectedCategory}
+                />
+              </div>
+            )}
+            {categoryReasonImpacts.length > 0 ? (
+              <CategoryReasonRanking
+                reasonImpacts={categoryReasonImpacts}
+                sharedLabels={productReasonLabels}
+              />
+            ) : (
+              <p className="py-8 text-center text-sm text-gray-400">
+                선택한 카테고리에 해당하는 회원 데이터가 없습니다.
+              </p>
+            )}
+          </div>
         </Card>
       </CardGrid>
-    </div>
+    </Screen>
   );
 }

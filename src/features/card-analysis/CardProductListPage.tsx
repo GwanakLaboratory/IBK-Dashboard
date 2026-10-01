@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Card } from '@/components/molecules/Card';
+import { Screen } from '@/components/layout/Screen';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
 import { Select } from '@/components/molecules/Select';
@@ -9,6 +9,7 @@ import {
   type SortableColumnKey,
   type SortDirection,
 } from '@/features/card-analysis/CardProductTable';
+import { CardShareSummary } from '@/features/card-analysis/CardShareSummary';
 import { ProductSearchBar } from '@/features/card-analysis/ProductSearchBar';
 import {
   ibkCreditCardInfoByName,
@@ -26,6 +27,10 @@ const BENEFIT_CATEGORY_OPTIONS = Array.from(
 const BRAND_OPTIONS = Array.from(
   new Set(ibkCreditCardInfos.flatMap((cardInfo) => cardInfo.brands)),
 ).sort((a, b) => a.localeCompare(b, 'ko'));
+
+const MAX_CHURN_RATE = Math.max(
+  ...productUsageStats.map((stat) => stat.churnRate),
+);
 
 export function CardProductListPage() {
   const navigate = useNavigate();
@@ -78,68 +83,91 @@ export function CardProductListPage() {
   }
 
   return (
-    <div>
-      <PageHeading
-        title="카드 상품 목록"
-        description="상품명을 클릭하면 카드 상세 화면에서 발급 현황, 위험도, 이탈 사유를 확인합니다."
-      />
+    <Screen>
+      <PageHeading />
 
-      <ProductSearchBar
-        value={searchKeyword}
-        onValueChange={setSearchKeyword}
-      />
+      <div className="grid gap-6">
+        <ProductSearchBar
+          value={searchKeyword}
+          onValueChange={setSearchKeyword}
+        />
 
-      <CardGrid columns={1}>
-        <Card
-          title="전체 카드 상품"
-          description={`${filteredStats.length}개 상품 / 총 ${productUsageStats.length}개`}
-        >
-          <div className="mb-4 flex flex-wrap items-center justify-end gap-3">
-            <Select
-              value={benefitCategoryFilter}
-              onChange={(event) =>
-                setBenefitCategoryFilter(
-                  event.target.value as BenefitCategoryFilter,
-                )
-              }
-            >
-              <option value="all">전체 혜택 카테고리</option>
-              {BENEFIT_CATEGORY_OPTIONS.map((benefitCategory) => (
-                <option key={benefitCategory} value={benefitCategory}>
-                  {benefitCategory}
-                </option>
-              ))}
-            </Select>
-            <Select
-              value={brandFilter}
-              onChange={(event) =>
-                setBrandFilter(event.target.value as BrandFilter)
-              }
-            >
-              <option value="all">전체 브랜드</option>
-              {BRAND_OPTIONS.map((brand) => (
-                <option key={brand} value={brand}>
-                  {brand}
-                </option>
-              ))}
-            </Select>
+        <CardShareSummary stats={productUsageStats} />
+
+        <div className="flex flex-wrap items-center gap-3">
+          <label
+            htmlFor="benefit-category-filter"
+            className="text-sm font-semibold text-gray-600"
+          >
+            혜택 카테고리
+          </label>
+          <Select
+            id="benefit-category-filter"
+            value={benefitCategoryFilter}
+            onChange={(event) =>
+              setBenefitCategoryFilter(
+                event.target.value as BenefitCategoryFilter,
+              )
+            }
+          >
+            <option value="all">전체</option>
+            {BENEFIT_CATEGORY_OPTIONS.map((benefitCategory) => (
+              <option key={benefitCategory} value={benefitCategory}>
+                {benefitCategory}
+              </option>
+            ))}
+          </Select>
+          <label
+            htmlFor="brand-filter"
+            className="ml-2 text-sm font-semibold text-gray-600"
+          >
+            브랜드
+          </label>
+          <Select
+            id="brand-filter"
+            value={brandFilter}
+            onChange={(event) =>
+              setBrandFilter(event.target.value as BrandFilter)
+            }
+          >
+            <option value="all">전체</option>
+            {BRAND_OPTIONS.map((brand) => (
+              <option key={brand} value={brand}>
+                {brand}
+              </option>
+            ))}
+          </Select>
+          <span className="ml-auto text-sm text-gray-500">
+            전체{' '}
+            <strong className="text-gray-900">
+              {productUsageStats.length}
+            </strong>
+            개 중{' '}
+            <strong className="text-primary">{filteredStats.length}</strong>개
+            표시
+          </span>
+        </div>
+
+        <CardGrid columns={1}>
+          <div className="overflow-hidden rounded-xl border border-border bg-white shadow-sm">
+            {hasFilteredStats ? (
+              <CardProductTable
+                stats={sortedStats}
+                cardInfoByName={ibkCreditCardInfoByName}
+                maxChurnRate={MAX_CHURN_RATE}
+                sortColumnKey={sortColumnKey}
+                sortDirection={sortDirection}
+                onSortColumnClick={handleSortColumnClick}
+                onRowClick={handleRowClick}
+              />
+            ) : (
+              <p className="py-14 text-center text-sm text-gray-400">
+                검색 결과가 없습니다.
+              </p>
+            )}
           </div>
-          {hasFilteredStats ? (
-            <CardProductTable
-              stats={sortedStats}
-              cardInfoByName={ibkCreditCardInfoByName}
-              sortColumnKey={sortColumnKey}
-              sortDirection={sortDirection}
-              onSortColumnClick={handleSortColumnClick}
-              onRowClick={handleRowClick}
-            />
-          ) : (
-            <p className="py-8 text-center text-sm text-gray-400">
-              검색 결과가 없습니다.
-            </p>
-          )}
-        </Card>
-      </CardGrid>
-    </div>
+        </CardGrid>
+      </div>
+    </Screen>
   );
 }

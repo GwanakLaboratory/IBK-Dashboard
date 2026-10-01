@@ -28,18 +28,18 @@ export function CustomerReasonRadar({
           <PolarGrid stroke="#e5e7eb" />
           <PolarAngleAxis
             dataKey="label"
-            tick={{ fontSize: 11, fill: '#6b7280' }}
+            tick={{ fontSize: 12, fill: '#6b7280' }}
           />
           <PolarRadiusAxis
             angle={90}
             domain={[0, 100]}
-            tick={{ fontSize: 10, fill: '#9ca3af' }}
+            tick={{ fontSize: 11, fill: '#9ca3af' }}
             axisLine={false}
           />
           <Radar
             dataKey="score"
-            stroke="#466CFF"
-            fill="#466CFF"
+            stroke="#DC2626"
+            fill="#EF4444"
             fillOpacity={0.25}
           />
         </RadarChart>

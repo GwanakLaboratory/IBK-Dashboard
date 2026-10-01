@@ -1,7 +1,4 @@
-import { RotateCcw, Search } from 'lucide-react';
 import { useNavigate } from 'react-router';
-import { Button } from '@/components/atoms/Button';
-import { Input } from '@/components/atoms/Input';
 import { productUsageStats } from '@/data/customers';
 
 type ProductSearchBarProps = {
@@ -36,9 +33,13 @@ export function ProductSearchBar({
   }
 
   return (
-    <div className="mt-6 flex items-center gap-2">
-      <Search className="h-5 w-5 text-gray-600" />
-      <Input
+    <div className="flex items-center gap-3 rounded-xl border border-border bg-white px-5 py-4">
+      <div className="text-sm font-medium text-gray-900">상품명</div>
+      <label htmlFor="product-search-input" className="sr-only">
+        검색어
+      </label>
+      <input
+        id="product-search-input"
         type="text"
         value={value}
         disabled={disabled}
@@ -49,15 +50,23 @@ export function ProductSearchBar({
           }
         }}
         placeholder="카드 상품명으로 조회"
-        className="flex-1"
+        className="h-10 flex-1 rounded-lg border border-gray-300 px-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400"
       />
-      <Button onClick={handleLookup} disabled={disabled}>
+      <button
+        type="button"
+        onClick={handleLookup}
+        disabled={disabled}
+        className="h-10 shrink-0 rounded-lg bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400"
+      >
         조회
-      </Button>
-      <Button variant="outline" onClick={handleReset}>
-        <RotateCcw className="h-3.5 w-3.5" />
+      </button>
+      <button
+        type="button"
+        onClick={handleReset}
+        className="h-10 shrink-0 rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+      >
         초기화
-      </Button>
+      </button>
     </div>
   );
 }

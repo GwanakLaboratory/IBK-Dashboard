@@ -106,14 +106,14 @@ export function ChatLauncher() {
   return (
     <>
       {isOpen && (
-        <div className="fixed bottom-24 right-7 z-50 flex h-[520px] w-[360px] max-w-[calc(100vw-3rem)] flex-col rounded-2xl border border-slate-200 bg-white shadow-[0_16px_48px_rgba(0,0,0,0.14),0_2px_8px_rgba(0,0,0,0.06)]">
-          <header className="flex items-center justify-between rounded-t-2xl bg-[#fafbff] px-4 py-3.5">
+        <div className="fixed bottom-24 right-7 z-50 flex h-[520px] w-[360px] max-w-[calc(100vw-3rem)] flex-col rounded-2xl border border-slate-200 bg-white shadow-panel">
+          <header className="flex items-center justify-between rounded-t-2xl bg-slate-50 px-4 py-3.5">
             <div className="flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-gradient-to-br from-blue-700 to-indigo-500">
                 <Sparkles className="h-4 w-4 text-white" />
               </div>
               <div>
-                <p className="text-[13px] font-bold text-slate-900">
+                <p className="text-xs font-bold text-slate-900">
                   AI 어시스턴트
                 </p>
                 <div className="flex items-center gap-1">
@@ -122,7 +122,7 @@ export function ChatLauncher() {
                       enabled ? 'bg-green-500' : 'bg-gray-400'
                     }`}
                   />
-                  <span className="text-[11px] text-gray-400">
+                  <span className="text-[12px] text-gray-400">
                     {enabled ? '온라인' : '오프라인'}
                   </span>
                 </div>
@@ -142,7 +142,7 @@ export function ChatLauncher() {
             ref={listRef}
             className="scrollbar-hide flex-1 space-y-2 overflow-y-auto px-3.5 pt-3.5"
           >
-            <div className="max-w-[80%] whitespace-pre-line rounded-bl-md rounded-br-2xl rounded-tl-2xl rounded-tr-2xl bg-gray-100 px-3 py-2.5 text-[13px] leading-5 text-gray-700">
+            <div className="max-w-[80%] whitespace-pre-line rounded-bl-md rounded-br-2xl rounded-tl-2xl rounded-tr-2xl bg-gray-100 px-3 py-2.5 text-xs leading-5 text-gray-700">
               {GREETING}
             </div>
             <div className="flex flex-wrap gap-2">
@@ -152,7 +152,7 @@ export function ChatLauncher() {
                   type="button"
                   onClick={() => void send(reply)}
                   disabled={isAsking}
-                  className="w-fit min-w-0 max-w-full justify-self-start rounded-full border border-gray-300 bg-white px-2.5 py-1 text-center text-[11px] font-medium text-gray-700 hover:border-primary hover:text-primary disabled:opacity-50"
+                  className="w-fit min-w-0 max-w-full justify-self-start rounded-full border border-gray-300 bg-white px-2.5 py-1 text-center text-[12px] font-medium text-gray-700 hover:border-primary hover:text-primary disabled:opacity-50"
                 >
                   {reply}
                 </button>
@@ -171,7 +171,7 @@ export function ChatLauncher() {
                   }`}
                 >
                   <div
-                    className={`px-3 py-2.5 text-[13px] ${
+                    className={`px-3 py-2.5 text-xs ${
                       message.role === 'user'
                         ? 'rounded-bl-[14px] rounded-br-[4px] rounded-tl-[14px] rounded-tr-[14px] bg-blue-700 text-white'
                         : message.isError
@@ -187,9 +187,9 @@ export function ChatLauncher() {
                   </div>
                   {isAssistantAnswer && mentionsRiskBreakdown(message.text) && (
                     <Link
-                      to="/dashboard#section-risk-distribution-trend"
+                      to="/dashboard/churn"
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center justify-between rounded-full bg-gray-100 px-3 py-2 text-[12px] font-medium text-gray-700 hover:bg-gray-200"
+                      className="flex items-center justify-between rounded-full bg-gray-100 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-200"
                     >
                       위험도 현황 보기
                       <ChevronRight className="h-3.5 w-3.5" />
@@ -199,7 +199,7 @@ export function ChatLauncher() {
               );
             })}
             {isAsking && (
-              <div className="max-w-[85%] rounded-bl-[4px] rounded-br-[14px] rounded-tl-[14px] rounded-tr-[14px] bg-gray-100 px-3 py-2.5 text-[13px] text-gray-500">
+              <div className="max-w-[85%] rounded-bl-[4px] rounded-br-[14px] rounded-tl-[14px] rounded-tr-[14px] bg-gray-100 px-3 py-2.5 text-xs text-gray-500">
                 {PROGRESS_STAGES[stage]}...
               </div>
             )}
@@ -212,7 +212,7 @@ export function ChatLauncher() {
                 value={question}
                 disabled={isAsking}
                 placeholder="궁금한 점을 물어보세요..."
-                className="h-full flex-1 bg-transparent text-[13px] text-slate-900 outline-none placeholder:text-gray-400 disabled:opacity-50"
+                className="h-full flex-1 bg-transparent text-xs text-slate-900 outline-none placeholder:text-gray-400 disabled:opacity-50"
               />
               <button
                 type="submit"
@@ -231,7 +231,7 @@ export function ChatLauncher() {
         type="button"
         title="AI 어시스턴트"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="fixed bottom-7 right-7 z-50 flex h-[52px] w-[52px] items-center justify-center rounded-full bg-blue-700 text-white shadow-[0_4px_20px_rgba(29,78,216,0.45)] transition-transform hover:scale-105"
+        className="fixed bottom-7 right-7 z-50 flex h-[52px] w-[52px] items-center justify-center rounded-full bg-blue-700 text-white shadow-launcher transition-transform hover:scale-105"
       >
         <Sparkles className="h-5 w-5" />
       </button>

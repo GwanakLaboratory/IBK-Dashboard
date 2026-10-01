@@ -1,44 +1,43 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  AlertCircle,
   AlertTriangle,
   CreditCard,
-  Layers,
   Percent,
+  UserPlus,
   Users,
+  type LucideIcon,
 } from 'lucide-react';
-import { useLocation } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
+import { Screen } from '@/components/layout/Screen';
 import { Card } from '@/components/molecules/Card';
 import { CardGrid } from '@/components/molecules/CardGrid';
 import { PageHeading } from '@/components/molecules/PageHeading';
-import { StatCard } from '@/components/molecules/StatCard';
-import { ActiveCardDistributionChart } from '@/features/dashboard/ActiveCardDistributionChart';
-import { AverageUsagePerMemberTrendChart } from '@/features/dashboard/AverageUsagePerMemberTrendChart';
-import { MemberActivityTrendChart } from '@/features/dashboard/MemberActivityTrendChart';
-import { MonthlyRiskDistributionTrendChart } from '@/features/dashboard/MonthlyRiskDistributionTrendChart';
-import { MonthlyUsageTrendChart } from '@/features/dashboard/MonthlyUsageTrendChart';
-import { NewSignupTrendChart } from '@/features/dashboard/NewSignupTrendChart';
+import { Tabs } from '@/components/molecules/Tabs';
 import { RiskDistributionChart } from '@/features/dashboard/RiskDistributionChart';
-import { RiskSummaryTable } from '@/features/dashboard/RiskSummaryTable';
-import { RiskTransitionMatrixTable } from '@/features/dashboard/RiskTransitionMatrixTable';
-import { TransactionCountTrendChart } from '@/features/dashboard/TransactionCountTrendChart';
-import { UsageVolatilityChart } from '@/features/dashboard/UsageVolatilityChart';
-import { ReasonImpactChart } from '@/features/reason-analysis/ReasonImpactChart';
-import { ScoreDistributionChart } from '@/features/reason-analysis/ScoreDistributionChart';
+import { RiskMemberFlowChart } from '@/features/dashboard/RiskMemberFlowChart';
+import { SummaryMetricIndexChart } from '@/features/dashboard/SummaryMetricIndexChart';
+import { SummaryMetricTrendChart } from '@/features/dashboard/SummaryMetricTrendChart';
 import {
-  getAverageReasonImpact,
-  getPredictionScoreHistogram,
-} from '@/features/reason-analysis/reasonAnalytics';
-import {
-  customers,
   monthlyMemberActivity,
   monthlyRiskDistribution,
   monthlyTotalUsage,
-  monthlyTransactionCount,
-  productUsageStats,
-  riskTransitionMatrix,
 } from '@/data/customers';
 import type { RiskLevel } from '@/types/churn';
+import { StatCard } from '@/components/molecules/StatCard';
+
+type SummaryMetricKey = 'usage' | 'members' | 'signup';
+type SummaryMetricTab = 'all' | SummaryMetricKey;
+
+// 전체 보기에서 지표마다 쓰는 고정 색 (카드 사용액은 단일 차트와 같은 파랑)
+const SUMMARY_METRIC_OPTIONS: {
+  key: SummaryMetricKey;
+  label: string;
+  color: string;
+}[] = [
+  { key: 'usage', label: '카드 사용액', color: '#1B4FD8' },
+  { key: 'members', label: '이용 가능 회원', color: '#EB6834' },
+  { key: 'signup', label: '신규 가입자', color: '#1BAF7A' },
+];
 
 function scrollToSection(sectionId: string) {
   document
@@ -48,6 +47,9 @@ function scrollToSection(sectionId: string) {
 
 export function DashboardPage() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [summaryMetricTab, setSummaryMetricTab] =
+    useState<SummaryMetricTab>('all');
 
   useEffect(() => {
     if (!location.hash) {
@@ -58,12 +60,26 @@ export function DashboardPage() {
   }, [location.hash]);
 
   const latestUsage = monthlyTotalUsage[monthlyTotalUsage.length - 1];
+  const previousUsage = monthlyTotalUsage[monthlyTotalUsage.length - 2];
   const latestActivity =
     monthlyMemberActivity[monthlyMemberActivity.length - 1];
+  const previousActivity =
+    monthlyMemberActivity[monthlyMemberActivity.length - 2];
   const latestRiskDistribution =
     monthlyRiskDistribution[monthlyRiskDistribution.length - 1];
+  const previousRiskDistribution =
+    monthlyRiskDistribution[monthlyRiskDistribution.length - 2];
+  const earliestActivity = monthlyMemberActivity[0];
+  const earliestRiskDistribution = monthlyRiskDistribution[0];
+
   const latestHighRiskCount = Math.round(
     (latestActivity.activeMembers * latestRiskDistribution.high) / 100,
+  );
+  const previousHighRiskCount = Math.round(
+    (previousActivity.activeMembers * previousRiskDistribution.high) / 100,
+  );
+  const earliestHighRiskCount = Math.round(
+    (earliestActivity.activeMembers * earliestRiskDistribution.high) / 100,
   );
   const latestRiskCounts: Record<RiskLevel, number> = {
     high: latestHighRiskCount,
@@ -74,189 +90,218 @@ export function DashboardPage() {
       (latestActivity.activeMembers * latestRiskDistribution.low) / 100,
     ),
   };
-  const reasonImpacts = useMemo(() => getAverageReasonImpact(customers), []);
-  const topReason = reasonImpacts[0];
-  const scoreHistogramBuckets = useMemo(
-    () => getPredictionScoreHistogram(customers),
-    [],
-  );
-  const latestAvgUsagePerMember =
-    (latestUsage.usage * 10000) / latestActivity.activeMembers;
-  const overallChurnRate = useMemo(() => {
-    const totalIssued = productUsageStats.reduce(
-      (sum, stat) => sum + stat.issuedCount,
-      0,
-    );
-    const totalCanceled = productUsageStats.reduce(
-      (sum, stat) => sum + stat.canceledCount,
-      0,
-    );
-    return totalIssued === 0 ? 0 : (totalCanceled / totalIssued) * 100;
-  }, []);
+
+  const previousRiskCounts: Record<RiskLevel, number> = {
+    high: previousHighRiskCount,
+    medium: Math.round(
+      (previousActivity.activeMembers * previousRiskDistribution.mid) / 100,
+    ),
+    low: Math.round(
+      (previousActivity.activeMembers * previousRiskDistribution.low) / 100,
+    ),
+  };
+
+  const usageDeltaPercent =
+    ((latestUsage.usage - previousUsage.usage) / previousUsage.usage) * 100;
+  const activeMembersDelta =
+    latestActivity.activeMembers - previousActivity.activeMembers;
+  const newSignupsDelta =
+    latestActivity.newSignups - previousActivity.newSignups;
+  const monthlyChurnRate =
+    (latestActivity.canceledMembers / latestActivity.activeMembers) * 100;
+  const previousMonthlyChurnRate =
+    (previousActivity.canceledMembers / previousActivity.activeMembers) * 100;
+  const monthlyChurnRateDeltaPp = monthlyChurnRate - previousMonthlyChurnRate;
+  const highRiskCountDelta = latestHighRiskCount - previousHighRiskCount;
+  const highRiskCountYearDeltaPercent =
+    ((latestHighRiskCount - earliestHighRiskCount) / earliestHighRiskCount) *
+    100;
+
+  const statTiles: {
+    label: string;
+    value: string;
+    unit: string;
+    sub: string;
+    Icon: LucideIcon;
+    isRisk?: boolean;
+    onClick: () => void;
+  }[] = [
+    {
+      label: '월 카드 사용액',
+      value: (latestUsage.usage / 10000).toFixed(1),
+      unit: '억원',
+      sub: `전월 대비 ${usageDeltaPercent >= 0 ? '+' : ''}${usageDeltaPercent.toFixed(1)}%`,
+      Icon: CreditCard,
+      onClick: () => navigate('/dashboard/trend', { state: { tab: 'usage' } }),
+    },
+    {
+      label: '이용 가능 회원 수',
+      value: latestActivity.activeMembers.toLocaleString('ko-KR'),
+      unit: '명',
+      sub: `전월 대비 ${activeMembersDelta >= 0 ? '+' : ''}${activeMembersDelta.toLocaleString('ko-KR')}`,
+      Icon: Users,
+      onClick: () =>
+        navigate('/dashboard/trend', { state: { tab: 'members' } }),
+    },
+    {
+      label: '신규 가입자 수',
+      value: latestActivity.newSignups.toLocaleString('ko-KR'),
+      unit: '명',
+      sub: `전월 대비 ${newSignupsDelta >= 0 ? '+' : ''}${newSignupsDelta.toLocaleString('ko-KR')}`,
+      Icon: UserPlus,
+      onClick: () =>
+        navigate('/dashboard/trend', { state: { tab: 'members' } }),
+    },
+    {
+      label: '월 이탈률',
+      value: monthlyChurnRate.toFixed(2),
+      unit: '%',
+      sub: `전월 대비 ${monthlyChurnRateDeltaPp >= 0 ? '+' : ''}${monthlyChurnRateDeltaPp.toFixed(2)}%p`,
+      Icon: Percent,
+      isRisk: true,
+      onClick: () => navigate('/dashboard/churn'),
+    },
+    {
+      label: '위험군 회원수',
+      value: latestHighRiskCount.toLocaleString('ko-KR'),
+      unit: '명',
+      sub: `전월 대비 ${highRiskCountDelta >= 0 ? '+' : ''}${highRiskCountDelta.toLocaleString('ko-KR')}`,
+      Icon: AlertTriangle,
+      isRisk: true,
+      onClick: () => scrollToSection('section-risk-summary'),
+    },
+  ];
+
+  const summaryTrendData: Record<
+    SummaryMetricKey,
+    {
+      data: { month: string; value: number }[];
+      valueFormatter: (value: number) => string;
+    }
+  > = {
+    usage: {
+      data: monthlyTotalUsage.map((point) => ({
+        month: point.month,
+        value: point.usage / 10000,
+      })),
+      valueFormatter: (value) => `${value.toFixed(1)}억원`,
+    },
+    members: {
+      data: monthlyMemberActivity.map((point) => ({
+        month: point.month,
+        value: point.activeMembers,
+      })),
+      valueFormatter: (value) => `${value.toLocaleString('ko-KR')}명`,
+    },
+    signup: {
+      data: monthlyMemberActivity.map((point) => ({
+        month: point.month,
+        value: point.newSignups,
+      })),
+      valueFormatter: (value) => `${value.toLocaleString('ko-KR')}명`,
+    },
+  };
 
   return (
-    <div>
-      <PageHeading
-        title="대시보드"
-        description="카드 회원 이탈 위험 현황을 한눈에 확인합니다."
-      />
+    <Screen>
+      <PageHeading />
 
-      <CardGrid columns={6} breakpoint="lg">
-        <StatCard
-          label="전체 카드 사용액"
-          value={`${(latestUsage.usage / 10000).toFixed(1)}억원`}
-          helperText={`1인당 평균 ${(latestAvgUsagePerMember / 10000).toFixed(1)}만원`}
-          Icon={CreditCard}
-          onClick={() => scrollToSection('section-total-usage')}
-        />
-        <StatCard
-          label="이용 가능 회원수"
-          value={`${latestActivity.activeMembers.toLocaleString('ko-KR')}명`}
-          helperText={`신규 ${latestActivity.newSignups.toLocaleString('ko-KR')}명 | 해지 ${latestActivity.canceledMembers.toLocaleString('ko-KR')}명`}
-          Icon={Users}
-          onClick={() => scrollToSection('section-active-members')}
-        />
-        <StatCard
-          label="전체 이탈률"
-          value={`${overallChurnRate.toFixed(1)}%`}
-          helperText="발급 대비 누적 해지 비율"
-          Icon={Percent}
-          indicator
-          onClick={() => scrollToSection('section-risk-distribution-trend')}
-        />
-        <StatCard
-          label="위험도 상태 회원"
-          value={`${latestHighRiskCount.toLocaleString('ko-KR')}명`}
-          helperText={`전체의 ${latestRiskDistribution.high}%`}
-          Icon={AlertTriangle}
-          indicator
-          onClick={() => scrollToSection('section-risk-summary')}
-        />
-        <StatCard
-          label="주요 이탈 사유"
-          value={topReason.label}
-          helperText={`평균 기여점수 ${topReason.averageScore}점`}
-          Icon={AlertCircle}
-          textSize="text-base"
-          onClick={() => scrollToSection('section-reason-impact')}
-        />
-        <StatCard
-          label="카드 상품 개수"
-          value={`${productUsageStats.length}개`}
-          helperText="개인 신용카드 상품 기준"
-          Icon={Layers}
-          onClick={() => scrollToSection('section-active-card-distribution')}
-        />
+      <CardGrid columns={5} breakpoint="lg">
+        {statTiles.map((tile) => (
+          <StatCard
+            key={tile.label}
+            label={tile.label}
+            value={tile.value}
+            unit={tile.unit}
+            helperText={tile.sub}
+            Icon={tile.Icon}
+            indicator={tile.isRisk}
+            onClick={tile.onClick}
+          />
+        ))}
+      </CardGrid>
+
+      <CardGrid columns={1}>
+        <Card
+          title="주요 지표 추이"
+          description="최근 12개월 · 월별"
+          seeMoreHref="/dashboard/trend"
+          actions={
+            <Tabs
+              variant="segmented"
+              tabs={[{ key: 'all', label: '전체' }, ...SUMMARY_METRIC_OPTIONS]}
+              value={summaryMetricTab}
+              onChange={setSummaryMetricTab}
+            />
+          }
+        >
+          {summaryMetricTab === 'all' ? (
+            <SummaryMetricIndexChart
+              series={SUMMARY_METRIC_OPTIONS.map((option) => ({
+                ...option,
+                ...summaryTrendData[option.key],
+              }))}
+            />
+          ) : (
+            <SummaryMetricTrendChart
+              data={summaryTrendData[summaryMetricTab].data}
+              valueFormatter={summaryTrendData[summaryMetricTab].valueFormatter}
+            />
+          )}
+        </Card>
       </CardGrid>
 
       <CardGrid columns={2} breakpoint="lg">
         <Card
-          id="section-total-usage"
-          title="전체 카드 사용액 추이"
-          description="월별 전체 카드 사용액 추이 (최근 12개월)"
+          id="section-risk-summary"
+          title="위험도 분포"
+          description={`전체 회원의 위험도별 구성비 · 20${latestActivity.month} 기준`}
         >
-          <MonthlyUsageTrendChart monthlyTotalUsage={monthlyTotalUsage} />
-        </Card>
-        <Card
-          title="1인당 평균 카드 사용액 추이"
-          description="전체 사용액을 이용 회원수로 나눈 값 (최근 12개월)"
-        >
-          <AverageUsagePerMemberTrendChart
-            monthlyTotalUsage={monthlyTotalUsage}
-            monthlyMemberActivity={monthlyMemberActivity}
-          />
-        </Card>
-        <Card
-          title="카드 이용 횟수 추이"
-          description="월별 전체 카드 이용 건수 (최근 12개월)"
-        >
-          <TransactionCountTrendChart
-            monthlyTransactionCount={monthlyTransactionCount}
-          />
-        </Card>
-        <Card
-          title="카드 사용액 변동성 추이"
-          description="전월 대비 전체 카드 사용액 증감률 (최근 11개월)"
-        >
-          <UsageVolatilityChart monthlyTotalUsage={monthlyTotalUsage} />
-        </Card>
-        <Card
-          id="section-active-members"
-          title="이용 가능 회원수 추이"
-          description="월별 카드 이용 회원수 및 신규 가입자 추이 (최근 12개월)"
-        >
-          <MemberActivityTrendChart
-            monthlyMemberActivity={monthlyMemberActivity}
-          />
-        </Card>
-        <Card
-          title="신규 가입자 추이"
-          description="월별 신규 가입 회원 수 (최근 12개월)"
-        >
-          <NewSignupTrendChart monthlyMemberActivity={monthlyMemberActivity} />
-        </Card>
-        <Card
-          id="section-risk-distribution-trend"
-          title="위험도 상태별 회원 현황"
-          description="위험 / 중위험 / 저위험 구성비 (최근 12개월)"
-        >
-          <MonthlyRiskDistributionTrendChart
-            monthlyRiskDistribution={monthlyRiskDistribution}
-          />
-        </Card>
-
-        <Card
-          title="이탈 위험도 전이 매트릭스"
-          description="지난달 위험도 대비 이번달 위험도 변화 비율"
-        >
-          <RiskTransitionMatrixTable
-            rows={riskTransitionMatrix}
-            fromMonth={
-              monthlyRiskDistribution[monthlyRiskDistribution.length - 2].month
-            }
-            toMonth={
-              monthlyRiskDistribution[monthlyRiskDistribution.length - 1].month
-            }
-          />
-        </Card>
-        <Card title="위험도 분포" description="전체 회원의 위험도별 구성비">
           <RiskDistributionChart
             countsByRiskLevel={latestRiskCounts}
+            previousCountsByRiskLevel={previousRiskCounts}
             totalCustomerCount={latestActivity.activeMembers}
+            previousTotalCustomerCount={previousActivity.activeMembers}
           />
         </Card>
         <Card
-          id="section-risk-summary"
-          title="위험도별 인원 현황"
-          description="위험도 단계별 회원 수"
+          title="위험군 규모 · 최근 3개월"
+          description={`전체 회원의 ${latestRiskDistribution.high}%`}
         >
-          <RiskSummaryTable
-            countsByRiskLevel={latestRiskCounts}
-            totalCustomerCount={latestActivity.activeMembers}
-          />
-        </Card>
-        <Card
-          id="section-reason-impact"
-          title="이탈 사유별 평균 영향도"
-          description="전체 회원 기준 이탈 이유별 평균 기여 점수 (높은 순)"
-        >
-          <ReasonImpactChart reasonImpacts={reasonImpacts} />
-        </Card>
-        <Card
-          title="이탈 예측점수 분포"
-          description="구간별 회원 인원수 — 저위험(녹색) / 중위험(주황) / 위험(빨강)"
-        >
-          <ScoreDistributionChart buckets={scoreHistogramBuckets} />
-        </Card>
-        <Card
-          id="section-active-card-distribution"
-          title="이용 중인 카드 상품 비중"
-          description="현재 이용 회원 기준 발급 카드 상품 비중 상위 5개 (클릭 시 카드 상세로 이동)"
-          seeMoreHref="/card-list"
-        >
-          <ActiveCardDistributionChart stats={productUsageStats} />
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-7">
+            <div className="flex shrink-0 flex-col gap-3 sm:w-[170px]">
+              <div className="flex items-baseline gap-1">
+                <span className="text-[32px] font-bold tracking-tight text-red-700">
+                  {latestHighRiskCount.toLocaleString('ko-KR')}
+                </span>
+                <span className="text-sm font-semibold text-gray-900">명</span>
+              </div>
+              <div className="flex flex-col gap-1.5 text-xs">
+                <div className="flex justify-between gap-2">
+                  <span className="text-gray-500">전월 대비</span>
+                  <strong className="text-red-700">
+                    {highRiskCountDelta >= 0 ? '+' : ''}
+                    {highRiskCountDelta.toLocaleString('ko-KR')}
+                  </strong>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <span className="text-gray-500">12개월 전 대비</span>
+                  <strong className="text-red-700">
+                    {highRiskCountYearDeltaPercent >= 0 ? '+' : ''}
+                    {highRiskCountYearDeltaPercent.toFixed(1)}%
+                  </strong>
+                </div>
+              </div>
+            </div>
+            <div className="min-w-0 flex-1">
+              <RiskMemberFlowChart
+                monthlyMemberActivity={monthlyMemberActivity.slice(-3)}
+                monthlyRiskDistribution={monthlyRiskDistribution}
+              />
+            </div>
+          </div>
         </Card>
       </CardGrid>
-    </div>
+    </Screen>
   );
 }

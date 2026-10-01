@@ -53,13 +53,13 @@ export function UsageVolatilityChart({
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
           <XAxis
             dataKey="month"
-            tick={{ fontSize: 12, fill: '#9ca3af' }}
+            tick={{ fontSize: 13, fill: '#9ca3af' }}
             axisLine={false}
             tickLine={false}
             interval={0}
           />
           <YAxis
-            tick={{ fontSize: 12, fill: '#9ca3af' }}
+            tick={{ fontSize: 13, fill: '#9ca3af' }}
             axisLine={false}
             tickLine={false}
             width={44}
@@ -99,7 +99,7 @@ export function UsageVolatilityChart({
               formatter={(value: unknown) =>
                 `${Number(value) > 0 ? '+' : ''}${value}%`
               }
-              style={{ fontSize: 11, fill: '#52514e' }}
+              style={{ fontSize: 12, fill: '#52514e' }}
             />
           </Bar>
         </BarChart>
