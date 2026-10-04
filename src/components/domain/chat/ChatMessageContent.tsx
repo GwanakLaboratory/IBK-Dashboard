@@ -80,55 +80,60 @@ export function ChatMessageContent({ text }: ChatMessageContentProps) {
   const blocks = parseBlocks(text);
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-5">
       {blocks.map((block, blockIndex) => {
         if (block.type === 'table') {
           return (
-            <table
+            <div
               key={blockIndex}
-              className="w-full overflow-hidden rounded-lg border border-gray-200 text-xs"
+              className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm"
             >
-              <thead>
-                <tr className="bg-gray-50">
-                  {block.headers.map((header, headerIndex) => (
-                    <th
-                      key={headerIndex}
-                      className={`px-2.5 py-1.5 font-medium text-gray-500 ${
-                        headerIndex === 0 ? 'text-left' : 'text-right'
-                      }`}
-                    >
-                      {header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="bg-gray-50">
-                {block.rows.map((row, rowIndex) => {
-                  const dotColorClassName = findRowRiskColor(row);
-                  return (
-                    <tr key={rowIndex} className="border-t border-gray-100">
-                      {row.map((cell, cellIndex) => (
-                        <td
-                          key={cellIndex}
-                          className={`px-2.5 py-1.5 ${
-                            cellIndex === 0
-                              ? 'text-left font-medium text-gray-700'
-                              : 'text-right text-gray-900'
-                          }`}
-                        >
-                          {cellIndex === 0 && dotColorClassName && (
-                            <span
-                              className={`mr-1.5 inline-block h-2 w-2 rounded-full ${dotColorClassName}`}
-                            />
-                          )}
-                          {cell}
-                        </td>
-                      ))}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="bg-slate-700">
+                    {block.headers.map((header, headerIndex) => (
+                      <th
+                        key={headerIndex}
+                        className={`px-2.5 py-2 text-[11px] font-semibold text-white ${
+                          headerIndex === 0 ? 'text-left' : 'text-right'
+                        }`}
+                      >
+                        {header}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {block.rows.map((row, rowIndex) => {
+                    const dotColorClassName = findRowRiskColor(row);
+                    return (
+                      <tr
+                        key={rowIndex}
+                        className="border-t border-slate-100 odd:bg-white even:bg-slate-50"
+                      >
+                        {row.map((cell, cellIndex) => (
+                          <td
+                            key={cellIndex}
+                            className={`px-2.5 py-2 ${
+                              cellIndex === 0
+                                ? 'text-left font-medium text-gray-700'
+                                : 'text-right font-semibold tabular-nums text-slate-900'
+                            }`}
+                          >
+                            {cellIndex === 0 && dotColorClassName && (
+                              <span
+                                className={`mr-1.5 inline-block h-2 w-2 rounded-full ${dotColorClassName}`}
+                              />
+                            )}
+                            {cell}
+                          </td>
+                        ))}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           );
         }
 

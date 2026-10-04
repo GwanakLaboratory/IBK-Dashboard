@@ -34,7 +34,7 @@ export function Sidebar() {
 
   return (
     <div className="flex h-full shrink-0">
-      <aside className="flex h-full w-16 shrink-0 flex-col items-center gap-1.5 border-t border-sidebar-border bg-sidebar py-3">
+      <aside className="flex h-full w-16 shrink-0 flex-col items-center gap-1.5 bg-sidebar py-3">
         <button
           type="button"
           onClick={() =>
