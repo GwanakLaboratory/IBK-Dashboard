@@ -4,6 +4,9 @@ type RiskLevelMeta = {
   label: string;
   dotColorClassName: string;
   badgeClassName: string;
+  /** 점수·막대처럼 위험도 색으로 칠할 숫자 */
+  textClassName: string;
+  barClassName: string;
   chartColor: string;
 };
 
@@ -14,20 +17,26 @@ export const RISK_LEVEL_DISPLAY_ORDER: RiskLevel[] = ['high', 'medium', 'low'];
 export const RISK_LEVEL_META: Record<RiskLevel, RiskLevelMeta> = {
   low: {
     label: '저위험',
-    dotColorClassName: 'bg-emerald-500',
-    badgeClassName: 'bg-emerald-50 text-emerald-700',
-    chartColor: '#10b981',
+    dotColorClassName: 'bg-green-500',
+    badgeClassName: 'bg-green-100 text-green-700',
+    textClassName: 'text-green-700',
+    barClassName: 'bg-green-500',
+    chartColor: '#22c55e',
   },
   medium: {
     label: '중위험',
-    dotColorClassName: 'bg-yellow-400',
-    badgeClassName: 'bg-yellow-50 text-yellow-700',
+    dotColorClassName: 'bg-amber-500',
+    badgeClassName: 'bg-amber-100 text-amber-700',
+    textClassName: 'text-amber-700',
+    barClassName: 'bg-amber-500',
     chartColor: '#f59e0b',
   },
   high: {
     label: '위험',
     dotColorClassName: 'bg-red-500',
-    badgeClassName: 'bg-red-50 text-red-600',
+    badgeClassName: 'bg-red-100 text-red-700',
+    textClassName: 'text-red-600',
+    barClassName: 'bg-red-500',
     chartColor: '#ef4444',
   },
 };
@@ -79,10 +88,10 @@ export function interleaveByRiskLevel<T extends { riskLevel: RiskLevel }>(
   return result;
 }
 
-/** 이탈 예측 점수로 위험도를 구한다. 기준은 회원 목데이터의 riskLevel 분포와 맞춘 값. */
+/** 이탈 예측 점수로 위험도를 구한다. 기준: 70점 이상 위험, 40점 이상 중위험 (디자인 시안 기준). */
 export function getRiskLevelFromScore(score: number): RiskLevel {
   if (score >= 70) return 'high';
-  if (score >= 50) return 'medium';
+  if (score >= 40) return 'medium';
   return 'low';
 }
 

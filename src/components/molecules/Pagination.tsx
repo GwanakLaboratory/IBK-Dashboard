@@ -43,8 +43,9 @@ export function Pagination({
   return (
     <nav className="flex items-center gap-1">
       <Button
-        variant="ghost"
+        variant="outline"
         size="icon"
+        className="border-slate-200 text-slate-600"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
         aria-label="이전 페이지"
@@ -57,7 +58,7 @@ export function Pagination({
           return (
             <span
               key={`ellipsis-${index}`}
-              className="flex h-8 w-8 items-center justify-center text-sm text-gray-400"
+              className="flex size-6 items-center justify-center text-xs text-slate-400"
             >
               …
             </span>
@@ -69,8 +70,9 @@ export function Pagination({
         return (
           <Button
             key={pageItem}
-            variant={isCurrentPage ? 'default' : 'ghost'}
+            variant="ghost"
             size="icon"
+            className={`text-xs ${isCurrentPage ? 'bg-slate-900 font-bold text-white hover:bg-slate-900' : 'font-normal'}`}
             onClick={() => onPageChange(pageItem)}
             aria-current={isCurrentPage ? 'page' : undefined}
           >
@@ -80,8 +82,9 @@ export function Pagination({
       })}
 
       <Button
-        variant="ghost"
+        variant="outline"
         size="icon"
+        className="border-slate-200 text-slate-600"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
         aria-label="다음 페이지"
