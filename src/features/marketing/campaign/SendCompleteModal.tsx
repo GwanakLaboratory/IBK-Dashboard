@@ -1,58 +1,68 @@
-import { CheckCircle2 } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { Link } from 'react-router';
-import { Button } from '@/components/atoms/Button';
 import { Modal } from '@/components/molecules/Modal';
-import type { CampaignView } from '@/features/marketing/campaign/campaignModel';
-import type { SendTiming } from '@/features/marketing/campaign/campaignModel';
+
+export type CmoRow = { key: string; name: string; sub: string; count: string };
 
 type SendCompleteModalProps = {
-  view: CampaignView;
-  timing: SendTiming;
-  onClose: () => void;
-  onNewCampaign: () => void;
+  subtitle: string;
+  rows: CmoRow[];
+  /** 확인 (선택을 처음 상태로 되돌린다) */
+  onConfirm: () => void;
 };
 
+/** CMO 전달 완료 안내 */
 export function SendCompleteModal({
-  view,
-  timing,
-  onClose,
-  onNewCampaign,
+  subtitle,
+  rows,
+  onConfirm,
 }: SendCompleteModalProps) {
-  const campaignLabel = view.matchedPreset?.label ?? view.segmentLabel;
+  const title = 'CMO로 전달했어요';
 
   return (
-    <Modal onClose={onClose}>
-      <div className="flex flex-col items-center gap-4 text-center">
-        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
-          <CheckCircle2 className="h-7 w-7 text-green-600" />
+    <Modal label={title} onClose={onConfirm}>
+      <div className="flex flex-col items-center gap-4">
+        <span className="inline-flex size-[52px] items-center justify-center rounded-full bg-green-600 text-white">
+          <Check className="size-[26px]" strokeWidth={2.8} />
         </span>
-        <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-bold text-gray-900">
-            {timing === 'now' ? '발송을 완료했어요' : '발송을 예약했어요'}
-          </h2>
-          <p className="text-sm text-gray-600">
-            &lsquo;{campaignLabel}&rsquo; ·{' '}
-            {view.targetCount.toLocaleString('ko-KR')}명
-          </p>
-          <p className="text-sm text-gray-600">
-            {view.channel.label} ·{' '}
-            {timing === 'now' ? '즉시 발송' : '예약 발송'}
-          </p>
+        <div className="flex flex-col items-center gap-1.5">
+          <h2 className="text-xl font-bold text-slate-900">{title}</h2>
+          <span className="text-sm text-slate-500">{subtitle}</span>
         </div>
-        <div className="w-full rounded-lg bg-gray-50 px-4 py-3 text-xs text-gray-600">
-          반응 결과는 접촉 이력과 성과 리포트에서 확인할 수 있어요
-        </div>
-        <div className="flex w-full gap-2">
+        <ul className="flex w-full flex-col divide-y divide-slate-100 rounded-xl border border-slate-200">
+          {rows.map((row) => (
+            <li
+              key={row.key}
+              className="flex items-center justify-between gap-4 px-4 py-3.5"
+            >
+              <span className="flex min-w-0 flex-col gap-[3px]">
+                <span className="text-sm font-bold text-slate-900">
+                  {row.name}
+                </span>
+                <span className="text-xs leading-snug text-slate-500">
+                  {row.sub}
+                </span>
+              </span>
+              <span className="shrink-0 text-sm font-bold text-slate-900">
+                {row.count}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <div className="grid w-full grid-cols-2 gap-2.5 pt-1">
           <Link
             to="/marketing/history"
-            onClick={onClose}
-            className="flex h-9 flex-1 items-center justify-center rounded-md border border-gray-300 text-sm font-medium text-gray-600 hover:bg-gray-50"
+            className="inline-flex h-12 items-center justify-center rounded-xl border border-slate-300 bg-white text-sm font-semibold text-slate-900 hover:bg-slate-50"
           >
-            접촉 이력 보기
+            접촉 이력에서 보기
           </Link>
-          <Button className="flex-1" onClick={onNewCampaign}>
-            새 캠페인 만들기
-          </Button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="h-12 rounded-xl bg-blue-700 text-sm font-bold text-white hover:bg-blue-800"
+          >
+            확인
+          </button>
         </div>
       </div>
     </Modal>

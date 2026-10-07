@@ -1,162 +1,71 @@
-import { useEffect, useState } from 'react';
+import { Building2 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router';
-import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
-import {
-  findActiveNavItem,
-  getDetailSegmentLabel,
-  NAV_GROUPS,
-} from '@/config/navigation';
-import type { NavGroupKey } from '@/types/navigation';
+import { NAV_SECTIONS } from '@/config/navigation';
 
 export function Sidebar() {
-  const location = useLocation();
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [manualGroupKey, setManualGroupKey] = useState<NavGroupKey | null>(
-    null,
-  );
-
-  const activeNavItem = findActiveNavItem(location.pathname);
-  const activeGroupKey =
-    manualGroupKey ?? activeNavItem?.group.groupKey ?? NAV_GROUPS[0].groupKey;
-  const activeGroup =
-    NAV_GROUPS.find((group) => group.groupKey === activeGroupKey) ??
-    NAV_GROUPS[0];
-
-  useEffect(() => {
-    setManualGroupKey(null);
-  }, [location.pathname]);
-
-  useEffect(() => {
-    if (location.pathname === '/') {
-      setIsCollapsed(true);
-    }
-  }, [location.pathname]);
+  const { pathname } = useLocation();
 
   return (
-    <div className="flex h-full shrink-0">
-      <aside className="flex h-full w-16 shrink-0 flex-col items-center gap-1.5 bg-sidebar py-3">
-        <button
-          type="button"
-          onClick={() =>
-            setIsCollapsed((previousCollapsed) => !previousCollapsed)
-          }
-          aria-label={isCollapsed ? '사이드바 펼치기' : '사이드바 접기'}
-          className="mb-2 flex h-11 w-11 items-center justify-center rounded-lg text-sidebar-muted transition-colors hover:bg-slate-800 hover:text-white"
-        >
-          {isCollapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
-            <ChevronLeft className="h-4 w-4" />
-          )}
-        </button>
-
-        <NavLink
-          to="/"
-          end
-          className={({ isActive }) =>
-            `flex h-14 w-[52px] flex-col items-center justify-center gap-1 rounded-[10px] text-[12px] font-medium transition-colors ${
-              isActive && manualGroupKey === null
-                ? 'bg-sidebar-active text-white'
-                : 'text-sidebar-muted hover:bg-slate-800 hover:text-slate-200'
-            }`
-          }
-        >
-          <Home className="h-5 w-5 shrink-0" strokeWidth={1.8} />홈
-        </NavLink>
-
-        {NAV_GROUPS.map((group) => {
-          const isActiveGroup =
-            (location.pathname !== '/' || manualGroupKey !== null) &&
-            group.groupKey === activeGroupKey;
-          const GroupIcon = group.icon;
-
+    <nav
+      aria-label="메뉴"
+      className="flex w-52 shrink-0 flex-col border-t border-sidebar-border bg-sidebar py-5"
+    >
+      <span className="px-5 pb-2.5 text-2xs font-bold tracking-widest text-slate-500">
+        MENU
+      </span>
+      {NAV_SECTIONS.map(
+        ({ key, label, icon: Icon, path, basePath, children }) => {
+          const active =
+            pathname === basePath || pathname.startsWith(`${basePath}/`);
           return (
-            <button
-              key={group.groupKey}
-              type="button"
-              onClick={() => {
-                setManualGroupKey(group.groupKey);
-                setIsCollapsed(false);
-              }}
-              title={group.label}
-              className={`flex h-14 w-[52px] flex-col items-center justify-center gap-1 rounded-[10px] text-[12px] font-medium transition-colors ${
-                isActiveGroup
-                  ? 'bg-sidebar-active text-white'
-                  : 'text-sidebar-muted hover:bg-slate-800 hover:text-slate-200'
-              }`}
-            >
-              <GroupIcon className="h-5 w-5 shrink-0" strokeWidth={1.8} />
-              {group.label}
-            </button>
-          );
-        })}
-      </aside>
-
-      <aside
-        className={`h-full shrink-0 overflow-hidden bg-sidebar-panel transition-all duration-300 ease-in-out ${
-          isCollapsed
-            ? 'w-0 border-r-0 opacity-0'
-            : 'w-48 border-r border-sidebar-panel-border opacity-100'
-        }`}
-      >
-        <div className="flex h-full w-48 flex-col pb-4 pt-5">
-          <div className="flex flex-col gap-1.5 px-4 pb-3">
-            <p className="text-base font-bold text-gray-900">
-              {activeGroup.label}
-            </p>
-            <p className="text-xs leading-relaxed text-sidebar-panel-muted">
-              {activeGroup.description}
-            </p>
-          </div>
-
-          <nav className="flex flex-col gap-0.5">
-            {activeGroup.items.map((item, itemIndex) => {
-              const previousSectionLabel =
-                activeGroup.items[itemIndex - 1]?.sectionLabel;
-              const showSectionLabel =
-                item.sectionLabel !== undefined &&
-                item.sectionLabel !== previousSectionLabel;
-
-              const detailSegment = getDetailSegmentLabel(
-                item,
-                location.pathname,
-              );
-
-              return (
-                <div key={item.tabKey} className="flex flex-col">
-                  {showSectionLabel && (
-                    <p className="mt-3 px-4 pb-1 pt-3 text-[12px] font-bold text-gray-500 first:pt-0">
-                      {item.sectionLabel}
-                    </p>
-                  )}
-                  <NavLink
-                    to={item.path}
-                    end={item.end}
-                    className={({ isActive }) =>
-                      `min-h-[40px] border-l-[3px] px-4 py-2 text-sm transition-colors ${
-                        isActive
-                          ? 'border-l-primary bg-blue-100 font-semibold text-primary'
-                          : 'border-l-transparent font-medium text-gray-700 hover:text-primary'
-                      }`
-                    }
-                  >
-                    {item.label}
-                  </NavLink>
-
-                  {detailSegment && (
-                    <div className="flex items-center gap-1.5 py-1.5 pl-7 pr-3 text-xs text-primary">
-                      <span className="text-gray-400">└</span>
-                      <span className="truncate font-semibold">
-                        {detailSegment}
-                      </span>
-                    </div>
-                  )}
+            <div key={key} className="flex flex-col">
+              <NavLink
+                to={path}
+                aria-current={active && !children ? 'page' : undefined}
+                className={`flex h-12 items-center gap-3 text-sm transition-colors ${
+                  active
+                    ? 'border-l-4 border-blue-500 bg-sidebar-active pl-4 pr-5 font-bold text-white'
+                    : 'px-5 font-medium text-slate-400 hover:text-white'
+                }`}
+              >
+                <Icon className="size-5" strokeWidth={1.8} />
+                <span>{label}</span>
+              </NavLink>
+              {active && children && (
+                <div className="flex flex-col gap-0.5 py-1.5">
+                  {children.map((child) => {
+                    // 상세 화면(예: /marketing/history/:id)도 부모 메뉴를 활성으로 본다
+                    const childActive =
+                      pathname === child.to ||
+                      pathname.startsWith(`${child.to}/`);
+                    return (
+                      <NavLink
+                        key={child.to}
+                        to={child.to}
+                        aria-current={childActive ? 'page' : undefined}
+                        className={`mx-3 flex h-10 items-center gap-2.5 rounded-lg pl-6 pr-3 text-sm transition-colors ${
+                          childActive
+                            ? 'bg-blue-500/15 font-bold text-blue-300'
+                            : 'font-medium text-slate-400 hover:text-white'
+                        }`}
+                      >
+                        <span
+                          className={`size-1.5 rounded-full ${childActive ? 'bg-blue-300' : 'bg-slate-600'}`}
+                        />
+                        {child.label}
+                      </NavLink>
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </nav>
-        </div>
-      </aside>
-    </div>
+              )}
+            </div>
+          );
+        },
+      )}
+      <div className="mt-auto flex items-center gap-2.5 border-t border-sidebar-border px-5 pt-3.5 text-xs text-slate-400">
+        <Building2 className="size-5" strokeWidth={1.8} />
+        <span>카드사업부</span>
+      </div>
+    </nav>
   );
 }

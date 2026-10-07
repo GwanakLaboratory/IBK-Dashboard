@@ -3,6 +3,7 @@ import {
   ChevronRight,
   Loader2,
   Maximize2,
+  MessageCircleMore,
   Minimize2,
   RotateCcw,
   Send,
@@ -49,6 +50,8 @@ const ANSWER_DELAY_MS = 2200;
 
 export function ChatLauncher() {
   const [isOpen, setIsOpen] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const launcherRef = useRef<HTMLButtonElement>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [question, setQuestion] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -93,6 +96,25 @@ export function ChatLauncher() {
     }, ANSWER_DELAY_MS);
   }
 
+  // 열려 있을 때 패널·런처 바깥을 누르면 닫는다
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (
+        panelRef.current?.contains(target) ||
+        launcherRef.current?.contains(target)
+      ) {
+        return;
+      }
+      setIsOpen(false);
+    };
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => document.removeEventListener('pointerdown', handlePointerDown);
+  }, [isOpen]);
+
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
     send(question.trim());
@@ -103,8 +125,9 @@ export function ChatLauncher() {
       {/* 닫혀 있어도 마운트해 두고, 런처 버튼 쪽(오른쪽 아래)을 기준으로
           커지고 작아지는 트랜지션으로 열고 닫는다. */}
       <div
+        ref={panelRef}
         aria-hidden={!isOpen}
-        className={`fixed bottom-24 right-7 z-50 flex max-h-[calc(100vh-8rem)] max-w-[calc(100vw-3rem)] origin-bottom-right flex-col rounded-2xl border border-slate-200 bg-white shadow-panel transition-all duration-300 ease-out ${
+        className={`fixed bottom-28 right-7 z-50 flex max-h-[calc(100vh-8rem)] max-w-[calc(100vw-3rem)] origin-bottom-right flex-col rounded-2xl border border-slate-200 bg-white shadow-panel transition-all duration-300 ease-out ${
           isExpanded ? 'h-[720px] w-[640px]' : 'h-[520px] w-[360px]'
         } ${
           isOpen
@@ -114,8 +137,9 @@ export function ChatLauncher() {
       >
         <header className="flex items-center justify-between rounded-t-2xl bg-slate-50 px-4 py-3.5">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-gradient-to-br from-blue-700 to-indigo-500">
-              <Sparkles className="h-4 w-4 text-white" />
+            {/* 헤더와 같은 대시보드 로고 (흰 막대라 네이비 바탕 위에 둔다) */}
+            <div className="flex size-7 items-center justify-center rounded-md bg-sidebar">
+              <img src="/logo-rising-bar.svg" alt="" className="size-4" />
             </div>
             <p className="text-[13px] font-bold text-slate-900">
               AI 어시스턴트
@@ -303,20 +327,28 @@ export function ChatLauncher() {
       </div>
 
       <button
+        ref={launcherRef}
         type="button"
+        aria-label={isOpen ? 'AI 어시스턴트 닫기' : 'AI 어시스턴트 열기'}
         title={isOpen ? '닫기' : 'AI 어시스턴트'}
         onClick={() => setIsOpen((prev) => !prev)}
-        className="fixed bottom-7 right-7 z-50 flex h-[52px] w-[52px] items-center justify-center rounded-full bg-blue-700 text-white shadow-launcher transition-transform hover:scale-105"
+        className="group fixed bottom-7 right-7 z-50 flex size-14 items-center justify-center rounded-full bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700 text-white shadow-launcher transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
       >
-        <Sparkles
-          className={`absolute h-5 w-5 transition-all duration-300 ${
+        {/* 처음 화면에 나타날 때 한 번만 퍼지는 빛 */}
+        <span
+          aria-hidden="true"
+          className="absolute inset-0 animate-ping rounded-full bg-blue-500/40 [animation-iteration-count:1]"
+        />
+        <MessageCircleMore
+          className={`absolute size-6 transition-all duration-300 group-hover:scale-110 ${
             isOpen
               ? 'rotate-90 scale-0 opacity-0'
               : 'rotate-0 scale-100 opacity-100'
           }`}
+          strokeWidth={2}
         />
         <X
-          className={`absolute h-5 w-5 transition-all duration-300 ${
+          className={`absolute size-5 transition-all duration-300 ${
             isOpen
               ? 'rotate-0 scale-100 opacity-100'
               : '-rotate-90 scale-0 opacity-0'

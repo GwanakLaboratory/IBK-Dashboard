@@ -4,21 +4,15 @@ import {
   createBrowserRouter,
 } from 'react-router';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { CardAnalysisPage } from '@/features/card-analysis/CardAnalysisPage';
-import { CardDetailPage } from '@/features/card-analysis/CardDetailPage';
-import { CardProductListPage } from '@/features/card-analysis/CardProductListPage';
-import { DashboardChurnPage } from '@/features/dashboard/DashboardChurnPage';
-import { DashboardPage } from '@/features/dashboard/DashboardPage';
-import { DashboardTrendPage } from '@/features/dashboard/DashboardTrendPage';
-import { CustomerAnalysisPage } from '@/features/customer-detail/CustomerAnalysisPage';
-import { CustomerDetailPage } from '@/features/customer-detail/CustomerDetailPage';
-import { CustomerProfilePage } from '@/features/customer-detail/CustomerProfilePage';
-import { HomePage } from '@/features/home/HomePage';
-import { CampaignHistoryDetailPage } from '@/features/marketing/CampaignHistoryDetailPage';
-import { ContactHistoryPage } from '@/features/marketing/ContactHistoryPage';
-import { TargetSendPage } from '@/features/marketing/TargetSendPage';
-import { ConversionPage } from '@/features/performance/ConversionPage';
-import { EconomicImpactPage } from '@/features/performance/EconomicImpactPage';
+import { HistoryPage } from '@/features/marketing/HistoryPage';
+import { SendPage } from '@/features/marketing/SendPage';
+import { OverviewPage } from '@/features/overview/OverviewPage';
+import { PerformancePage } from '@/features/performance/PerformancePage';
+import { CardDetailPage } from '@/features/target/CardDetailPage';
+import { CustomerAnalysisPage } from '@/features/target/CustomerAnalysisPage';
+import { CardsPage } from '@/features/target/CardsPage';
+import { MemberDetailPage } from '@/features/target/MemberDetailPage';
+import { MembersPage } from '@/features/target/MembersPage';
 
 const DEFAULT_PATH = '/dashboard';
 
@@ -26,31 +20,20 @@ const router = createBrowserRouter([
   {
     element: <DashboardLayout />,
     children: [
-      { index: true, element: <HomePage /> },
-      { path: '/dashboard', element: <DashboardPage /> },
-      { path: '/dashboard/trend', element: <DashboardTrendPage /> },
-      { path: '/dashboard/churn', element: <DashboardChurnPage /> },
-      { path: '/card-analysis', element: <CardAnalysisPage /> },
-      { path: '/card-list', element: <CardProductListPage /> },
-      { path: '/card-list/:productName', element: <CardDetailPage /> },
-      { path: '/customer-detail', element: <CustomerDetailPage /> },
-      { path: '/customer-analysis', element: <CustomerAnalysisPage /> },
+      { index: true, element: <Navigate to={DEFAULT_PATH} replace /> },
+      { path: '/dashboard', element: <OverviewPage /> },
+      { path: '/target', element: <CustomerAnalysisPage /> },
+      { path: '/target/members', element: <MembersPage /> },
+      { path: '/target/members/:memberId', element: <MemberDetailPage /> },
+      { path: '/target/cards', element: <CardsPage /> },
+      { path: '/target/cards/:cardName', element: <CardDetailPage /> },
       {
-        path: '/customer-detail/:customerId',
-        element: <CustomerProfilePage />,
+        path: '/marketing',
+        element: <Navigate to="/marketing/send" replace />,
       },
-      { path: '/marketing/campaign', element: <TargetSendPage /> },
-      { path: '/marketing/history', element: <ContactHistoryPage /> },
-      {
-        path: '/marketing/history/:campaignId',
-        element: <CampaignHistoryDetailPage />,
-      },
-      {
-        path: '/performance',
-        element: <Navigate to="/performance/conversion" replace />,
-      },
-      { path: '/performance/conversion', element: <ConversionPage /> },
-      { path: '/performance/economic', element: <EconomicImpactPage /> },
+      { path: '/marketing/send', element: <SendPage /> },
+      { path: '/marketing/history', element: <HistoryPage /> },
+      { path: '/performance', element: <PerformancePage /> },
       { path: '*', element: <Navigate to={DEFAULT_PATH} replace /> },
     ],
   },
