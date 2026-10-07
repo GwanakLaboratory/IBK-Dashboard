@@ -1,46 +1,41 @@
 import { CalendarDays, ChevronLeft } from 'lucide-react';
 import { type ReactNode } from 'react';
-import { Link, NavLink } from 'react-router';
+import { Link } from 'react-router';
 import {
   DATA_BASE_MONTH_LABEL,
   DATA_UPDATED_AT,
   PAGE_HEADS,
-  SECTION_TABS,
   type NavSectionKey,
 } from '@/config/navigation';
 
 type PageHeaderProps = {
-  /** 섹션 기본 제목(PAGE_HEADS)과 하위 탭(SECTION_TABS)을 가져올 섹션 */
+  /** 섹션 기본 제목(PAGE_HEADS)을 가져올 섹션 */
   section: NavSectionKey;
   eyebrow?: string;
   title?: string;
+  /** 제목 바로 옆에 붙는 요소 (예: 위험도 배지) */
+  titleAddon?: ReactNode;
   description?: ReactNode;
   /** 상세 화면의 "← 목록" 링크 */
   back?: { label: string; to: string };
   /** 제목 오른쪽 영역. 생략하면 데이터 기준일 + 기준 월을 보여준다. */
   actions?: ReactNode;
-  /** 탭 옆에 붙일 숫자 (탭 경로 → 숫자) */
-  tabCounts?: Record<string, string>;
-  /** 상세 화면처럼 섹션 탭을 숨길 때 */
-  hideTabs?: boolean;
   /** 제목 크기 (대시보드처럼 강조할 때 lg) */
   titleSize?: 'md' | 'lg';
 };
 
-/** 모든 페이지 맨 위 제목 영역: 영문 소제목 + 제목·설명 + 오른쪽 액션 + 하위 탭 */
+/** 모든 페이지 맨 위 제목 영역: 영문 소제목 + 제목·설명 + 오른쪽 액션 */
 export function PageHeader({
   section,
   eyebrow,
   title,
+  titleAddon,
   description,
   back,
   actions,
-  tabCounts,
-  hideTabs = false,
   titleSize = 'md',
 }: PageHeaderProps) {
   const head = PAGE_HEADS[section];
-  const tabs = hideTabs ? undefined : SECTION_TABS[section];
 
   return (
     <div className="flex flex-col gap-2.5">
@@ -64,6 +59,7 @@ export function PageHeader({
             >
               {title ?? head.title}
             </h1>
+            {titleAddon}
             <span className="text-sm text-slate-500">
               {description ?? head.description}
             </span>
@@ -71,45 +67,6 @@ export function PageHeader({
         </div>
         {actions ?? <DataBaseInfo />}
       </div>
-      {tabs && (
-        <div
-          role="tablist"
-          aria-label="하위 화면"
-          className="flex border-b border-slate-200"
-        >
-          {tabs.map((tab) => (
-            <NavLink
-              key={tab.to}
-              to={tab.to}
-              role="tab"
-              className={({ isActive }) =>
-                `-mb-px mr-6 inline-flex h-11 items-center gap-2 border-b-2 px-0.5 text-sm ${
-                  isActive
-                    ? 'border-blue-700 font-bold text-slate-900'
-                    : 'border-transparent font-medium text-slate-500 hover:text-slate-900'
-                }`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  {tab.label}
-                  {tabCounts?.[tab.to] && (
-                    <span
-                      className={`inline-flex h-5 items-center rounded-full px-2 text-xs font-bold ${
-                        isActive
-                          ? 'bg-blue-50 text-blue-700'
-                          : 'bg-slate-100 text-slate-500'
-                      }`}
-                    >
-                      {tabCounts[tab.to]}
-                    </span>
-                  )}
-                </>
-              )}
-            </NavLink>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

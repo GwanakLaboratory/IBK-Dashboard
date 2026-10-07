@@ -14,7 +14,7 @@ export type KpiItem = {
 type KpiStripProps = {
   items: KpiItem[];
   /** 칸 전체 크기 (여백 · 라벨 · 숫자) */
-  size?: 'md' | 'lg';
+  size?: 'md' | 'lg' | 'xl';
 };
 
 const SIZE_CLASS_NAME = {
@@ -29,6 +29,12 @@ const SIZE_CLASS_NAME = {
     label: 'text-base',
     value: 'text-4xl',
     unit: 'text-lg',
+  },
+  xl: {
+    cell: 'gap-3 px-6 py-5',
+    label: 'text-lg',
+    value: 'text-5xl',
+    unit: 'text-xl',
   },
 };
 

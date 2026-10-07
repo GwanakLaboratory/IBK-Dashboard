@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { DeltaBadge } from '@/components/domain/DeltaBadge';
 import { RankBadge } from '@/components/domain/RankBadge';
 import { PageHeader, UpdatedAtLabel } from '@/components/layout/PageHeader';
+import { Dropdown } from '@/components/molecules/Dropdown';
 import { Card } from '@/components/molecules/Card';
-import { Select } from '@/components/atoms/Select';
 import { MonthSelect } from '@/components/molecules/MonthSelect';
 import { Tabs } from '@/components/molecules/Tabs';
 import {
@@ -172,12 +172,12 @@ export function OverviewPage() {
         actions={
           <div className="flex items-center gap-6">
             <RiskTrendLegend />
-            <Select
-              aria-label="추이 기간"
+            <Dropdown
+              label="추이 기간"
+              size="sm"
+              align="right"
               value={String(range)}
-              onChange={(event) =>
-                setRange(Number(event.target.value) as 6 | 12)
-              }
+              onChange={(value) => setRange(Number(value) as 6 | 12)}
               options={[
                 { value: '6', label: '최근 6개월' },
                 { value: '12', label: '최근 12개월' },

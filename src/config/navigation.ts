@@ -20,7 +20,7 @@ export type NavSection = {
   children?: { to: string; label: string }[];
 };
 
-/** 사이드바 메뉴. 하위 화면은 사이드바 하위 메뉴(children) 또는 페이지 제목 아래 탭(SECTION_TABS)으로 이동한다. */
+/** 사이드바 메뉴. 하위 화면은 사이드바 하위 메뉴(children)나 화면 안 버튼으로 이동한다. */
 export const NAV_SECTIONS: NavSection[] = [
   {
     key: 'status',
@@ -31,9 +31,9 @@ export const NAV_SECTIONS: NavSection[] = [
   },
   {
     key: 'target',
-    label: '위험 타겟',
+    label: '고객 분석',
     icon: Target,
-    path: '/target/members',
+    path: '/target',
     basePath: '/target',
   },
   {
@@ -71,9 +71,8 @@ export const PAGE_HEADS: Record<NavSectionKey, PageHead> = {
   },
   target: {
     eyebrow: 'RISK TARGET',
-    title: '위험 타겟',
-    description:
-      '이탈 예측 점수로 위험 회원과 카드 상품을 찾고 우선순위를 정해요',
+    title: '고객 분석',
+    description: '우선 관리할 고객군을 찾고 특성별 이탈 위험을 비교해요',
   },
   marketing: {
     eyebrow: 'MARKETING',
@@ -85,19 +84,6 @@ export const PAGE_HEADS: Record<NavSectionKey, PageHead> = {
     title: '관리 및 성과',
     description: '이탈 방지 활동이 실제로 이탈을 줄였는지 대조군과 비교해요',
   },
-};
-
-export type SectionTab = {
-  to: string;
-  label: string;
-};
-
-/** 페이지 제목 아래 밑줄 탭 (하위 화면 이동) */
-export const SECTION_TABS: Partial<Record<NavSectionKey, SectionTab[]>> = {
-  target: [
-    { to: '/target/members', label: '회원' },
-    { to: '/target/cards', label: '카드 상품' },
-  ],
 };
 
 /** 데이터 기준일 (매월 1일 갱신) */
