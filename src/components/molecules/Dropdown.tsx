@@ -1,7 +1,12 @@
 import { ChevronDown, type LucideIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-export type DropdownOption = { value: string; label: string };
+export type DropdownOption = {
+  value: string;
+  label: string;
+  /** 목록에서 오른쪽에 붙는 보라 표시 (예: "AI 추천") */
+  badge?: string;
+};
 
 type DropdownProps = {
   /** 스크린리더용 이름 (예: "카드상품") */
@@ -99,13 +104,18 @@ export function Dropdown({
                   onChange(option.value);
                   setOpen(false);
                 }}
-                className={`h-9 shrink-0 whitespace-nowrap rounded-md px-3 text-left text-sm ${
+                className={`flex h-9 shrink-0 items-center gap-2 whitespace-nowrap rounded-md px-3 text-left text-sm ${
                   isSelected
                     ? 'bg-blue-50 font-bold text-blue-700'
                     : 'font-medium text-gray-900 hover:bg-slate-50'
                 }`}
               >
                 {option.label}
+                {option.badge && (
+                  <span className="ml-auto text-2xs font-bold text-violet-700">
+                    {option.badge}
+                  </span>
+                )}
               </button>
             );
           })}

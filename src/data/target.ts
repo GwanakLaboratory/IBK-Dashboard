@@ -308,17 +308,6 @@ export function findCardProduct(cardName: string | undefined) {
   return CARD_PRODUCTS.find((card) => card.name === cardName);
 }
 
-/** 타겟 발송 화면으로 회원을 넘길 때 쓰는 navigate state */
-export type SendNavigationState = {
-  pickedMemberIds: string[];
-  /** 대상 이름 (생략하면 고른 회원 이름으로 만든다) */
-  sourceLabel?: string;
-  /** 추천 문구 테마 (예: 'cashback') */
-  theme?: string;
-  /** 업종 캐시백 문구에 넣을 업종 */
-  category?: string;
-};
-
 /** 회원 상세에서 카드 상세로 갈 때 넘기는 state (뒤로가기를 회원 상세로) */
 export type CardDetailLinkState = {
   fromMemberId: string;

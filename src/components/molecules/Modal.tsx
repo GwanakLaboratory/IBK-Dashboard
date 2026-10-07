@@ -4,11 +4,18 @@ type ModalProps = {
   /** 스크린리더용 이름 */
   label: string;
   onClose: () => void;
+  /** 대화상자 너비·여백 (기본 max-w-md p-6) */
+  className?: string;
   children: ReactNode;
 };
 
 /** 화면 가운데 흰 대화상자. 바깥을 누르거나 Esc 로 닫는다. */
-export function Modal({ label, onClose, children }: ModalProps) {
+export function Modal({
+  label,
+  onClose,
+  className = 'max-w-md p-6',
+  children,
+}: ModalProps) {
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') onClose();
@@ -27,7 +34,7 @@ export function Modal({ label, onClose, children }: ModalProps) {
         aria-modal="true"
         aria-label={label}
         onClick={(event) => event.stopPropagation()}
-        className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl"
+        className={`w-full rounded-2xl border border-slate-200 bg-white shadow-xl ${className}`}
       >
         {children}
       </div>
