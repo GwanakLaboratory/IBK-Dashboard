@@ -82,7 +82,7 @@ function buildChurnRateAnswer(): DemoAnswer {
       `| 해지 회원 | ${n(previousActivity.canceledMembers)}명 | ${n(latestActivity.canceledMembers)}명 |`,
       `| 이탈률 | ${pct(churnRate(previousActivity), 2)} | ${pct(rate, 2)} |`,
     ].join('\n'),
-    link: { to: '/dashboard/churn', label: '이탈 현황 보기' },
+    link: { to: '/dashboard', label: '대시보드 보기' },
   };
 }
 
@@ -104,7 +104,7 @@ function buildRiskAnswer(): DemoAnswer {
       `| 중위험 | ${n(counts.mid)}명 | ${latestDistribution.mid}% |`,
       `| 저위험 | ${n(counts.low)}명 | ${latestDistribution.low}% |`,
     ].join('\n'),
-    link: { to: '/dashboard/churn', label: '위험도 현황 보기' },
+    link: { to: '/dashboard', label: '위험도 현황 보기' },
   };
 }
 
@@ -121,7 +121,7 @@ function buildReasonAnswer(): DemoAnswer {
           `| ${index + 1}위 | ${reason.label} | ${pct(reason.share)} |`,
       ),
     ].join('\n'),
-    link: { to: '/customer-detail', label: '회원 목록 보기' },
+    link: { to: '/target/members', label: '회원 목록 보기' },
   };
 }
 
@@ -167,7 +167,7 @@ function buildProductAnswer(): DemoAnswer {
           `| ${stat.productName} | ${pct(stat.churnRate)} | ${n(stat.highRiskCount)}명 |`,
       ),
     ].join('\n'),
-    link: { to: '/card-analysis', label: '카드 분석 보기' },
+    link: { to: '/target/cards', label: '카드 분석 보기' },
   };
 }
 
@@ -187,7 +187,7 @@ function buildSegmentAnswer(): DemoAnswer {
         (stat) => `| ${stat.label} | ${pct(stat.churnRate)} |`,
       ),
     ].join('\n'),
-    link: { to: '/customer-analysis', label: '회원 분석 보기' },
+    link: { to: '/target/members', label: '회원 분석 보기' },
   };
 }
 

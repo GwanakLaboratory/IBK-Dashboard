@@ -10,6 +10,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import type { ReactNode } from 'react';
 import { CHART_COLOR } from '@/components/charts/chartColors';
 
 export type TrendSeries = {
@@ -39,6 +40,10 @@ type TrendLineChartProps = {
   referenceBand?: { from: number; to: number; label?: string };
   /** 특정 x 라벨부터 오른쪽을 칠하는 영역 (예: 캠페인 시작 이후) */
   highlightFrom?: { x: string; label: string };
+  /** x 라벨마다 점선 세로선 + 숫자 배지 (예: 그 달 발송 캠페인 수) */
+  markers?: { x: string; count: number }[];
+  /** 툴팁 아래에 덧붙일 내용 (x 라벨별) */
+  renderTooltipExtra?: (label: string) => ReactNode;
 };
 
 /** 월별 추이 꺾은선. 마지막 값만 라벨로 보여주고 마지막 달 라벨을 굵게 한다. */
@@ -53,6 +58,8 @@ export function TrendLineChart({
   referenceLines = [],
   referenceBand,
   highlightFrom,
+  markers = [],
+  renderTooltipExtra,
 }: TrendLineChartProps) {
   const lastIndex = data.length - 1;
   const lastLabel = data[lastIndex]?.label;
@@ -62,7 +69,13 @@ export function TrendLineChart({
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={data}
-          margin={{ top: 16, right: 48, bottom: 0, left: 0 }}
+          // 마커 배지가 잘리지 않도록 위 여백을 늘린다
+          margin={{
+            top: markers.length ? 28 : 16,
+            right: 48,
+            bottom: 0,
+            left: 0,
+          }}
         >
           {referenceBand && (
             <ReferenceArea
@@ -131,6 +144,39 @@ export function TrendLineChart({
             tick={{ fill: CHART_COLOR.axis, className: 'text-2xs' }}
             tickFormatter={yTickFormatter}
           />
+          {markers.map((marker) => (
+            <ReferenceLine
+              key={marker.x}
+              x={marker.x}
+              stroke={CHART_COLOR.axisStrong}
+              strokeDasharray="4 4"
+              strokeOpacity={0.5}
+              label={({
+                viewBox,
+              }: {
+                viewBox?: { x?: number; y?: number };
+              }) => (
+                <g>
+                  <circle
+                    cx={viewBox?.x ?? 0}
+                    cy={(viewBox?.y ?? 0) - 10}
+                    r={9}
+                    fill={CHART_COLOR.axisStrong}
+                  />
+                  <text
+                    x={viewBox?.x ?? 0}
+                    y={(viewBox?.y ?? 0) - 6}
+                    textAnchor="middle"
+                    className="text-2xs"
+                    fontWeight={700}
+                    fill={CHART_COLOR.white}
+                  >
+                    {marker.count}
+                  </text>
+                </g>
+              )}
+            />
+          ))}
           {referenceLines.map((line) => (
             <ReferenceLine
               key={line.label}
@@ -162,6 +208,7 @@ export function TrendLineChart({
                       {valueFormatter(Number(entry.value))}
                     </p>
                   ))}
+                  {renderTooltipExtra?.(String(label))}
                 </div>
               );
             }}
