@@ -245,37 +245,51 @@ const CONTACTS = [
 /** 모든 카드 상품에 이탈 위험(40점 이상) 회원이 최소 몇 명씩 있게 할지 */
 const MIN_RISK_MEMBERS_PER_CARD = 3;
 
+/** 순번으로 정해지는 고정 회원 (새로고침해도 같음) */
+function makeFillerMember(
+  n: number,
+  product: string,
+  score: number,
+): TargetMember {
+  return {
+    id: `C-${String(600000 + n * 7919).padStart(6, '0')}`,
+    name: `${SURNAMES[(n * 7) % SURNAMES.length]}*${NAME_ENDINGS[(n * 5) % NAME_ENDINGS.length]}`,
+    gender: n % 2 === 0 ? '여' : '남',
+    ageGroup: AGE_GROUPS[(n * 3) % AGE_GROUPS.length],
+    joinedAt: `20${15 + (n % 11)}.${String(1 + ((n * 5) % 12)).padStart(2, '0')}`,
+    product,
+    score,
+    // 점수가 낮을수록 미이용 기간도 짧게
+    idleDays: Math.max(1, Math.round(score * 0.7) + ((n * 13) % 15) - 7),
+    reason: CHURN_REASONS[n % CHURN_REASONS.length],
+    lastContact: CONTACTS[n % CONTACTS.length],
+  };
+}
+
 /**
- * 카드 상세의 "이탈 위험 회원 TOP3"가 비지 않도록, 대표 회원이 부족한 상품마다
- * 이탈 위험 회원을 채운다. 값은 순번으로 정해지는 고정값(새로고침해도 같음).
+ * 카드 상세의 "이탈 위험 회원 TOP3"가 비지 않도록 대표 회원이 부족한 상품마다
+ * 이탈 위험 회원을 채우고, 위험도가 고르게 섞이도록 상품마다 중위험·저위험 회원도 더한다.
  */
 function buildFillerMembers(): TargetMember[] {
   const fillers: TargetMember[] = [];
+  const add = (product: string, score: number) =>
+    fillers.push(makeFillerMember(fillers.length, product, score));
+
   CARD_PRODUCTS.forEach((card) => {
     const existing = SAMPLE_MEMBERS.filter(
       (member) => member.product === card.name && member.score >= 40,
     ).length;
     for (let k = existing; k < MIN_RISK_MEMBERS_PER_CARD; k += 1) {
-      const n = fillers.length;
-      fillers.push({
-        id: `C-${String(600000 + n * 7919).padStart(6, '0')}`,
-        name: `${SURNAMES[(n * 7) % SURNAMES.length]}*${NAME_ENDINGS[(n * 5) % NAME_ENDINGS.length]}`,
-        gender: n % 2 === 0 ? '여' : '남',
-        ageGroup: AGE_GROUPS[(n * 3) % AGE_GROUPS.length],
-        joinedAt: `20${15 + (n % 11)}.${String(1 + ((n * 5) % 12)).padStart(2, '0')}`,
-        product: card.name,
-        // 카드 안에서 1위가 가장 높도록 순번이 뒤일수록 점수를 낮춘다
-        score: 90 - k * 9 - ((n * 7) % 12),
-        idleDays: 12 + ((n * 13) % 63),
-        reason: CHURN_REASONS[n % CHURN_REASONS.length],
-        lastContact: CONTACTS[n % CONTACTS.length],
-      });
+      // 카드 안에서 1위가 가장 높도록 순번이 뒤일수록 점수를 낮춘다
+      add(card.name, 90 - k * 9 - ((fillers.length * 7) % 12));
     }
+    add(card.name, 42 + ((fillers.length * 11) % 26)); // 중위험 40–69
+    add(card.name, 8 + ((fillers.length * 13) % 30)); // 저위험 0–39
   });
   return fillers;
 }
 
-/** 이탈 위험 회원 목록 (이탈 예측 점수 높은 순) */
+/** 회원 목록 (이탈 예측 점수 높은 순) */
 export const TARGET_MEMBERS: TargetMember[] = [
   ...SAMPLE_MEMBERS,
   ...buildFillerMembers(),

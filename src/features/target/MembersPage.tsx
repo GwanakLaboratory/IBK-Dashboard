@@ -18,7 +18,11 @@ import {
   type TargetMember,
 } from '@/data/target';
 import type { RiskLevel } from '@/types/churn';
-import { RISK_LEVEL_META, getRiskLevelFromScore } from '@/utils/risk';
+import {
+  RISK_LEVEL_META,
+  getRiskLevelFromScore,
+  interleaveByRiskLevel,
+} from '@/utils/risk';
 
 type LevelFilter = 'all' | RiskLevel;
 type QueryMode = 'name' | 'phone' | 'id';
@@ -28,7 +32,7 @@ const ALL_PRODUCTS = '전체 카드상품';
 const PAGE_SIZE = 10;
 // 가로 스크롤 없이 콘텐츠 폭에 맞추는 유동 열
 const GRID_COLUMNS =
-  'grid-cols-[76px_56px_96px_minmax(0,1fr)_96px_88px_minmax(0,1.3fr)_44px_48px]';
+  'grid-cols-[76px_56px_96px_minmax(0,1fr)_96px_88px_minmax(0,1.3fr)_44px]';
 
 const LEVEL_CARDS: { key: LevelFilter; label: string; sub: string }[] = [
   { key: 'all', label: '분석 대상 전체', sub: '최근 2개월 신용카드 이용 고객' },
@@ -117,10 +121,23 @@ export function MembersPage() {
       ),
     [level, product, applied, sort],
   );
+  // 전체 위험도 + 점수 순일 때는 위험 → 중위험 → 저위험을 번갈아 보여준다 (등급 안에서는 점수 순)
+  const rowsInOrder = useMemo(
+    () =>
+      level === 'all' && sort === 'score'
+        ? interleaveByRiskLevel(
+            filtered.map((member) => ({
+              member,
+              riskLevel: getRiskLevelFromScore(member.score),
+            })),
+          ).map((item) => item.member)
+        : filtered,
+    [filtered, level, sort],
+  );
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
-  const rows = filtered.slice(
+  const rows = rowsInOrder.slice(
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE,
   );
@@ -322,7 +339,6 @@ export function MembersPage() {
           <span>위험도</span>
           <span>주요 이유</span>
           <span className="text-right">미이용</span>
-          <span />
         </div>
         {rows.map((member) => {
           const detailPath = `/target/members/${member.id}`;
@@ -358,12 +374,6 @@ export function MembersPage() {
               </span>
               <span className="text-right font-semibold text-slate-900">
                 {member.idleDays}일
-              </span>
-              <span
-                aria-hidden="true"
-                className="inline-flex h-[30px] items-center justify-self-end rounded-lg border border-slate-300 bg-white px-2.5 font-semibold text-slate-700"
-              >
-                상세
               </span>
             </div>
           );
