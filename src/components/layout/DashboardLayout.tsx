@@ -14,13 +14,14 @@ export function DashboardLayout() {
   }, [pathname]);
 
   return (
-    <div className="flex h-dvh min-h-[720px] min-w-[1280px] flex-col bg-surface font-sans tabular-nums text-slate-900">
+    <div className="flex h-dvh min-w-[1280px] flex-col bg-surface font-sans tabular-nums text-slate-900">
       <Header />
       <div className="flex min-h-0 grow">
         <Sidebar />
+        {/* 아래 여백은 오른쪽 아래 챗봇 버튼(56px + 여백)이 마지막 내용을 덮지 않을 만큼 둔다 */}
         <main
           ref={mainRef}
-          className="flex min-h-0 min-w-0 grow flex-col gap-4 overflow-y-auto px-8 pb-8 pt-6"
+          className="scrollbar-thin flex min-h-0 min-w-0 grow flex-col gap-4 overflow-y-auto overscroll-contain px-8 pb-24 pt-6"
         >
           <Outlet />
         </main>
