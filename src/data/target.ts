@@ -37,7 +37,7 @@ const SAMPLE_MEMBERS: TargetMember[] = [
     product: '해피메이트 IBK카드',
     score: 92,
     idleDays: 74,
-    reason: '최근 3개월 이용금액 급감',
+    reason: '타사카드 사용량 증가',
     lastContact: '',
   },
   {
@@ -49,7 +49,7 @@ const SAMPLE_MEMBERS: TargetMember[] = [
     product: 'K-패스(신용)',
     score: 88,
     idleDays: 61,
-    reason: '타사 카드 결제 전환 추정',
+    reason: '카드 혜택 및 서비스 감소',
     lastContact: '09.18 앱 푸시',
   },
   {
@@ -61,7 +61,7 @@ const SAMPLE_MEMBERS: TargetMember[] = [
     product: 'IBK포인트(신용)',
     score: 81,
     idleDays: 45,
-    reason: '이용 가맹점 수 감소',
+    reason: '타사카드 사용량 증가',
     lastContact: '',
   },
   {
@@ -73,7 +73,7 @@ const SAMPLE_MEMBERS: TargetMember[] = [
     product: '해피메이트 IBK카드',
     score: 76,
     idleDays: 38,
-    reason: '혜택 이용률 저하',
+    reason: '은행 거래 관계 약화',
     lastContact: '09.10 알림톡',
   },
   {
@@ -85,7 +85,7 @@ const SAMPLE_MEMBERS: TargetMember[] = [
     product: 'I-PET',
     score: 71,
     idleDays: 33,
-    reason: '연회비 청구 임박',
+    reason: '카드 혜택 및 서비스 감소',
     lastContact: '09.10 알림톡',
   },
   {
@@ -97,7 +97,7 @@ const SAMPLE_MEMBERS: TargetMember[] = [
     product: 'IBK포인트(신용)',
     score: 64,
     idleDays: 21,
-    reason: '한도 사용률 하락',
+    reason: '타사카드 사용량 증가',
     lastContact: '',
   },
   {
@@ -109,7 +109,7 @@ const SAMPLE_MEMBERS: TargetMember[] = [
     product: 'IBK KaPick',
     score: 57,
     idleDays: 17,
-    reason: '앱 접속 빈도 감소',
+    reason: '직업 및 소득 환경 변화',
     lastContact: '09.24 앱 푸시',
   },
   {
@@ -121,7 +121,7 @@ const SAMPLE_MEMBERS: TargetMember[] = [
     product: 'K-패스(신용)',
     score: 48,
     idleDays: 12,
-    reason: '해외 이용 중단',
+    reason: '은행 거래 관계 약화',
     lastContact: '09.02 이메일',
   },
   {
@@ -133,7 +133,7 @@ const SAMPLE_MEMBERS: TargetMember[] = [
     product: '해피메이트 IBK카드',
     score: 31,
     idleDays: 5,
-    reason: '리볼빙 해지',
+    reason: '모집인 경로',
     lastContact: '',
   },
   {
@@ -145,18 +145,26 @@ const SAMPLE_MEMBERS: TargetMember[] = [
     product: 'I-PET',
     score: 18,
     idleDays: 2,
-    reason: '자동이체 해지',
+    reason: '카드 혜택 및 서비스 감소',
     lastContact: '',
   },
 ];
 
+/** 이탈 사유 (회원 수가 많은 순) */
 export const CHURN_REASONS = [
-  '최근 3개월 이용금액 급감',
-  '타사 카드 결제 전환 추정',
-  '이용 가맹점 수 감소',
-  '혜택 이용률 저하',
-  '연회비 청구 임박',
-  '한도 사용률 하락',
+  '타사카드 사용량 증가',
+  '카드 혜택 및 서비스 감소',
+  '은행 거래 관계 약화',
+  '직업 및 소득 환경 변화',
+  '모집인 경로',
+];
+
+/**
+ * 회원에게 사유를 돌려 가며 붙이는 순서 (CHURN_REASONS 순번).
+ * 20명마다 7 · 5 · 4 · 3 · 1명이라 CHURN_REASONS 순서대로 회원이 많다.
+ */
+const REASON_CYCLE = [
+  0, 1, 0, 2, 0, 1, 3, 0, 2, 1, 0, 4, 0, 1, 2, 3, 0, 1, 2, 3,
 ];
 
 export type CardProduct = {
@@ -261,7 +269,7 @@ function makeFillerMember(
     score,
     // 점수가 낮을수록 미이용 기간도 짧게
     idleDays: Math.max(1, Math.round(score * 0.7) + ((n * 13) % 15) - 7),
-    reason: CHURN_REASONS[n % CHURN_REASONS.length],
+    reason: CHURN_REASONS[REASON_CYCLE[n % REASON_CYCLE.length]],
     lastContact: CONTACTS[n % CONTACTS.length],
   };
 }

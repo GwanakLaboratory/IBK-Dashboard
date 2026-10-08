@@ -11,8 +11,7 @@ import {
   RiskTrendLegend,
 } from '@/features/overview/RiskTrendComboChart';
 import {
-  CUSTOMER_GROUPS,
-  GROUP_RISK_CHANGES,
+  REASON_RISK_CHANGES,
   MONTHS,
   RISK_COUNTS,
   RISK_RATIOS,
@@ -43,26 +42,23 @@ export function OverviewPage() {
   // 추이
   const start = Math.max(0, idx - range + 1);
 
-  // 고객군
-  const monthsBack = MONTHS.length - 1 - idx;
-  const groups = CUSTOMER_GROUPS.map((group) => {
-    const groupRatio = group.ratio - group.slope * monthsBack;
-    return {
-      name: group.name,
-      ratio: groupRatio,
-      count: Math.round((group.size * groupRatio) / 100),
-    };
-  });
-  const maxGroupCount = Math.max(...groups.map((group) => group.count));
-
-  // TOP 5
+  // 이탈 사유별 위험 고객 (TOP 5는 이번 달 고객 수와 전월 대비 증감)
   const curScale = RISK_COUNTS[idx] / RISK_COUNTS[11];
   const prevScale = RISK_COUNTS[idx - 1] / RISK_COUNTS[10];
-  const topRows = GROUP_RISK_CHANGES.map(([name, prev, cur]) => ({
+  const reasons = REASON_RISK_CHANGES.map(([name, prev, cur]) => ({
     name,
     prev: Math.round(prev * prevScale),
     cur: Math.round(cur * curScale),
-  })).sort((a, b) => b.cur - b.prev - (a.cur - a.prev));
+  }));
+  const groups = reasons.map((reason) => ({
+    name: reason.name,
+    count: reason.cur,
+    ratio: (reason.cur / RISK_COUNTS[idx]) * 100,
+  }));
+  const maxGroupCount = Math.max(...groups.map((group) => group.count));
+  const topRows = [...reasons].sort(
+    (a, b) => b.cur - b.prev - (a.cur - a.prev),
+  );
 
   return (
     <>
@@ -213,7 +209,7 @@ export function OverviewPage() {
       {/* 하단 */}
       <div className="grid shrink-0 grow grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-4">
         <Card
-          title="주요 고객군별 이탈 위험 비중"
+          title="주요 이탈 사유별 이탈 위험 비중"
           titleSize="lg"
           actions={
             <Tabs
@@ -278,7 +274,7 @@ export function OverviewPage() {
               className={`${TOP5_GRID} h-8 items-center gap-2 border-b border-slate-200 px-1 text-xs font-semibold text-slate-500`}
             >
               <span>순위</span>
-              <span>고객군</span>
+              <span>이탈 사유</span>
               <span className="text-right">전월</span>
               <span className="text-right">이번 달</span>
               <span className="text-right">증감</span>

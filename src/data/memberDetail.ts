@@ -117,6 +117,7 @@ export function getMemberDetail(member: TargetMember) {
       drop > 30
         ? `최근 3개월 이용금액이 ${drop}% 줄었어요. 자주 쓰던 카페·배달 업종 10% 청구할인을 앱 푸시로 안내하면 반응 가능성이 가장 높아요.`
         : '이용 패턴이 안정적이에요. 다음 달 연회비 청구 전에 혜택 사용 내역을 알림톡으로 안내하는 정도면 충분해요.',
+    // 회원 본인의 주요 사유를 1위로, 나머지는 전체 회원 수가 많은 순서로 둔다
     reasons: [
       member.reason,
       ...CHURN_REASONS.filter((r) => r !== member.reason),

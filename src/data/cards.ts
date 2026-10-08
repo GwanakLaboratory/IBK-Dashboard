@@ -1,5 +1,5 @@
 /* 카드 상품 목록 · 상세 화면 전용 목데이터. 카드 목록은 IBK 실제 상품 기준. */
-import { CARD_PRODUCTS, type CardProduct } from '@/data/target';
+import { CARD_PRODUCTS, CHURN_REASONS, type CardProduct } from '@/data/target';
 
 /** 많이 쓰이는 순서로 정렬한 값 목록 */
 function byFrequency(values: string[]) {
@@ -18,14 +18,6 @@ export const CARD_BENEFIT_CATEGORIES = [
 export const CARD_BRANDS = [
   '전체',
   ...byFrequency(CARD_PRODUCTS.flatMap((card) => card.brands)),
-];
-
-export const CARD_DETAIL_REASONS = [
-  '혜택 이용률 저하',
-  '연회비 대비 혜택 미사용',
-  '타사 카드 신규 발급 이력',
-  '최근 3개월 이용금액 급감',
-  '고객센터 불만 접수',
 ];
 
 const CARD_REASON_BASE = [78, 64, 52, 41, 23];
@@ -65,7 +57,7 @@ export function getCardRateTrend(card: CardProduct) {
 
 /** 사유별 평균 기여 점수 (이탈률에 비례) */
 export function getCardReasonScores(card: CardProduct) {
-  return CARD_DETAIL_REASONS.map((label, index) => ({
+  return CHURN_REASONS.map((label, index) => ({
     label,
     score: Math.min(
       99,

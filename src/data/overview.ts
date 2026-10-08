@@ -1,4 +1,5 @@
 /* version2 전체 현황 시안 데이터 (디자인 캔버스 OverviewV2 값 그대로) */
+import { CHURN_REASONS } from '@/data/target';
 
 export const MONTHS = [
   '25.10',
@@ -32,22 +33,16 @@ export const RISK_RATIOS = RISK_COUNTS.map(
   (count, index) => (count / MEMBER_TOTALS[index]) * 100,
 );
 
-/** 고객군별 최신 월 위험 비중과 고객군 규모. slope 는 한 달 전으로 갈 때 줄어드는 %p */
-export const CUSTOMER_GROUPS = [
-  { name: '신규 발급 후 무실적', ratio: 35.9, size: 201480, slope: 0.57 },
-  { name: '이용 감소 고객', ratio: 30.0, size: 309180, slope: 0.47 },
-  { name: '고이용 고객 중 이용 급감', ratio: 20.2, size: 523410, slope: 0.31 },
-  { name: '장기 미이용 이력', ratio: 18.4, size: 368550, slope: 0.36 },
-  { name: '해지 이력 보유', ratio: 15.2, size: 145640, slope: 0.21 },
-];
-
-/** [고객군, 8월 위험 고객 수, 9월 위험 고객 수] */
-export const GROUP_RISK_CHANGES: [string, number, number][] = [
-  ['신규 발급 후 무실적', 62342, 72331],
-  ['이용 감소 고객', 82307, 92754],
-  ['장기 미이용 이력', 60531, 67813],
-  ['고이용 고객 중 이용 급감', 100581, 105729],
-  ['특정 업종 중심 이용 고객', 39342, 43195],
+/**
+ * 이탈 사유별 위험 고객 수 [사유, 8월, 9월]. 9월 합계 = RISK_COUNTS 9월, 8월 합계 = 8월.
+ * CHURN_REASONS 순서(회원이 많은 순)대로 고객 수와 증가 폭이 크다.
+ */
+export const REASON_RISK_CHANGES: [string, number, number][] = [
+  [CHURN_REASONS[0], 99700, 104000],
+  [CHURN_REASONS[1], 71386, 74286],
+  [CHURN_REASONS[2], 57429, 59429],
+  [CHURN_REASONS[3], 43321, 44571],
+  [CHURN_REASONS[4], 14309, 14857],
 ];
 
 export const formatNumber = (value: number) => value.toLocaleString('ko-KR');

@@ -41,17 +41,15 @@ describe('getConditionCount', () => {
     expect(
       getConditionCount({ ...EMPTY_CONDITION_PICK, risk: ['위험', '중위험'] }),
     ).toBe(RISK_OPTION_COUNT['위험'] + RISK_OPTION_COUNT['중위험']);
-    // 위험 회원 × (1/4 × 1.08) × (1/3 × 1.08)
+    // 위험 회원 × (1/5 × 1.08) × (1/3 × 1.08)
     expect(
       getConditionCount({
         ...EMPTY_CONDITION_PICK,
         risk: ['위험'],
-        reason: ['이용금액 급감'],
+        reason: ['타사카드 사용량 증가'],
         spend: ['1천만 원 이상'],
       }),
-    ).toBe(
-      Math.round(RISK_OPTION_COUNT['위험'] * 0.25 * 1.08 * (1 / 3) * 1.08),
-    );
+    ).toBe(Math.round(RISK_OPTION_COUNT['위험'] * 0.2 * 1.08 * (1 / 3) * 1.08));
   });
 });
 
@@ -93,7 +91,7 @@ describe('buildTargetSummary', () => {
         conditions: {
           ...EMPTY_CONDITION_PICK,
           risk: ['위험'],
-          reason: ['이용금액 급감'],
+          reason: ['타사카드 사용량 증가'],
           spend: ['1천만 원 이상'],
         },
       }),

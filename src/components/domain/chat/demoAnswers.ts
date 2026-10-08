@@ -7,7 +7,7 @@ import {
   getFilterOffset,
 } from '@/data/customerAnalysis';
 import {
-  GROUP_RISK_CHANGES,
+  REASON_RISK_CHANGES,
   MONTHS,
   RISK_COUNTS,
   RISK_RATIOS,
@@ -65,7 +65,7 @@ function buildOverviewAnswer(): DemoAnswer {
   const ratio = RISK_RATIOS[idx];
   const total = Math.round((risk / ratio) * 100);
   const ratioDelta = ratio - RISK_RATIOS[idx - 1];
-  const topGroups = GROUP_RISK_CHANGES.map(([name, prev, cur]) => ({
+  const topGroups = REASON_RISK_CHANGES.map(([name, prev, cur]) => ({
     name,
     prev,
     cur,
@@ -76,7 +76,7 @@ function buildOverviewAnswer(): DemoAnswer {
     text: [
       `${fullMonthLabel(MONTHS[idx])} 기준 최근 2개월 이용 고객 **${n(total)}명** 중 **${n(risk)}명(${pct(ratio)})**이 이탈 위험으로 예측돼요. 위험 비중은 전월보다 **${signed(ratioDelta)}%p** 늘었어요.`,
       '',
-      '| 전월 대비 위험 증가 고객군 | 8월 | 9월 |',
+      '| 전월 대비 위험 증가 이탈 사유 | 8월 | 9월 |',
       '| --- | --- | --- |',
       ...topGroups.map(
         (group) =>

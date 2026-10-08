@@ -1,5 +1,5 @@
 // 타겟 발송 목데이터 (AI 추천 세그먼트 · 조건 · 무작위 추출 · 채널 · 문구). 실제 캠페인/발송 API 연동 전까지 사용한다.
-import { MEMBER_COUNT_BY_LEVEL } from '@/data/target';
+import { CHURN_REASONS, MEMBER_COUNT_BY_LEVEL } from '@/data/target';
 import type { RiskLevel } from '@/types/churn';
 
 export type SendChannelKey = 'tm' | 'kakao' | 'sms' | 'push';
@@ -163,12 +163,7 @@ export const CONDITION_GROUPS: {
   {
     key: 'reason',
     label: '주요 이탈 사유',
-    options: [
-      '이용금액 급감',
-      '혜택 이용 저하',
-      '연회비 청구 임박',
-      '타사 카드 전환',
-    ],
+    options: CHURN_REASONS,
   },
   {
     key: 'category',
