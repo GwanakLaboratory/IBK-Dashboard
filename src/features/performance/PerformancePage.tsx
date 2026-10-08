@@ -47,6 +47,9 @@ const CAMPAIGN_GRID =
 // 채널별 반응률 막대는 50%를 끝으로 본다
 const CHANNEL_SCALE = 50;
 
+// 캠페인별 성과는 이용 재개 많은 순으로 5개만 보여준다 (전체는 접촉 이력에서)
+const TOP_CAMPAIGNS = PERFORMANCE_CAMPAIGNS.slice(0, 5);
+
 const formatNumber = (value: number) => value.toLocaleString('ko-KR');
 const formatPercent = (value: number) => `${value.toFixed(1)}%`;
 /** 억 원 금액 (소수 첫째 자리, 천 단위 쉼표) */
@@ -165,7 +168,7 @@ export function PerformancePage() {
               <span className="text-right">이용 재개</span>
               <span className="text-right">방어 이용금액</span>
             </div>
-            {PERFORMANCE_CAMPAIGNS.map((campaign, index) => {
+            {TOP_CAMPAIGNS.map((campaign, index) => {
               const channel = findSendChannel(campaign.channel);
               return (
                 <button
