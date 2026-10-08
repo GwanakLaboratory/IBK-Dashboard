@@ -1,4 +1,4 @@
-import type { Customer, RiskLevel } from '@/types/churn';
+import type { RiskLevel } from '@/types/churn';
 
 type RiskLevelMeta = {
   label: string;
@@ -93,19 +93,4 @@ export function getRiskLevelFromScore(score: number): RiskLevel {
   if (score >= 70) return 'high';
   if (score >= 40) return 'medium';
   return 'low';
-}
-
-export function getTopReason(customer: Customer) {
-  return customer.churnReasons[0];
-}
-
-export function getLastUsedAt(customer: Customer): string | null {
-  if (customer.transactions.length === 0) {
-    return null;
-  }
-  return customer.transactions.reduce(
-    (latestDate, transaction) =>
-      transaction.date > latestDate ? transaction.date : latestDate,
-    customer.transactions[0].date,
-  );
 }
