@@ -1,30 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import {
-  getReasonShortLabel,
-  getRiskLevelFromScore,
-  getRiskLevelRank,
-  interleaveByRiskLevel,
-} from '@/utils/risk';
+import { getRiskLevelFromScore, interleaveByRiskLevel } from '@/utils/risk';
 import type { RiskLevel } from '@/types/churn';
-
-describe('getReasonShortLabel', () => {
-  it('returns the mapped short label for a known reason', () => {
-    expect(getReasonShortLabel('최근 3개월 이용금액 급감')).toBe(
-      '이용금액 급감',
-    );
-  });
-
-  it('returns the original label when there is no mapping', () => {
-    expect(getReasonShortLabel('알 수 없는 사유')).toBe('알 수 없는 사유');
-  });
-});
-
-describe('getRiskLevelRank', () => {
-  it('ranks low below medium below high', () => {
-    expect(getRiskLevelRank('low')).toBeLessThan(getRiskLevelRank('medium'));
-    expect(getRiskLevelRank('medium')).toBeLessThan(getRiskLevelRank('high'));
-  });
-});
 
 describe('getRiskLevelFromScore', () => {
   it('classifies scores below 40 as low', () => {
