@@ -26,11 +26,5 @@ export default tseslint.config(
       ],
     },
   },
-  {
-    files: ['api/**/*.ts'],
-    languageOptions: {
-      globals: globals.node,
-    },
-  },
   eslintConfigPrettier,
 );

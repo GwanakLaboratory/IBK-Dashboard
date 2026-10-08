@@ -47,8 +47,17 @@ const CAMPAIGN_GRID =
 // 채널별 반응률 막대는 50%를 끝으로 본다
 const CHANNEL_SCALE = 50;
 
+// 캠페인별 성과는 이용 재개 많은 순으로 5개만 보여준다 (전체는 접촉 이력에서)
+const TOP_CAMPAIGNS = PERFORMANCE_CAMPAIGNS.slice(0, 5);
+
 const formatNumber = (value: number) => value.toLocaleString('ko-KR');
 const formatPercent = (value: number) => `${value.toFixed(1)}%`;
+/** 억 원 금액 (소수 첫째 자리, 천 단위 쉼표) */
+const formatEok = (value: number) =>
+  value.toLocaleString('ko-KR', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
 
 const KPIS: KpiItem[] = [
   {
@@ -69,7 +78,7 @@ const KPIS: KpiItem[] = [
   },
   {
     label: '방어 이용금액',
-    value: PERFORMANCE_KPIS.amount.toFixed(1),
+    value: formatEok(PERFORMANCE_KPIS.amount),
     unit: '억 원',
     sub: '이용 재개 고객의 향후 12개월 예상 이용금액',
   },
@@ -159,7 +168,7 @@ export function PerformancePage() {
               <span className="text-right">이용 재개</span>
               <span className="text-right">방어 이용금액</span>
             </div>
-            {PERFORMANCE_CAMPAIGNS.map((campaign, index) => {
+            {TOP_CAMPAIGNS.map((campaign, index) => {
               const channel = findSendChannel(campaign.channel);
               return (
                 <button
@@ -187,7 +196,7 @@ export function PerformancePage() {
                     {formatNumber(campaign.returned)}명
                   </span>
                   <span className="text-right font-bold text-blue-700">
-                    {campaign.amount.toFixed(1)}억 원
+                    {formatEok(campaign.amount)}억 원
                   </span>
                 </button>
               );

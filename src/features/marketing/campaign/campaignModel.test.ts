@@ -3,6 +3,7 @@ import {
   ALL_MEMBER_COUNT,
   EMPTY_CONDITION_PICK,
   RANDOM_POOLS,
+  RISK_OPTION_COUNT,
   SEND_SEGMENTS,
 } from '@/data/marketing';
 import {
@@ -39,16 +40,16 @@ describe('getConditionCount', () => {
   it('starts from risk counts and narrows by each picked group', () => {
     expect(
       getConditionCount({ ...EMPTY_CONDITION_PICK, risk: ['위험', '중위험'] }),
-    ).toBe(18950 + 18452);
-    // 위험 18,950 × (1/4 × 1.08) × (1/3 × 1.08)
+    ).toBe(RISK_OPTION_COUNT['위험'] + RISK_OPTION_COUNT['중위험']);
+    // 위험 회원 × (1/5 × 1.08) × (1/3 × 1.08)
     expect(
       getConditionCount({
         ...EMPTY_CONDITION_PICK,
         risk: ['위험'],
-        reason: ['이용금액 급감'],
+        reason: ['타사카드 사용량 증가'],
         spend: ['1천만 원 이상'],
       }),
-    ).toBe(Math.round(18950 * 0.25 * 1.08 * (1 / 3) * 1.08));
+    ).toBe(Math.round(RISK_OPTION_COUNT['위험'] * 0.2 * 1.08 * (1 / 3) * 1.08));
   });
 });
 
@@ -64,7 +65,9 @@ describe('buildTargetSummary', () => {
 
   it('removes overlap when several segments are picked', () => {
     const summary = buildTargetSummary(draftOf({ segmentIds: ['s1', 's2'] }));
-    expect(summary.total).toBe(Math.round((1342 + 1063) * 0.96));
+    expect(summary.total).toBe(
+      Math.round((SEND_SEGMENTS[0].count + SEND_SEGMENTS[1].count) * 0.96),
+    );
     expect(summary.note).toBe('세그먼트끼리 겹치는 고객은 한 번만 셌어요');
   });
 
@@ -88,7 +91,7 @@ describe('buildTargetSummary', () => {
         conditions: {
           ...EMPTY_CONDITION_PICK,
           risk: ['위험'],
-          reason: ['이용금액 급감'],
+          reason: ['타사카드 사용량 증가'],
           spend: ['1천만 원 이상'],
         },
       }),
@@ -110,7 +113,7 @@ describe('buildTargetSummary', () => {
     expect(summary.total).toBe(3000);
     expect(summary.items.map((item) => item.value)).toEqual([
       '카카오',
-      '위험 회원 18,950명',
+      RANDOM_POOLS[0].label,
       '3,000명',
       '3,000명 (미발송)',
     ]);
@@ -129,7 +132,7 @@ describe('buildAiInsight', () => {
     const insight = buildAiInsight([s1, s2]);
     expect(insight.text).toContain(`${s1.name}의 예상 반응(42.9%)`);
     expect(insight.text).toContain('텔레마케팅 1개, 카카오 1개');
-    const average = (42.9 * 1342 + 31.4 * 1063) / (1342 + 1063);
+    const average = (42.9 * s1.count + 31.4 * s2.count) / (s1.count + s2.count);
     expect(insight.highlight).toBe(
       `전체 예상 반응 ${average.toFixed(1)}% (인원 가중 평균)`,
     );

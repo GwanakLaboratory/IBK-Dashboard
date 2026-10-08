@@ -154,15 +154,77 @@ const lastTarget = TARGET[TARGET.length - 1];
 const lastControl = CONTROL[CONTROL.length - 1];
 export const CHURN_GAP = (lastControl - lastTarget).toFixed(1);
 
-/** 캠페인별 방어 이용금액 (억 원) — 이용 재개 고객의 향후 12개월 예상 이용금액 */
-const DEFENDED_AMOUNT: Record<string, number> = {
-  'cp-0924': 3.9,
-  'cp-0917': 3.2,
-  'cp-0910': 2.1,
-  'cp-0905': 1.6,
-  'cp-0920': 2.4,
-  'cp-0902': 0.9,
+/**
+ * 기대 효과 계산 가정값. 대시보드 더미 값은 모두 이 공식에 맞춘다.
+ * 전체 회원 = 분석 대상 고객, 마케팅 대상 = 이탈 위험 고객 = 9월 캠페인 발송 인원,
+ * 유지 고객 = 9월 캠페인 이용 재개 인원 (performance.test.ts에서 확인)
+ */
+export const EFFECT_ASSUMPTIONS = {
+  /** 전체 회원 수 (명) */
+  totalMembers: 1_300_000,
+  /** 이탈 예정 비율 */
+  churnRate: 0.2,
+  /** 모델 Recall — 실제 이탈 예정 고객 중 모델이 찾아내는 비율 */
+  recall: 0.8,
+  /** 모델 Precision — 모델이 고른 고객 중 실제 이탈 예정 고객 비율 */
+  precision: 0.7,
+  /** 유지 고객 1명의 월 이용액 (원) */
+  monthlyUsagePerMember: 800_000,
 };
+
+/** 모델이 찾은 이탈 예정 고객 중 마케팅으로 유지하는 비율 n (%) */
+export const RETENTION_RATE = 30;
+
+export type ExpectedEffect = {
+  /** 이탈 예정 = 전체 회원 × 이탈 비율 */
+  churners: number;
+  /** 모델 발견 = 이탈 예정 × Recall */
+  detected: number;
+  /** 마케팅 대상 = 모델 발견 ÷ Precision */
+  targets: number;
+  /** 유지 고객 = 모델 발견 × n% */
+  retained: number;
+  /** ① 이용액 효과 (원, 월) = 유지 고객 × 1인 월 이용액 */
+  usageEffect: number;
+  /** ② 비용 절감 (원) = 유지 고객 × m만 원 */
+  costSaving: number;
+};
+
+/**
+ * @param retentionRate n — 모델이 찾은 이탈 예정 고객 중 마케팅으로 유지하는 비율 (%)
+ * @param savingPerMember m — 유지 고객 1명당 비용 절감액 (만 원)
+ */
+export function calcExpectedEffect(
+  retentionRate: number,
+  savingPerMember: number,
+): ExpectedEffect {
+  const { totalMembers, churnRate, recall, precision, monthlyUsagePerMember } =
+    EFFECT_ASSUMPTIONS;
+  const churners = totalMembers * churnRate;
+  const detected = churners * recall;
+  const targets = detected / precision;
+  const retained = detected * (retentionRate / 100);
+  return {
+    churners,
+    detected,
+    targets,
+    retained,
+    usageEffect: retained * monthlyUsagePerMember,
+    costSaving: retained * savingPerMember * 10_000,
+  };
+}
+
+const EOK = 100_000_000;
+/** 방어 이용금액을 셀 기간 (개월) */
+const DEFENDED_MONTHS = 12;
+
+/** 방어 이용금액 (억 원) — 이용 재개 고객의 향후 12개월 예상 이용금액 */
+function getDefendedAmount(returned: number) {
+  return (
+    (returned * EFFECT_ASSUMPTIONS.monthlyUsagePerMember * DEFENDED_MONTHS) /
+    EOK
+  );
+}
 
 export type PerformanceCampaign = Campaign & {
   responseRate: number;
@@ -180,7 +242,7 @@ export const PERFORMANCE_CAMPAIGNS: PerformanceCampaign[] = CAMPAIGNS.filter(
 )
   .map((campaign) => ({
     ...campaign,
-    amount: DEFENDED_AMOUNT[campaign.id] ?? 0,
+    amount: getDefendedAmount(campaign.returned),
   }))
   .sort((a, b) => b.returned - a.returned);
 
@@ -192,8 +254,14 @@ const totalAmount = PERFORMANCE_CAMPAIGNS.reduce(
   (sum, campaign) => sum + campaign.amount,
   0,
 );
+/** 마케팅 대상 1인당 집행 비용 (원) — 혜택·발송 비용 포함 가정 */
+const SPEND_PER_TARGET = 50_000;
+const sentCount = PERFORMANCE_CAMPAIGNS.reduce(
+  (sum, campaign) => sum + campaign.count,
+  0,
+);
 /** 9월 집행 비용 (억 원) */
-const SPEND = 1.8;
+const SPEND = Math.round(((sentCount * SPEND_PER_TARGET) / EOK) * 10) / 10;
 
 export const PERFORMANCE_KPIS = {
   returned: totalReturned,

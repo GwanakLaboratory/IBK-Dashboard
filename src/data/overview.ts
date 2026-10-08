@@ -1,4 +1,5 @@
 /* version2 전체 현황 시안 데이터 (디자인 캔버스 OverviewV2 값 그대로) */
+import { CHURN_REASONS } from '@/data/target';
 
 export const MONTHS = [
   '25.10',
@@ -15,33 +16,33 @@ export const MONTHS = [
   '26.09',
 ];
 
-/** 월별 이탈 위험 고객 수 */
+/** 월별 최근 2개월 이용 고객 수 (기대 효과 공식의 전체 회원 130만 이상 언저리) */
+const MEMBER_TOTALS = [
+  1300512, 1301287, 1301934, 1302745, 1303168, 1303902, 1304651, 1305213,
+  1305876, 1306429, 1307138, 1307694,
+];
+
+/** 월별 이탈 위험 고객 수 (공식의 이탈 비율 20% 언저리) */
 export const RISK_COUNTS = [
-  24120, 25010, 25870, 26340, 27205, 28412, 30476, 31122, 33415, 34692, 36077,
-  37402,
+  248398, 251148, 249971, 252733, 254118, 252957, 255712, 257127, 255952,
+  258673, 257506, 258923,
 ];
 
 /** 월별 이탈 위험 비중 (%) */
-export const RISK_RATIOS = [
-  33.1, 33.9, 34.6, 35.0, 35.9, 36.8, 37.9, 38.5, 40.2, 41.5, 43.0, 44.2,
-];
+export const RISK_RATIOS = RISK_COUNTS.map(
+  (count, index) => (count / MEMBER_TOTALS[index]) * 100,
+);
 
-/** 고객군별 최신 월 위험 비중과 고객군 규모. slope 는 한 달 전으로 갈 때 줄어드는 %p */
-export const CUSTOMER_GROUPS = [
-  { name: '신규 발급 후 무실적', ratio: 69.4, size: 13115, slope: 1.1 },
-  { name: '이용 감소 고객', ratio: 58.1, size: 20125, slope: 0.9 },
-  { name: '고이용 고객 중 이용 급감', ratio: 39.0, size: 34070, slope: 0.6 },
-  { name: '장기 미이용 이력', ratio: 35.6, size: 23990, slope: 0.7 },
-  { name: '해지 이력 보유', ratio: 29.4, size: 9480, slope: 0.4 },
-];
-
-/** [고객군, 8월 위험 고객 수, 9월 위험 고객 수] */
-export const GROUP_RISK_CHANGES: [string, number, number][] = [
-  ['신규 발급 후 무실적', 7845, 9102],
-  ['이용 감소 고객', 10376, 11693],
-  ['장기 미이용 이력', 7623, 8540],
-  ['고이용 고객 중 이용 급감', 12641, 13288],
-  ['특정 업종 중심 이용 고객', 4952, 5437],
+/**
+ * 이탈 사유별 위험 고객 수 [사유, 8월, 9월]. 9월 합계 = RISK_COUNTS 9월, 8월 합계 = 8월.
+ * CHURN_REASONS 순서(회원이 많은 순)대로 고객 수와 증가 폭이 크다.
+ */
+export const REASON_RISK_CHANGES: [string, number, number][] = [
+  [CHURN_REASONS[0], 90035, 90623],
+  [CHURN_REASONS[1], 64341, 64731],
+  [CHURN_REASONS[2], 51525, 51785],
+  [CHURN_REASONS[3], 38708, 38838],
+  [CHURN_REASONS[4], 12897, 12946],
 ];
 
 export const formatNumber = (value: number) => value.toLocaleString('ko-KR');

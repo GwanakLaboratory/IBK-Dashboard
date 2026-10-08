@@ -81,10 +81,6 @@ export const AI_GENERATING_MS = 2400;
 
 export const formatCount = (n: number) => n.toLocaleString('ko-KR');
 
-export function getSegmentLabel(segment: SendSegment) {
-  return `${segment.benefit} · ${findSendChannel(segment.channel).shortLabel}`;
-}
-
 export function getSelectedSegments(draft: SendDraft) {
   return SEND_SEGMENTS.filter((segment) =>
     draft.segmentIds.includes(segment.id),

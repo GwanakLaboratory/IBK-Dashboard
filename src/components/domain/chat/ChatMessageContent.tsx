@@ -86,7 +86,7 @@ export function ChatMessageContent({ text }: ChatMessageContentProps) {
           return (
             <div
               key={blockIndex}
-              className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm"
+              className="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm"
             >
               <table className="w-full text-xs">
                 <thead>
@@ -94,7 +94,7 @@ export function ChatMessageContent({ text }: ChatMessageContentProps) {
                     {block.headers.map((header, headerIndex) => (
                       <th
                         key={headerIndex}
-                        className={`px-2.5 py-2 text-[11px] font-semibold text-white ${
+                        className={`whitespace-nowrap px-2.5 py-2 text-xs font-semibold text-white ${
                           headerIndex === 0 ? 'text-left' : 'text-right'
                         }`}
                       >
@@ -114,9 +114,9 @@ export function ChatMessageContent({ text }: ChatMessageContentProps) {
                         {row.map((cell, cellIndex) => (
                           <td
                             key={cellIndex}
-                            className={`px-2.5 py-2 ${
+                            className={`whitespace-nowrap px-2.5 py-2 ${
                               cellIndex === 0
-                                ? 'text-left font-medium text-gray-700'
+                                ? 'text-left font-medium text-slate-700'
                                 : 'text-right font-semibold tabular-nums text-slate-900'
                             }`}
                           >
@@ -138,7 +138,7 @@ export function ChatMessageContent({ text }: ChatMessageContentProps) {
         }
 
         return (
-          <p key={blockIndex} className="leading-relaxed">
+          <p key={blockIndex}>
             {renderInlineBold(block.line, `p-${blockIndex}`)}
           </p>
         );
