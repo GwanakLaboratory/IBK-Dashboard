@@ -1,6 +1,7 @@
 import { CalendarDays, ChevronLeft } from 'lucide-react';
 import { type ReactNode } from 'react';
 import { Link } from 'react-router';
+import { useDemoNotice } from '@/components/molecules/DemoNotice';
 import {
   DATA_BASE_MONTH_LABEL,
   DATA_UPDATED_AT,
@@ -76,13 +77,26 @@ export function DataBaseInfo({ monthControl }: { monthControl?: ReactNode }) {
   return (
     <div className="flex items-center gap-3.5">
       <UpdatedAtLabel />
-      {monthControl ?? (
-        <span className="inline-flex h-10 items-center gap-2.5 rounded-lg border border-slate-300 bg-white px-3.5 text-sm font-bold">
-          <CalendarDays className="size-4 text-slate-500" />
-          {DATA_BASE_MONTH_LABEL}
-        </span>
-      )}
+      {monthControl ?? <BaseMonthButton />}
     </div>
+  );
+}
+
+/** 기준 월 표시. 데모 버전은 9월 데이터만 있어 누르면 안내 문구를 띄운다 */
+function BaseMonthButton() {
+  const { show, notice } = useDemoNotice();
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => show('데모 버전에서는 기준 월 변경을 지원하지 않아요')}
+        className="inline-flex h-10 items-center gap-2.5 rounded-lg border border-slate-300 bg-white px-3.5 text-sm font-bold hover:bg-slate-50"
+      >
+        <CalendarDays className="size-4 text-slate-500" />
+        {DATA_BASE_MONTH_LABEL}
+      </button>
+      {notice}
+    </>
   );
 }
 
