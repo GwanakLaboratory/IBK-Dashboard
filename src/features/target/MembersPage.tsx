@@ -11,6 +11,10 @@ import { Card } from '@/components/molecules/Card';
 import { Pagination } from '@/components/molecules/Pagination';
 import { Tabs } from '@/components/molecules/Tabs';
 import {
+  downloadTargetCsv,
+  memberCsvRow,
+} from '@/features/marketing/campaign/targetCsv';
+import {
   CARD_PRODUCTS,
   MEMBER_COUNT_BY_LEVEL,
   TARGET_MEMBERS,
@@ -320,7 +324,12 @@ export function MembersPage() {
                 value={sort}
                 onChange={withFirstPage(setSort)}
               />
-              <Button variant="outline">
+              <Button
+                variant="outline"
+                onClick={() =>
+                  downloadTargetCsv(rowsInOrder.map(memberCsvRow), '회원목록')
+                }
+              >
                 <Download className="size-4" strokeWidth={2} />
                 엑셀 받기
               </Button>
