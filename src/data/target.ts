@@ -18,12 +18,12 @@ export type TargetMember = {
   lastContact: string;
 };
 
-/** 위험도별 전체 회원 수 (목록 상단 카드). 위험 + 중위험 = 대시보드 이탈 위험 고객 */
+/** 위험도별 전체 회원 수 (목록 상단 카드). 전체 = 대시보드 이용 고객, 위험 + 중위험 = 대시보드 이탈 위험 고객 */
 export const MEMBER_COUNT_BY_LEVEL = {
-  all: 1300000,
-  high: 150550,
-  medium: 146593,
-  low: 1002857,
+  all: 1307694,
+  high: 131186,
+  medium: 127737,
+  low: 1048771,
 };
 
 /** 시안에 있던 대표 회원 10명 */

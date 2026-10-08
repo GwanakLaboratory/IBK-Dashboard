@@ -37,8 +37,9 @@ const COLOR = {
   baseline: CHART_COLOR.baseline,
 };
 
-const COUNT_TICKS = [0, 20000, 40000, 60000, 80000];
-const RATIO_TICKS = [20, 30, 40, 50, 60];
+// 두 축 눈금 수를 맞춰 격자선을 공유하고, 비중 선이 막대 위쪽에 그려지도록 범위를 잡는다
+const COUNT_TICKS = [0, 80000, 160000, 240000, 320000, 400000];
+const RATIO_TICKS = [0, 5, 10, 15, 20, 25];
 
 type LabelProps = {
   x?: number | string;
@@ -113,7 +114,7 @@ export function RiskTrendComboChart({
           />
           <YAxis
             yAxisId="count"
-            domain={[0, 80000]}
+            domain={[0, 400000]}
             ticks={COUNT_TICKS}
             axisLine={false}
             tickLine={false}
@@ -124,7 +125,7 @@ export function RiskTrendComboChart({
           <YAxis
             yAxisId="ratio"
             orientation="right"
-            domain={[20, 60]}
+            domain={[0, 25]}
             ticks={RATIO_TICKS}
             axisLine={false}
             tickLine={false}

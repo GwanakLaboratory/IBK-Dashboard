@@ -152,8 +152,8 @@ export function CustomerAnalysisPage() {
     focusTimerRef.current = window.setTimeout(() => setFocused(null), 1800);
   };
 
-  const tenureRatio = adjustRatio(31.5, offset);
-  const channelRatio = adjustRatio(29.5, offset);
+  const tenureRatio = adjustRatio(27.2, offset);
+  const channelRatio = adjustRatio(25.5, offset);
   const picks: {
     kind: string;
     subject: string;
