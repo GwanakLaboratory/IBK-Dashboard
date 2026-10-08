@@ -1,4 +1,5 @@
 import { Phone } from 'lucide-react';
+import { useDemoNotice } from '@/components/molecules/DemoNotice';
 
 const DASHBOARD_TITLE = 'IBK CARD RISK INSIGHT';
 const SUPPORT_CONTACT_NUMBER = '1588-2588, 1566-2566';
@@ -6,9 +7,10 @@ const CURRENT_USER_DEPARTMENT = '카드사업부';
 const CURRENT_USER_NAME = 'IBK';
 
 export function Header() {
-  const handleLogoutClick = () => {
-    console.log('click logout');
-  };
+  // 데모 버전에는 로그인 화면이 없어 로그아웃 대신 안내 문구를 잠깐 띄운다
+  const { show, notice } = useDemoNotice();
+  const handleLogoutClick = () =>
+    show('데모 버전에서는 로그아웃을 지원하지 않아요');
 
   return (
     <header className="flex h-14 shrink-0 items-center justify-between bg-sidebar px-6 text-white">
@@ -36,6 +38,8 @@ export function Header() {
           로그아웃
         </button>
       </div>
+
+      {notice}
     </header>
   );
 }

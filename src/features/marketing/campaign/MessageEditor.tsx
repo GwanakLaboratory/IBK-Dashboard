@@ -48,7 +48,7 @@ export function MessageEditor({
       {targets.map((target) => (
         <div
           key={target.key}
-          className="overflow-hidden rounded-2xl border border-slate-200 bg-white"
+          className="rounded-2xl border border-slate-200 bg-white"
         >
           {hasTemplate(target) ? (
             <MessageCard
@@ -126,7 +126,7 @@ function MessageCard({
         type="button"
         aria-expanded={view.open}
         onClick={() => update({ open: !view.open })}
-        className="flex w-full items-center gap-2.5 bg-white px-6 py-4 text-left"
+        className="flex w-full items-center gap-2.5 px-6 py-4 text-left"
       >
         <TargetName target={target} />
         <span

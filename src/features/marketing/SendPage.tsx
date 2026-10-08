@@ -109,6 +109,8 @@ export function SendPage() {
   function handleCmoConfirm() {
     setDraft(INITIAL_SEND_DRAFT);
     setDone(null);
+    // 처음 상태로 돌아갔으니 본문 스크롤(레이아웃의 main)도 맨 위로 올린다
+    document.querySelector('main')?.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   const cmoRows: CmoRow[] = messageTargets.map((target) => {
