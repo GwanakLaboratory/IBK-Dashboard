@@ -2,10 +2,10 @@
 import { CARD_PRODUCTS } from '@/data/target';
 
 /** 전체 평균 위험비중 % */
-export const AVERAGE_RISK_RATIO = 44.2;
+export const AVERAGE_RISK_RATIO = 22.9;
 
 /** 위험비중 막대의 최대 눈금 % */
-export const RISK_RATIO_SCALE = 80;
+export const RISK_RATIO_SCALE = 40;
 
 export const ANALYSIS_MONTHS = [
   '26.09',
@@ -39,21 +39,22 @@ export const DEFAULT_ANALYSIS_FILTER: AnalysisFilter = {
 
 /** 필터에 따라 위험비중을 조금씩 움직여 조회가 동작하는 것처럼 보이게 한다 */
 export function getFilterOffset(filter: AnalysisFilter) {
-  const monthOffset = (9 - Number(filter.month.slice(3))) * -0.9;
+  const monthOffset = (9 - Number(filter.month.slice(3))) * -0.5;
   const productOffset =
     filter.product === '전체'
       ? 0
-      : (CARD_PRODUCTS.findIndex((card) => card.name === filter.product) % 5) -
-        2;
+      : ((CARD_PRODUCTS.findIndex((card) => card.name === filter.product) % 5) -
+          2) *
+        0.5;
   const channelOffset =
     filter.channel === '전체'
       ? 0
-      : (ISSUE_CHANNELS.indexOf(filter.channel) % 4) - 1.5;
+      : ((ISSUE_CHANNELS.indexOf(filter.channel) % 4) - 1.5) * 0.5;
   return monthOffset + productOffset + channelOffset;
 }
 
 export function adjustRatio(ratio: number, offset: number) {
-  return Math.max(5, Math.min(78, +(ratio + offset).toFixed(1)));
+  return Math.max(2, Math.min(39, +(ratio + offset).toFixed(1)));
 }
 
 export type ProductRisk = {
@@ -65,10 +66,10 @@ export type ProductRisk = {
   small: boolean;
 };
 
-const TOP_RATIOS = [58.0, 49.0, 42.0, 35.0, 33.5];
-const TOP_TOTALS = [14138, 12650, 11980, 9420, 8760];
-const SMALL_RATIOS = [71.0, 64.0, 59.0];
-const SMALL_TOTALS = [420, 610, 880];
+const TOP_RATIOS = [30.0, 25.3, 21.7, 18.1, 17.3];
+const TOP_TOTALS = [217200, 194340, 184050, 144720, 134580];
+const SMALL_RATIOS = [36.7, 33.1, 30.5];
+const SMALL_TOTALS = [6450, 9370, 13520];
 
 /** 카드 상품별 위험비중. 마지막 3개 상품은 예측 대상이 적어 순위에서 뺀다. */
 export function getProductRisks(offset: number): ProductRisk[] {
@@ -80,15 +81,17 @@ export function getProductRisks(offset: number): ProductRisk[] {
         ? TOP_RATIOS[index]
         : small
           ? SMALL_RATIOS[index - smallStart]
-          : +(32 - (index - 5) * 0.4 + (((index * 37) % 7) - 3) * 0.5).toFixed(
-              1,
-            );
+          : +(
+              16.5 -
+              (index - 5) * 0.2 +
+              (((index * 37) % 7) - 3) * 0.25
+            ).toFixed(1);
     const total =
       index < TOP_TOTALS.length
         ? TOP_TOTALS[index]
         : small
           ? SMALL_TOTALS[index - smallStart]
-          : 2000 + ((index * 7919) % 7000);
+          : 30000 + ((index * 7919) % 7000) * 15;
     return {
       name: card.name,
       ratio: adjustRatio(baseRatio, offset),
@@ -118,22 +121,22 @@ export const STATIC_DIMENSIONS: Dimension[] = [
     key: 'usage',
     title: '월 이용금액별 이탈 위험',
     rows: [
-      ['30만 원 미만', 56, 21400],
-      ['30~50만 원', 48, 18200],
-      ['50~100만 원', 39, 19800],
-      ['100~200만 원', 31, 15100],
-      ['200만 원 이상', 25, 10120],
+      ['30만 원 미만', 29.0, 328800],
+      ['30~50만 원', 24.8, 279600],
+      ['50~100만 원', 20.2, 304200],
+      ['100~200만 원', 16.0, 232000],
+      ['200만 원 이상', 12.9, 155400],
     ],
   },
   {
     key: 'tenure',
     title: '거래 기간별 이탈 위험',
     rows: [
-      ['6개월 미만', 61, 9800],
-      ['6개월~1년', 52, 10400],
-      ['1~3년', 44, 22600],
-      ['3~5년', 36, 19300],
-      ['5년 이상', 28, 22520],
+      ['6개월 미만', 31.5, 150600],
+      ['6개월~1년', 26.9, 159800],
+      ['1~3년', 22.8, 347200],
+      ['3~5년', 18.6, 296500],
+      ['5년 이상', 14.5, 345900],
     ],
     mark: { label: '6개월 미만', tone: 'red' },
   },
@@ -141,22 +144,22 @@ export const STATIC_DIMENSIONS: Dimension[] = [
     key: 'age',
     title: '연령대별 이탈 위험',
     rows: [
-      ['20대 이하', 52, 12100],
-      ['30대', 47, 21300],
-      ['40대', 39, 22800],
-      ['50대', 35, 17600],
-      ['60대 이상', 42, 10820],
+      ['20대 이하', 26.9, 185900],
+      ['30대', 24.3, 327200],
+      ['40대', 20.2, 350300],
+      ['50대', 18.1, 270400],
+      ['60대 이상', 21.7, 166200],
     ],
   },
   {
     key: 'channel',
     title: '발급 채널별 이탈 위험',
     rows: [
-      ['영업점', 34, 30200],
-      ['i-ONE뱅크', 42, 18400],
-      ['IBK카드앱', 38, 16900],
-      ['외부 제휴', 57, 12300],
-      ['기타', 46, 6820],
+      ['영업점', 17.6, 464000],
+      ['i-ONE뱅크', 21.7, 282700],
+      ['IBK카드앱', 19.7, 259600],
+      ['외부 제휴', 29.5, 189000],
+      ['기타', 23.8, 104700],
     ],
     mark: { label: '외부 제휴', tone: 'amber' },
   },
@@ -164,14 +167,14 @@ export const STATIC_DIMENSIONS: Dimension[] = [
     key: 'category',
     title: '주 이용 업종별 이탈 위험',
     rows: [
-      ['쇼핑', 51, 19400],
-      ['외식', 46, 17800],
-      ['주유', 35, 14200],
-      ['생활요금', 29, 16300],
-      ['기타', 43, 16920],
+      ['쇼핑', 26.4, 298000],
+      ['외식', 23.8, 273500],
+      ['주유', 18.1, 218200],
+      ['생활요금', 15.0, 250400],
+      ['기타', 22.2, 259900],
     ],
   },
 ];
 
 /** 위험 증가 최대 고객군의 전월 대비 증가폭 %p */
-export const CHANNEL_RISK_INCREASE = 8.0;
+export const CHANNEL_RISK_INCREASE = 4.1;

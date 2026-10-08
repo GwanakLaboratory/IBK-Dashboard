@@ -191,7 +191,7 @@ function buildPerformanceAnswer(): DemoAnswer {
       '| 지표 | 값 |',
       '| --- | --- |',
       `| 이탈률 (타겟군 / 대조군) | ${PERFORMANCE_KPIS.lastTarget}% / ${PERFORMANCE_KPIS.lastControl}% |`,
-      `| 방어 이용금액 | ${PERFORMANCE_KPIS.amount.toFixed(1)}억 원 |`,
+      `| 방어 이용금액 | ${PERFORMANCE_KPIS.amount.toLocaleString('ko-KR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}억 원 |`,
       `| 마케팅 효율 (ROI) | ${PERFORMANCE_KPIS.roi.toFixed(1)}배 |`,
       '',
       best

@@ -1,4 +1,5 @@
 // 타겟 발송 목데이터 (AI 추천 세그먼트 · 조건 · 무작위 추출 · 채널 · 문구). 실제 캠페인/발송 API 연동 전까지 사용한다.
+import { MEMBER_COUNT_BY_LEVEL } from '@/data/target';
 import type { RiskLevel } from '@/types/churn';
 
 export type SendChannelKey = 'tm' | 'kakao' | 'sms' | 'push';
@@ -91,7 +92,7 @@ export const SEND_SEGMENTS: SendSegment[] = [
     condition: '연 이용 1천만 원↑ · 이용금액 급감',
     description:
       '연 이용 상위 12% 중 이용금액이 급감한 회원의 이탈률이 3.2배 높아요.',
-    count: 1342,
+    count: 11432,
     averageScore: 91,
     insight:
       '고가치 회원 이용 급감 세그먼트는 이용금액 급감 비중이 가장 높아요.',
@@ -106,7 +107,7 @@ export const SEND_SEGMENTS: SendSegment[] = [
     condition: '연회비 청구 30일 이내 · 혜택 이용 저하',
     description:
       '청구 직전에 혜택을 안 쓴 회원의 해지 신청이 청구 월에 몰려요.',
-    count: 1063,
+    count: 9055,
     averageScore: 88,
     insight: '연회비 청구 전 혜택 미사용 회원은 청구 직후 해지 비중이 높아요.',
     recommendation: '추천 연회비 혜택 안내 × 카카오 · 예상 반응 31.4%',
@@ -119,7 +120,7 @@ export const SEND_SEGMENTS: SendSegment[] = [
     channel: 'kakao',
     condition: '타사 카드 전환 · 주 이용 업종 카페/외식',
     description: '카페/외식 결제가 타사 카드로 옮겨간 비중이 가장 커요.',
-    count: 1270,
+    count: 10818,
     averageScore: 86,
     insight:
       '카페/외식 결제가 줄어든 시점과 타사 카드 신규 발급 시점이 겹쳐요.',
@@ -134,7 +135,7 @@ export const SEND_SEGMENTS: SendSegment[] = [
     condition: '60일 이상 미이용 · 휴면 전환 30일 전',
     description:
       '휴면 전환 후 복귀율은 4%대라 전환 전 접촉이 가장 효과적이에요.',
-    count: 3759,
+    count: 32020,
     averageScore: 84,
     insight: '휴면 전환 30일 전 회원은 첫 결제 혜택에 가장 크게 반응해요.',
     recommendation: '추천 첫 결제 혜택 × 문자 · 예상 반응 18.6%',
@@ -194,14 +195,14 @@ export const RISK_OPTION_LEVEL: Record<string, RiskLevel> = {
   저위험: 'low',
 };
 
-/** 위험도별 회원 수. 조건 인원 계산의 시작 모수. */
+/** 위험도별 회원 수 (회원 목록과 같은 값). 조건 인원 계산의 시작 모수. */
 export const RISK_OPTION_COUNT: Record<string, number> = {
-  위험: 18950,
-  중위험: 18452,
-  저위험: 145238,
+  위험: MEMBER_COUNT_BY_LEVEL.high,
+  중위험: MEMBER_COUNT_BY_LEVEL.medium,
+  저위험: MEMBER_COUNT_BY_LEVEL.low,
 };
 
-export const ALL_MEMBER_COUNT = 182640;
+export const ALL_MEMBER_COUNT = MEMBER_COUNT_BY_LEVEL.all;
 
 export const EMPTY_CONDITION_PICK: ConditionPick = {
   risk: [],
@@ -222,11 +223,16 @@ export type RandomPool = {
 };
 
 export const RANDOM_POOLS: RandomPool[] = [
-  { key: 'risk', label: '위험 회원 18,950명', count: 18950, levels: ['high'] },
+  {
+    key: 'risk',
+    label: `위험 회원 ${MEMBER_COUNT_BY_LEVEL.high.toLocaleString('ko-KR')}명`,
+    count: MEMBER_COUNT_BY_LEVEL.high,
+    levels: ['high'],
+  },
   {
     key: 'all',
-    label: '위험 + 중위험 37,402명',
-    count: 37402,
+    label: `위험 + 중위험 ${(MEMBER_COUNT_BY_LEVEL.high + MEMBER_COUNT_BY_LEVEL.medium).toLocaleString('ko-KR')}명`,
+    count: MEMBER_COUNT_BY_LEVEL.high + MEMBER_COUNT_BY_LEVEL.medium,
     levels: ['high', 'medium'],
   },
 ];

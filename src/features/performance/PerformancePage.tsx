@@ -49,6 +49,12 @@ const CHANNEL_SCALE = 50;
 
 const formatNumber = (value: number) => value.toLocaleString('ko-KR');
 const formatPercent = (value: number) => `${value.toFixed(1)}%`;
+/** 억 원 금액 (소수 첫째 자리, 천 단위 쉼표) */
+const formatEok = (value: number) =>
+  value.toLocaleString('ko-KR', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
 
 const KPIS: KpiItem[] = [
   {
@@ -69,7 +75,7 @@ const KPIS: KpiItem[] = [
   },
   {
     label: '방어 이용금액',
-    value: PERFORMANCE_KPIS.amount.toFixed(1),
+    value: formatEok(PERFORMANCE_KPIS.amount),
     unit: '억 원',
     sub: '이용 재개 고객의 향후 12개월 예상 이용금액',
   },
@@ -187,7 +193,7 @@ export function PerformancePage() {
                     {formatNumber(campaign.returned)}명
                   </span>
                   <span className="text-right font-bold text-blue-700">
-                    {campaign.amount.toFixed(1)}억 원
+                    {formatEok(campaign.amount)}억 원
                   </span>
                 </button>
               );
