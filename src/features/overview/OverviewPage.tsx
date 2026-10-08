@@ -207,7 +207,7 @@ export function OverviewPage() {
       </Card>
 
       {/* 하단 */}
-      <div className="grid shrink-0 grow grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-4">
+      <div className="grid shrink-0 grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-4">
         <Card
           title="주요 이탈 사유별 이탈 위험 비중"
           titleSize="lg"
