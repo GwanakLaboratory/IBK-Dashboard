@@ -9,7 +9,10 @@ import {
 import {
   buildAiInsight,
   buildMessageView,
+  buildSendSummary,
   buildTargetSummary,
+  countPendingMessages,
+  EMPTY_MESSAGE_DRAFT,
   formatDateLabel,
   formatTimeLabel,
   getConditionCount,
@@ -157,6 +160,69 @@ describe('getMessageTargets', () => {
     expect(targets).toHaveLength(1);
     expect(targets[0]).toMatchObject({ key: 'rand', count: 1000 });
     expect(targets[0].template?.recommendedTime).toBe('19:00');
+  });
+});
+
+describe('countPendingMessages', () => {
+  // s1 은 텔레마케팅(문구 없음), s3 은 문구 카드
+  const targets = getMessageTargets(draftOf({ segmentIds: ['s1', 's3'] }));
+
+  it('counts message cards that are not confirmed yet', () => {
+    expect(countPendingMessages(targets, {})).toBe(1);
+    expect(
+      countPendingMessages(targets, {
+        s3: { ...EMPTY_MESSAGE_DRAFT, generated: true },
+      }),
+    ).toBe(1);
+  });
+
+  it('is zero once every message card is confirmed', () => {
+    expect(
+      countPendingMessages(targets, {
+        s3: { ...EMPTY_MESSAGE_DRAFT, generated: true, confirmed: true },
+      }),
+    ).toBe(0);
+  });
+});
+
+describe('buildSendSummary', () => {
+  it('keeps only telemarketing and confirmed segments', () => {
+    const draft = draftOf({ segmentIds: ['s1', 's2', 's3'] });
+    const summary = buildSendSummary(draft);
+    // s1(텔레마케팅)만 바로 포함되고, 문구 카드인 s2 · s3 은 결정 전이라 빠진다
+    expect(summary.items).toHaveLength(1);
+    expect(summary.chip).toBe('3개 중 1개 결정');
+
+    const confirmed = buildSendSummary({
+      ...draft,
+      messages: { s3: { ...EMPTY_MESSAGE_DRAFT, confirmed: true } },
+    });
+    expect(confirmed.items).toHaveLength(2);
+    expect(confirmed.chip).toBe('3개 중 2개 결정');
+  });
+
+  it('matches the target summary once every message is confirmed', () => {
+    const draft = draftOf({
+      segmentIds: ['s2'],
+      messages: { s2: { ...EMPTY_MESSAGE_DRAFT, confirmed: true } },
+    });
+    expect(buildSendSummary(draft)).toEqual(buildTargetSummary(draft));
+  });
+
+  it('is empty for a direct mode until its message is confirmed', () => {
+    const draft = draftOf({
+      mode: 'rand',
+      channel: 'sms',
+      poolKey: RANDOM_POOL_KEY,
+      size: 1000,
+    });
+    expect(buildSendSummary(draft).empty).toBe(true);
+    expect(
+      buildSendSummary({
+        ...draft,
+        messages: { rand: { ...EMPTY_MESSAGE_DRAFT, confirmed: true } },
+      }).total,
+    ).toBe(1000);
   });
 });
 
