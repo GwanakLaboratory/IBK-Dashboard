@@ -498,7 +498,7 @@ function DimensionCard({
                 to ? `${row.label} 카드 상세 보기` : `${row.label} ${display}`
               }
               onClick={to ? () => navigate(to) : undefined}
-              className={`grid h-9 w-full grid-cols-[96px_minmax(0,1fr)_56px] items-center gap-3 rounded-lg border px-2 text-left disabled:cursor-default ${
+              className={`grid h-9 w-full grid-cols-[96px_minmax(0,1fr)_76px] items-center gap-3 rounded-lg border px-2.5 text-left disabled:cursor-default ${
                 tone ? tone.row : 'border-transparent'
               } ${to ? 'hover:bg-slate-50' : ''}`}
             >
@@ -516,7 +516,7 @@ function DimensionCard({
                 />
               </span>
               <span
-                className={`text-right text-sm font-bold ${
+                className={`whitespace-nowrap text-right text-sm font-bold ${
                   tone ? tone.text : isTop ? 'text-blue-700' : 'text-slate-600'
                 }`}
               >
