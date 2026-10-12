@@ -34,9 +34,10 @@ type SortKey = 'score' | 'idle';
 
 const ALL_PRODUCTS = '전체 카드상품';
 const PAGE_SIZE = 10;
-// 가로 스크롤 없이 콘텐츠 폭에 맞추는 유동 열
+// 열 너비는 내용 폭에 맞춰 두고(카드상품·주요 이유는 최대 너비까지만 늘어남),
+// 화면이 넓을 때 남는 폭은 justify-between 으로 열 사이 간격에 고르게 나눈다.
 const GRID_COLUMNS =
-  'grid-cols-[76px_56px_96px_minmax(0,1fr)_96px_88px_minmax(0,1.3fr)_44px]';
+  'grid-cols-[84px_60px_112px_minmax(120px,200px)_112px_96px_minmax(120px,170px)_44px] justify-between';
 
 const LEVEL_CARDS: { key: LevelFilter; label: string; sub: string }[] = [
   { key: 'all', label: '분석 대상 전체', sub: '최근 2개월 신용카드 이용 고객' },
@@ -394,12 +395,9 @@ export function MembersPage() {
               <span className="truncate text-slate-700" title={member.product}>
                 {member.product}
               </span>
-              <ScoreBar score={member.score} barClassName="w-12" />
+              <ScoreBar score={member.score} />
               <span>
-                <RiskBadge
-                  riskLevel={getRiskLevelFromScore(member.score)}
-                  size="lg"
-                />
+                <RiskBadge riskLevel={getRiskLevelFromScore(member.score)} />
               </span>
               <span className="truncate text-slate-700" title={member.reason}>
                 {member.reason}
