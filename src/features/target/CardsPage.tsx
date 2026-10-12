@@ -21,8 +21,12 @@ const SORT_TABS: { key: SortKey; label: string }[] = [
   { key: 'members', label: '보유 회원 많은 순' },
 ];
 
+// 혜택 카테고리는 긴 배지 2개 + '+N'이 잘리지 않을 만큼 최소 너비를 둔다
 const ROW_GRID =
-  'grid grid-cols-[40px_minmax(200px,2fr)_minmax(160px,1.2fr)_minmax(120px,1fr)_110px_120px] items-center gap-3 px-6';
+  'grid grid-cols-[40px_minmax(200px,1.6fr)_minmax(290px,1.4fr)_minmax(140px,1fr)_88px_128px] items-center gap-3 px-6';
+
+// 혜택 카테고리 칸에 색 배지로 보여줄 개수 (나머지는 +N)
+const SHOWN_TAG_COUNT = 2;
 
 const toCardPath = (name: string) =>
   `/target/cards/${encodeURIComponent(name)}`;
@@ -60,6 +64,7 @@ const CARD_KPIS: KpiItem[] = [
     unit: '%',
     badge: <DeltaBadge delta={worstRate.churnRateDelta} size="md" />,
     sub: worstRate.name,
+    to: toCardPath(worstRate.name),
   },
   {
     label: '위험 회원 비중 가장 높은 상품',
@@ -67,6 +72,7 @@ const CARD_KPIS: KpiItem[] = [
     value: (worstMix.highShare + worstMix.mediumShare).toFixed(1),
     unit: '%',
     sub: `${worstMix.name} · 위험 + 중위험 회원`,
+    to: toCardPath(worstMix.name),
   },
 ];
 
@@ -213,7 +219,8 @@ function CardRow({ card, rank }: { card: CardProduct; rank: number }) {
       : delta < 0
         ? 'text-green-700'
         : 'text-slate-400';
-  const [firstTag, ...restTags] = card.tags;
+  const shownTags = card.tags.slice(0, SHOWN_TAG_COUNT);
+  const restCount = card.tags.length - shownTags.length;
 
   return (
     <div
@@ -224,19 +231,22 @@ function CardRow({ card, rank }: { card: CardProduct; rank: number }) {
       <Link
         to={toCardPath(card.name)}
         aria-label={`${card.name} 상세 보기`}
+        title={card.name}
         className="truncate text-sm font-bold text-slate-900 hover:underline"
       >
         {card.name}
       </Link>
-      {/* 첫 카테고리만 색 배지로, 나머지는 +N (전체는 툴팁) */}
+      {/* 앞의 두 카테고리만 색 배지로, 나머지는 +N (전체는 툴팁) */}
       <span
         className="flex min-w-0 items-center gap-1"
         title={card.tags.join(', ')}
       >
-        {firstTag && <CardTag label={firstTag} />}
-        {restTags.length > 0 && (
+        {shownTags.map((tag) => (
+          <CardTag key={tag} label={tag} />
+        ))}
+        {restCount > 0 && (
           <span className="inline-flex h-7 shrink-0 items-center rounded-full border border-slate-200 px-2 text-xs font-bold text-slate-500">
-            +{restTags.length}
+            +{restCount}
           </span>
         )}
       </span>

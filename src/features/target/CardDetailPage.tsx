@@ -31,6 +31,7 @@ import {
 } from '@/data/target';
 import type { RiskLevel } from '@/types/churn';
 import { RISK_LEVEL_META, getRiskLevelFromScore } from '@/utils/risk';
+import { CardImage } from './CardImage';
 import { CardTag } from './CardTag';
 
 const formatNumber = (value: number) => value.toLocaleString('ko-KR');
@@ -155,10 +156,10 @@ export function CardDetailPage() {
       <div className="grid grid-cols-[minmax(0,4fr)_repeat(3,minmax(0,3fr))] divide-x divide-slate-100 rounded-2xl border border-slate-200 bg-white">
         <div className="flex items-center gap-4 px-6 py-5">
           {CARD_IMAGE_URLS[card.name] ? (
-            <img
+            <CardImage
+              key={card.name}
               src={CARD_IMAGE_URLS[card.name]}
               alt={`${card.name} 카드 이미지`}
-              className="h-20 w-auto shrink-0 rounded-lg object-contain"
             />
           ) : (
             <div className="flex h-20 w-32 shrink-0 flex-col justify-between rounded-lg bg-sidebar px-3 py-2.5">
