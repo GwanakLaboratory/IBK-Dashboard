@@ -204,7 +204,10 @@ export function MembersPage() {
 
       <div className="grid grid-cols-4 gap-4">
         {LEVEL_CARDS.map((card) => {
-          const selected = card.key === level;
+          // 카드상품으로 걸러 보고 있으면 '분석 대상 전체'가 아니므로 전체 카드는 선택 표시를 하지 않는다
+          const selected =
+            card.key === level &&
+            !(card.key === 'all' && product !== ALL_PRODUCTS);
           const count = MEMBER_COUNT_BY_LEVEL[card.key];
           const meta = card.key === 'all' ? null : RISK_LEVEL_META[card.key];
           return (
