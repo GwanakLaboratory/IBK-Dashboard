@@ -22,15 +22,11 @@ import {
   type TargetMember,
 } from '@/data/target';
 import type { RiskLevel } from '@/types/churn';
-import {
-  RISK_LEVEL_META,
-  getRiskLevelFromScore,
-  interleaveByRiskLevel,
-} from '@/utils/risk';
+import { RISK_LEVEL_META, getRiskLevelFromScore } from '@/utils/risk';
 
 type LevelFilter = 'all' | RiskLevel;
 type QueryMode = 'name' | 'phone' | 'id';
-type SortKey = 'score' | 'idle';
+type SortKey = 'id' | 'score' | 'idle';
 
 const ALL_PRODUCTS = '전체 카드상품';
 const PAGE_SIZE = 10;
@@ -68,9 +64,29 @@ const LEVEL_OPTIONS: { value: LevelFilter; label: string }[] = [
 ];
 
 const SORT_TABS: { key: SortKey; label: string }[] = [
+  { key: 'id', label: '회원번호 순' },
   { key: 'score', label: '이탈 예측 점수 높은 순' },
   { key: 'idle', label: '미이용 기간 긴 순' },
 ];
+
+const DEFAULT_SORT: SortKey = 'id';
+
+/** 'C-204817' → 204817 (회원번호 순 정렬용) */
+const memberNumber = (member: TargetMember) =>
+  Number(member.id.replace(/\D/g, ''));
+
+// 값이 같으면 회원번호 순으로 이어서 정렬해 순서가 늘 같게 한다
+const SORT_COMPARE: Record<
+  SortKey,
+  (a: TargetMember, b: TargetMember) => number
+> = {
+  id: (a, b) => memberNumber(a) - memberNumber(b),
+  score: (a, b) => b.score - a.score || memberNumber(a) - memberNumber(b),
+  idle: (a, b) =>
+    b.idleDays - a.idleDays ||
+    b.score - a.score ||
+    memberNumber(a) - memberNumber(b),
+};
 
 const PRODUCT_OPTIONS = [ALL_PRODUCTS, ...CARD_PRODUCTS.map((c) => c.name)];
 
@@ -109,7 +125,7 @@ export function MembersPage() {
     mode: 'name',
     query: '',
   });
-  const [sort, setSort] = useState<SortKey>('score');
+  const [sort, setSort] = useState<SortKey>(DEFAULT_SORT);
   const [page, setPage] = useState(1);
 
   const filtered = useMemo(
@@ -119,30 +135,13 @@ export function MembersPage() {
           (level === 'all' || getRiskLevelFromScore(member.score) === level) &&
           (product === ALL_PRODUCTS || member.product === product) &&
           matchQuery(member, applied.mode, applied.query),
-      ).sort((a, b) =>
-        sort === 'idle'
-          ? b.idleDays - a.idleDays || b.score - a.score
-          : b.score - a.score,
-      ),
+      ).sort(SORT_COMPARE[sort]),
     [level, product, applied, sort],
-  );
-  // 전체 위험도 + 점수 순일 때는 위험 → 중위험 → 저위험을 번갈아 보여준다 (등급 안에서는 점수 순)
-  const rowsInOrder = useMemo(
-    () =>
-      level === 'all' && sort === 'score'
-        ? interleaveByRiskLevel(
-            filtered.map((member) => ({
-              member,
-              riskLevel: getRiskLevelFromScore(member.score),
-            })),
-          ).map((item) => item.member)
-        : filtered,
-    [filtered, level, sort],
   );
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
-  const rows = rowsInOrder.slice(
+  const rows = filtered.slice(
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE,
   );
@@ -172,7 +171,7 @@ export function MembersPage() {
     queryMode === 'name' &&
     draft === '' &&
     applied.query === '' &&
-    sort === 'score';
+    sort === DEFAULT_SORT;
 
   const applyQuery = () => {
     setApplied({ mode: queryMode, query: draft.trim() });
@@ -185,7 +184,7 @@ export function MembersPage() {
     setQueryMode('name');
     setDraft('');
     setApplied({ mode: 'name', query: '' });
-    setSort('score');
+    setSort(DEFAULT_SORT);
     setPage(1);
   };
 
@@ -196,7 +195,7 @@ export function MembersPage() {
         eyebrow="RISK TARGET · 회원"
         titleSize="lg"
         title="회원 목록"
-        description="이탈 예측 점수 높은 순 · 회원을 눌러 상세 이력을 확인할 수 있어요"
+        description="회원을 눌러 상세 이력을 확인할 수 있어요"
         back={{ label: '고객 분석', to: '/target' }}
         // 데이터 기준일·기준 월 표시는 이 화면에서 쓰지 않는다
         actions={false}
@@ -354,7 +353,7 @@ export function MembersPage() {
               <Button
                 variant="outline"
                 onClick={() =>
-                  downloadTargetCsv(rowsInOrder.map(memberCsvRow), '회원목록')
+                  downloadTargetCsv(filtered.map(memberCsvRow), '회원목록')
                 }
               >
                 <Download className="size-4" strokeWidth={2} />
