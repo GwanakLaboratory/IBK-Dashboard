@@ -316,7 +316,6 @@ export function CardDetailPage() {
           description="이 카드 회원의 사유별 평균 기여 점수 (0–100)"
         >
           <RankedBarList
-            labelClassName="w-auto grow"
             valueClassName="w-8"
             items={reasons.map((reason) => ({
               label: reason.label,
