@@ -77,7 +77,9 @@ export function Dropdown({
       >
         <span className="flex min-w-0 items-center gap-2.5">
           {Icon && <Icon className="size-4 shrink-0 text-slate-500" />}
-          <span className="truncate">{selected?.label}</span>
+          <span className="truncate" title={selected?.label}>
+            {selected?.label}
+          </span>
         </span>
         <ChevronDown
           className={`size-3 shrink-0 text-slate-400 transition-transform ${open ? 'rotate-180' : ''}`}

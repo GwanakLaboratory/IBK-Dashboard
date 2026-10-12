@@ -252,7 +252,8 @@ export function CustomerAnalysisPage() {
           <Dropdown
             label="카드상품"
             size="md"
-            className="min-w-40 max-w-60"
+            // 고른 상품 이름 길이에 따라 필터 줄이 밀리지 않도록 너비를 고정한다 (긴 이름은 말줄임)
+            className="w-60"
             value={draft.product}
             onChange={(value) => setDraft({ ...draft, product: value })}
             options={['전체', ...CARD_PRODUCTS.map((card) => card.name)].map(
