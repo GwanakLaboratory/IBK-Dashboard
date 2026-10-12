@@ -142,7 +142,7 @@ export function ChatLauncher() {
             <button
               type="button"
               onClick={() => setIsExpanded((prev) => !prev)}
-              className="flex h-7 w-7 items-center justify-center rounded-md border border-topbar-button-border text-white transition-colors hover:bg-white/10"
+              className="flex h-7 w-7 items-center justify-center rounded-md text-white/80 transition-colors hover:bg-white/10 hover:text-white"
               aria-label={isExpanded ? '작게 보기' : '크게 보기'}
               title={isExpanded ? '작게 보기' : '크게 보기'}
             >
@@ -155,8 +155,9 @@ export function ChatLauncher() {
             <button
               type="button"
               onClick={() => setMessages([])}
-              className="flex h-7 w-7 items-center justify-center rounded-md border border-topbar-button-border text-white transition-colors hover:bg-white/10"
+              className="flex h-7 w-7 items-center justify-center rounded-md text-white/80 transition-colors hover:bg-white/10 hover:text-white"
               aria-label="대화 초기화"
+              title="대화 초기화"
             >
               <RotateCcw className="h-3.5 w-3.5" />
             </button>
@@ -171,11 +172,12 @@ export function ChatLauncher() {
                 event.currentTarget.scrollTop > SCROLL_TOP_THRESHOLD,
               )
             }
-            className="scrollbar-hide flex-1 space-y-4 overflow-y-auto px-3.5 pt-3.5"
+            // 대화는 문장이라 숫자 폭을 고정하지 않고(레이아웃의 tabular-nums 해제), 한글 자간을 살짝 좁힌다
+            className="scrollbar-hide flex-1 space-y-4 overflow-y-auto px-3.5 pb-6 pt-3.5 tracking-[-0.01em] [font-variant-numeric:normal]"
           >
             {/* 인사말과 추천 질문은 한 덩어리로 붙이고, 아래 대화와는 넉넉히 띄운다 */}
             <div className="space-y-2.5 pb-4">
-              <div className="max-w-[80%] whitespace-pre-line rounded-2xl rounded-bl-lg bg-slate-100 px-3 py-2.5 text-sm text-slate-700">
+              <div className="max-w-[80%] whitespace-pre-line rounded-2xl rounded-bl-lg bg-slate-100 px-4 py-3 text-sm font-medium leading-relaxed text-slate-800">
                 {GREETING}
               </div>
               <QuestionChips
@@ -196,12 +198,14 @@ export function ChatLauncher() {
                   }`}
                 >
                   <div
-                    className={`px-3 py-2.5 text-sm ${
+                    // 둥근 모서리(16px)에 글자가 붙어 보이지 않게 안쪽 여백을 넉넉히 둔다.
+                    // 띄어쓰기 없는 긴 글(keep-all 이라 끊을 곳이 없음)은 넘칠 때만 아무 데서나 줄바꿈한다
+                    className={`px-4 py-3 text-sm leading-relaxed [overflow-wrap:anywhere] ${
                       message.role === 'user'
                         ? 'rounded-2xl rounded-br-lg bg-blue-700 text-white'
                         : message.isError
                           ? 'rounded-2xl rounded-bl-lg bg-red-50 text-red-600'
-                          : 'rounded-2xl rounded-bl-lg bg-slate-100 text-slate-700'
+                          : 'rounded-2xl rounded-bl-lg bg-slate-100 font-medium text-slate-800'
                     }`}
                   >
                     {isAssistantAnswer ? (
@@ -211,14 +215,18 @@ export function ChatLauncher() {
                     )}
                     {/* 답변 근거 화면으로 가는 링크는 말풍선 맨 아래에 붙인다 */}
                     {message.link && (
-                      <div className="mt-3 flex justify-end border-t border-slate-200 pt-2">
+                      // 회색 말풍선 안에서 눌러서 이동하는 버튼으로 보이도록 흰 알약 모양으로 둔다
+                      <div className="mt-3 flex justify-end">
                         <Link
                           to={message.link.to}
                           onClick={() => setIsOpen(false)}
-                          className="inline-flex items-center gap-0.5 text-sm font-medium text-blue-700 hover:underline"
+                          className="group inline-flex h-7 items-center gap-0.5 rounded-full border border-blue-200 bg-white pl-2.5 pr-1.5 text-2xs font-bold text-blue-700 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-50"
                         >
                           {message.link.label}
-                          <ChevronRight className="size-4" />
+                          <ChevronRight
+                            className="size-3 transition-transform group-hover:translate-x-0.5"
+                            strokeWidth={2.6}
+                          />
                         </Link>
                       </div>
                     )}
@@ -308,6 +316,11 @@ export function ChatLauncher() {
               </div>
             )}
           </div>
+          {/* 넘친 대화가 입력창 경계에서 딱 잘려 보이지 않게 아래로 갈수록 흐려지게 덮는다 */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-white to-transparent"
+          />
           <button
             type="button"
             onClick={() =>
@@ -388,15 +401,21 @@ type QuestionChipsProps = {
 
 function QuestionChips({ questions, disabled, onSelect }: QuestionChipsProps) {
   return (
-    <div className="flex flex-wrap gap-2">
+    // AI가 추천하는 질문이라는 게 보이도록 연파랑 칩 + 반짝이 아이콘으로 둔다
+    <div className="flex flex-wrap gap-1.5">
       {questions.map((question) => (
         <button
           key={question}
           type="button"
           onClick={() => onSelect(question)}
           disabled={disabled}
-          className="w-fit min-w-0 max-w-full rounded-full border border-slate-200 bg-white px-3 py-1.5 text-center text-xs font-medium text-slate-700 shadow-sm transition-colors hover:border-blue-300 hover:text-blue-700 active:bg-blue-50 disabled:pointer-events-none disabled:opacity-50"
+          className="inline-flex w-fit min-w-0 max-w-full items-center gap-1 rounded-full border border-blue-100 bg-blue-50 py-1.5 pl-2.5 pr-3 text-left text-xs font-medium text-blue-800 transition-colors hover:border-blue-200 hover:bg-blue-100 disabled:pointer-events-none disabled:opacity-50"
         >
+          <Sparkles
+            aria-hidden="true"
+            className="size-3 shrink-0 text-blue-500"
+            strokeWidth={2.2}
+          />
           {question}
         </button>
       ))}
