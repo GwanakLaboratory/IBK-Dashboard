@@ -35,8 +35,9 @@ import { CardTag } from './CardTag';
 
 const formatNumber = (value: number) => value.toLocaleString('ko-KR');
 
+// 열 너비는 내용 폭에 맞추고, 남는 폭은 justify-between 으로 열 사이 간격에 나눈다
 const MEMBER_GRID =
-  'grid grid-cols-[36px_80px_88px_96px_64px_minmax(0,1fr)_52px] items-center gap-2 px-1';
+  'grid grid-cols-[28px_48px_76px_76px_72px_40px_minmax(100px,170px)] items-center justify-between gap-2 px-1';
 
 // 도넛 둘레 (반지름 62)
 const DONUT_RADIUS = 62;
@@ -341,17 +342,20 @@ export function CardDetailPage() {
               <span>순위</span>
               <span>회원</span>
               <span>회원번호</span>
-              <span className="text-right">이탈 예측 점수</span>
-              <span className="text-right">미이용</span>
-              <span className="pl-4">주요 이유</span>
-              <span />
+              <span>이탈 예측 점수</span>
+              <span>위험도</span>
+              <span>미이용</span>
+              <span>주요 이탈 사유</span>
             </div>
             {topMembers.map((member, index) => {
               const level = getRiskLevelFromScore(member.score);
               return (
-                <div
+                <Link
                   key={member.id}
-                  className={`${MEMBER_GRID} min-h-11 flex-1 border-b border-slate-100`}
+                  to={`/target/members/${member.id}`}
+                  state={{ from: 'card' }}
+                  aria-label={`${member.name} 상세 보기`}
+                  className={`${MEMBER_GRID} min-h-11 flex-1 border-b border-slate-100 last:border-b-0 hover:bg-blue-50/40`}
                 >
                   <RankBadge rank={index + 1} highlight="dark" size="md" />
                   <span className="truncate font-semibold text-slate-900">
@@ -359,25 +363,23 @@ export function CardDetailPage() {
                   </span>
                   <span className="text-slate-500">{member.id}</span>
                   <span
-                    className={`text-right font-bold ${RISK_LEVEL_META[level].textClassName}`}
+                    className={`font-bold ${RISK_LEVEL_META[level].textClassName}`}
                   >
                     {member.score}점
                   </span>
-                  <span className="text-right font-semibold text-slate-900">
+                  <span>
+                    <RiskBadge riskLevel={level} />
+                  </span>
+                  <span className="font-semibold text-slate-900">
                     {member.idleDays}일
                   </span>
-                  <span className="truncate pl-4 text-slate-700">
+                  <span
+                    className="truncate text-slate-700"
+                    title={member.reason}
+                  >
                     {member.reason}
                   </span>
-                  <Link
-                    to={`/target/members/${member.id}`}
-                    state={{ from: 'card' }}
-                    aria-label={`${member.name} 상세 보기`}
-                    className="inline-flex h-7 items-center justify-center rounded-lg border border-slate-300 bg-white px-2 font-semibold text-slate-700 hover:bg-slate-50"
-                  >
-                    상세
-                  </Link>
-                </div>
+                </Link>
               );
             })}
             {topMembers.length === 0 && (
