@@ -93,6 +93,12 @@ type DimensionView = {
   hasMore?: boolean;
 };
 
+function isSameFilter(a: AnalysisFilter, b: AnalysisFilter) {
+  return (
+    a.month === b.month && a.product === b.product && a.channel === b.channel
+  );
+}
+
 export function CustomerAnalysisPage() {
   const navigate = useNavigate();
   const [draft, setDraft] = useState<AnalysisFilter>(DEFAULT_ANALYSIS_FILTER);
@@ -110,6 +116,12 @@ export function CustomerAnalysisPage() {
   useEffect(() => () => window.clearTimeout(focusTimerRef.current), []);
 
   const offset = getFilterOffset(applied);
+  // 바꾼 조건이 아직 반영되지 않았을 때만 조회 버튼을 켠다
+  const isFilterChanged = !isSameFilter(draft, applied);
+  // 고른 조건과 반영된 조건이 모두 기본값이면 초기화할 게 없다
+  const isDefaultFilter =
+    isSameFilter(draft, DEFAULT_ANALYSIS_FILTER) &&
+    isSameFilter(applied, DEFAULT_ANALYSIS_FILTER);
   const products = getProductRisks(offset);
   const rankedProducts = products
     .filter((product) => !product.small)
@@ -262,11 +274,16 @@ export function CustomerAnalysisPage() {
             }))}
           />
         </FilterField>
-        <Button className="px-6" onClick={() => setApplied(draft)}>
+        <Button
+          className="px-6"
+          disabled={!isFilterChanged}
+          onClick={() => setApplied(draft)}
+        >
           조회
         </Button>
         <Button
           variant="outline"
+          disabled={isDefaultFilter}
           onClick={() => {
             setDraft(DEFAULT_ANALYSIS_FILTER);
             setApplied(DEFAULT_ANALYSIS_FILTER);

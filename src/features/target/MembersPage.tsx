@@ -158,6 +158,21 @@ export function MembersPage() {
       setPage(1);
     };
 
+  // 입력한 검색어가 아직 반영되지 않았을 때만 조회 버튼을 켠다.
+  // 검색어가 비어 있으면 검색 기준(이름/번호)만 바꿔도 결과가 같다.
+  const pendingQuery = draft.trim();
+  const isQueryChanged =
+    pendingQuery !== applied.query ||
+    (pendingQuery !== '' && queryMode !== applied.mode);
+  // 모든 조건이 처음 상태면 초기화할 게 없다
+  const isDefaultFilter =
+    level === 'all' &&
+    product === ALL_PRODUCTS &&
+    queryMode === 'name' &&
+    draft === '' &&
+    applied.query === '' &&
+    sort === 'score';
+
   const applyQuery = () => {
     setApplied({ mode: queryMode, query: draft.trim() });
     setPage(1);
@@ -268,13 +283,21 @@ export function MembersPage() {
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') applyQuery();
+                if (e.key === 'Enter' && isQueryChanged) applyQuery();
               }}
             />
-            <Button className="px-6" onClick={applyQuery}>
+            <Button
+              className="px-6"
+              disabled={!isQueryChanged}
+              onClick={applyQuery}
+            >
               조회
             </Button>
-            <Button variant="outline" onClick={resetFilter}>
+            <Button
+              variant="outline"
+              disabled={isDefaultFilter}
+              onClick={resetFilter}
+            >
               초기화
             </Button>
           </div>
