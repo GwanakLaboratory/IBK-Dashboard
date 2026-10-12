@@ -54,7 +54,7 @@ export function PageHeader({
           <span className="text-2xs font-bold tracking-widest text-blue-700">
             {eyebrow ?? head.eyebrow}
           </span>
-          <div className="flex flex-wrap items-baseline gap-3.5">
+          <div className="flex flex-wrap items-center gap-3.5">
             <h1
               className={`whitespace-nowrap font-bold tracking-tight ${titleSize === 'lg' ? 'text-3xl' : 'text-2xl'}`}
             >

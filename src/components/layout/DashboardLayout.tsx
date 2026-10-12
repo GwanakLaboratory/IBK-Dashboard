@@ -18,10 +18,11 @@ export function DashboardLayout() {
       <Header />
       <div className="flex min-h-0 grow">
         <Sidebar />
-        {/* 아래 여백은 오른쪽 아래 챗봇 버튼(56px + 여백)이 마지막 내용을 덮지 않을 만큼 둔다 */}
+        {/* 아래 여백은 오른쪽 아래 챗봇 버튼(56px + 여백)이 마지막 내용을 덮지 않을 만큼 둔다.
+            스크롤바 자리는 항상 비워 둬서, 스크롤바가 생기고 없어질 때 본문 너비가 바뀌지 않게 한다 */}
         <main
           ref={mainRef}
-          className="scrollbar-thin flex min-h-0 min-w-0 grow flex-col gap-4 overflow-y-auto overscroll-contain px-8 pb-24 pt-6"
+          className="scrollbar-thin flex min-h-0 min-w-0 grow flex-col gap-4 overflow-y-auto overscroll-contain px-8 pb-24 pt-6 [scrollbar-gutter:stable]"
         >
           <Outlet />
         </main>
