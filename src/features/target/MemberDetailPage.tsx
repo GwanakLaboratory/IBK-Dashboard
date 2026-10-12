@@ -252,7 +252,11 @@ export function MemberDetailPage() {
             yTicks={[500, 600, 700, 800, 900]}
             valueFormatter={(v) => `${v}점`}
             referenceLines={[
-              { y: 700, label: '안정 승인 700점' },
+              {
+                y: 700,
+                label: '안정 승인 700점',
+                color: CHART_COLOR.success,
+              },
               {
                 y: 621,
                 label: '발급 최소기준 621점',
