@@ -176,7 +176,7 @@ export function PerformancePage() {
                   type="button"
                   aria-label={`${campaign.name} 상세 보기`}
                   onClick={() => setOpenCampaign(campaign)}
-                  className={`${CAMPAIGN_GRID} h-10 w-full border-b border-slate-100 text-left hover:bg-blue-50/40`}
+                  className={`${CAMPAIGN_GRID} h-10 w-full border-b border-slate-100 text-left last:border-b-0 hover:bg-blue-50/40`}
                 >
                   <RankBadge rank={index + 1} highlight="dark" size="md" />
                   <span className="truncate font-semibold text-slate-900">

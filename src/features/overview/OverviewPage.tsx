@@ -283,7 +283,7 @@ export function OverviewPage() {
             {topRows.map((row, index) => (
               <div
                 key={row.name}
-                className={`${TOP5_GRID} h-10 items-center gap-2 border-b border-slate-100 px-1 text-xs`}
+                className={`${TOP5_GRID} h-10 items-center gap-2 border-b border-slate-100 px-1 text-xs last:border-b-0`}
               >
                 <RankBadge rank={index + 1} highlight="dark" size="md" />
                 <span className="truncate font-semibold text-slate-900">
