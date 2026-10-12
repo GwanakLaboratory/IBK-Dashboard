@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button } from '@/components/atoms/Button';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card } from '@/components/molecules/Card';
 import { Dropdown } from '@/components/molecules/Dropdown';
@@ -122,6 +123,20 @@ export function HistoryPage() {
   const [sort, setSort] = useState<SortKey>('date');
   const [openCampaign, setOpenCampaign] = useState<Campaign | null>(null);
 
+  // 모든 조건이 처음 상태면 초기화할 게 없다
+  const isDefaultFilter =
+    status === 'all' &&
+    source === 'all' &&
+    channel === 'all' &&
+    sort === 'date';
+
+  const resetFilter = () => {
+    setStatus('all');
+    setSource('all');
+    setChannel('all');
+    setSort('date');
+  };
+
   const rows = CAMPAIGNS.filter(
     (c) =>
       (status === 'all' || c.status === status) &&
@@ -199,6 +214,13 @@ export function HistoryPage() {
               onChange={setChannel}
               options={CHANNEL_OPTIONS}
             />
+            <Button
+              variant="outline"
+              disabled={isDefaultFilter}
+              onClick={resetFilter}
+            >
+              초기화
+            </Button>
           </div>
           <div className="flex items-center gap-3.5">
             <span className="whitespace-nowrap text-xs text-slate-500">
@@ -223,7 +245,8 @@ export function HistoryPage() {
           <span>채널</span>
           <span>발송일</span>
           <span className="text-right">발송 대상</span>
-          <span className="flex items-center gap-1">
+          {/* 발송 대상(오른쪽 정렬)과 붙어 보이지 않게 반응률 칸은 왼쪽 여백을 둔다 */}
+          <span className="flex items-center gap-1 pl-8">
             반응률
             <HelpTip label="반응률 기준 보기" text={RESPONSE_RATE_TIP} />
           </span>
@@ -306,7 +329,7 @@ function CampaignRow({
       <span className="text-right font-semibold">
         {formatNumber(campaign.count)}
       </span>
-      <span className="flex items-center gap-2.5">
+      <span className="flex items-center gap-2.5 pl-8">
         <span className="h-2 max-w-44 grow overflow-hidden rounded-full bg-slate-100">
           <span
             className="block h-full rounded-full bg-blue-700"

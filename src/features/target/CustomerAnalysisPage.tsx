@@ -93,6 +93,12 @@ type DimensionView = {
   hasMore?: boolean;
 };
 
+function isSameFilter(a: AnalysisFilter, b: AnalysisFilter) {
+  return (
+    a.month === b.month && a.product === b.product && a.channel === b.channel
+  );
+}
+
 export function CustomerAnalysisPage() {
   const navigate = useNavigate();
   const [draft, setDraft] = useState<AnalysisFilter>(DEFAULT_ANALYSIS_FILTER);
@@ -110,6 +116,12 @@ export function CustomerAnalysisPage() {
   useEffect(() => () => window.clearTimeout(focusTimerRef.current), []);
 
   const offset = getFilterOffset(applied);
+  // 바꾼 조건이 아직 반영되지 않았을 때만 조회 버튼을 켠다
+  const isFilterChanged = !isSameFilter(draft, applied);
+  // 고른 조건과 반영된 조건이 모두 기본값이면 초기화할 게 없다
+  const isDefaultFilter =
+    isSameFilter(draft, DEFAULT_ANALYSIS_FILTER) &&
+    isSameFilter(applied, DEFAULT_ANALYSIS_FILTER);
   const products = getProductRisks(offset);
   const rankedProducts = products
     .filter((product) => !product.small)
@@ -240,7 +252,8 @@ export function CustomerAnalysisPage() {
           <Dropdown
             label="카드상품"
             size="md"
-            className="min-w-40 max-w-60"
+            // 고른 상품 이름 길이에 따라 필터 줄이 밀리지 않도록 너비를 고정한다 (긴 이름은 말줄임)
+            className="w-60"
             value={draft.product}
             onChange={(value) => setDraft({ ...draft, product: value })}
             options={['전체', ...CARD_PRODUCTS.map((card) => card.name)].map(
@@ -262,11 +275,16 @@ export function CustomerAnalysisPage() {
             }))}
           />
         </FilterField>
-        <Button className="px-6" onClick={() => setApplied(draft)}>
+        <Button
+          className="px-6"
+          disabled={!isFilterChanged}
+          onClick={() => setApplied(draft)}
+        >
           조회
         </Button>
         <Button
           variant="outline"
+          disabled={isDefaultFilter}
           onClick={() => {
             setDraft(DEFAULT_ANALYSIS_FILTER);
             setApplied(DEFAULT_ANALYSIS_FILTER);
@@ -480,7 +498,7 @@ function DimensionCard({
                 to ? `${row.label} 카드 상세 보기` : `${row.label} ${display}`
               }
               onClick={to ? () => navigate(to) : undefined}
-              className={`grid h-9 w-full grid-cols-[96px_minmax(0,1fr)_56px] items-center gap-3 rounded-lg border px-2 text-left disabled:cursor-default ${
+              className={`grid h-9 w-full grid-cols-[96px_minmax(0,1fr)_76px] items-center gap-3 rounded-lg border px-2.5 text-left disabled:cursor-default ${
                 tone ? tone.row : 'border-transparent'
               } ${to ? 'hover:bg-slate-50' : ''}`}
             >
@@ -498,7 +516,7 @@ function DimensionCard({
                 />
               </span>
               <span
-                className={`text-right text-sm font-bold ${
+                className={`whitespace-nowrap text-right text-sm font-bold ${
                   tone ? tone.text : isTop ? 'text-blue-700' : 'text-slate-600'
                 }`}
               >

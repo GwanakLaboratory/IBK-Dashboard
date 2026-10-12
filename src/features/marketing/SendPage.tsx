@@ -6,10 +6,12 @@ import { EMPTY_CONDITION_PICK } from '@/data/marketing';
 import {
   AI_GENERATING_MS,
   buildMessageView,
-  buildTargetSummary,
+  buildSendSummary,
+  countPendingMessages,
   EMPTY_MESSAGE_DRAFT,
   formatCount,
   formatSchedule,
+  getDecidedTargets,
   getExtractMembers,
   getMessageTargets,
   hasTemplate,
@@ -40,8 +42,14 @@ export function SendPage() {
   const [draft, setDraft] = useState<SendDraft>(INITIAL_SEND_DRAFT);
   const [done, setDone] = useState<DoneAction>(null);
   const aiTimersRef = useRef(new Map<string, number>());
-  const summary = useMemo(() => buildTargetSummary(draft), [draft]);
+  // 확인 후 전달은 문구를 결정한 대상만 센다
+  const summary = useMemo(() => buildSendSummary(draft), [draft]);
   const messageTargets = useMemo(() => getMessageTargets(draft), [draft]);
+  const decidedTargets = getDecidedTargets(messageTargets, draft.messages);
+  const pendingMessageCount = countPendingMessages(
+    messageTargets,
+    draft.messages,
+  );
 
   useEffect(() => {
     const timers = aiTimersRef.current;
@@ -55,6 +63,10 @@ export function SendPage() {
   }
 
   function updateMessage(targetKey: string, patch: Partial<MessageDraft>) {
+    // 펼치기 · 생성 완료 표시 말고 문구나 일정을 바꾸면 다시 결정해야 한다
+    const changesContent = Object.keys(patch).some(
+      (key) => !['open', 'aiTask', 'confirmed'].includes(key),
+    );
     setDraft((previous) => ({
       ...previous,
       messages: {
@@ -62,6 +74,7 @@ export function SendPage() {
         [targetKey]: {
           ...(previous.messages[targetKey] ?? EMPTY_MESSAGE_DRAFT),
           ...patch,
+          ...(changesContent && { confirmed: false }),
         },
       },
     }));
@@ -89,6 +102,17 @@ export function SendPage() {
       const { task, text } = rewriteByRequest(message, request);
       runAi(targetKey, task, text);
     },
+    // 결정하면 카드를 접고, 아직 결정하지 않은 다음 문구 카드를 펼친다
+    onConfirm: (targetKey) => {
+      updateMessage(targetKey, { confirmed: true, open: false });
+      const next = messageTargets.find(
+        (target) =>
+          target.key !== targetKey &&
+          hasTemplate(target) &&
+          !draft.messages[target.key]?.confirmed,
+      );
+      if (next) updateMessage(next.key, { open: true });
+    },
   };
 
   function toggleSegment(segmentId: string) {
@@ -113,7 +137,7 @@ export function SendPage() {
     document.querySelector('main')?.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  const cmoRows: CmoRow[] = messageTargets.map((target) => {
+  const cmoRows: CmoRow[] = decidedTargets.map((target) => {
     const schedule = hasTemplate(target)
       ? formatSchedule(
           buildMessageView(target, draft.messages[target.key], false),
@@ -129,7 +153,7 @@ export function SendPage() {
       count: `${formatCount(target.count)}명`,
     };
   });
-  const isMultiSegment = draft.mode === 'ai' && messageTargets.length > 1;
+  const isMultiSegment = draft.mode === 'ai' && decidedTargets.length > 1;
 
   return (
     <>
@@ -204,13 +228,14 @@ export function SendPage() {
       <TargetSummary
         step={messageTargets.length > 0 ? 3 : 2}
         summary={summary}
+        pendingMessageCount={pendingMessageCount}
         onExtract={handleExtract}
         onSendToCmo={() => !summary.empty && setDone('cmo')}
       />
 
       {done === 'cmo' && (
         <SendCompleteModal
-          subtitle={`${draft.mode === 'ai' ? `${messageTargets.length}개 대상` : '1개 대상'} · 총 ${formatCount(summary.total)}명${isMultiSegment ? ' (중복 제외)' : ''}`}
+          subtitle={`${draft.mode === 'ai' ? `${decidedTargets.length}개 대상` : '1개 대상'} · 총 ${formatCount(summary.total)}명${isMultiSegment ? ' (중복 제외)' : ''}`}
           rows={cmoRows}
           onConfirm={handleCmoConfirm}
         />

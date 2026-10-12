@@ -8,6 +8,8 @@ import { StepHeading } from '@/features/marketing/campaign/TargetSelectPanel';
 type TargetSummaryProps = {
   step: number;
   summary: Summary;
+  /** 문구를 아직 결정하지 않은 대상 수. 이 대상들은 요약 · 추출 · 전달에서 빠져 있다. */
+  pendingMessageCount: number;
   onExtract: () => void;
   onSendToCmo: () => void;
 };
@@ -19,6 +21,7 @@ const BIG_BUTTON_CLASS_NAME =
 export function TargetSummary({
   step,
   summary,
+  pendingMessageCount,
   onExtract,
   onSendToCmo,
 }: TargetSummaryProps) {
@@ -49,10 +52,17 @@ export function TargetSummary({
                 </span>
               ))}
             </div>
-            {summary.empty && (
-              <span className="pt-2 text-sm text-slate-400">
-                아직 고른 대상이 없어요. 위에서 세그먼트나 조건을 골라 주세요.
+            {pendingMessageCount > 0 ? (
+              <span className="pt-1 text-xs font-semibold text-amber-700">
+                발송 문구를 결정하지 않은 대상 {pendingMessageCount}개는
+                결정하면 포함돼요
               </span>
+            ) : (
+              summary.empty && (
+                <span className="pt-2 text-sm text-slate-400">
+                  아직 고른 대상이 없어요. 위에서 세그먼트나 조건을 골라 주세요.
+                </span>
+              )
             )}
           </div>
           <div className="flex flex-col justify-center gap-2.5 border-l border-slate-100 px-7 py-5">

@@ -252,7 +252,11 @@ export function MemberDetailPage() {
             yTicks={[500, 600, 700, 800, 900]}
             valueFormatter={(v) => `${v}점`}
             referenceLines={[
-              { y: 700, label: '안정 승인 700점' },
+              {
+                y: 700,
+                label: '안정 승인 700점',
+                color: CHART_COLOR.success,
+              },
               {
                 y: 621,
                 label: '발급 최소기준 621점',
@@ -327,7 +331,7 @@ export function MemberDetailPage() {
             {detail.payments.map((payment) => (
               <div
                 key={payment.store}
-                className="grid min-h-[46px] grid-cols-[56px_minmax(0,1fr)_88px_76px] items-center gap-2 border-b border-slate-100 px-1 text-xs"
+                className="grid min-h-[46px] grid-cols-[56px_minmax(0,1fr)_88px_76px] items-center gap-2 border-b border-slate-100 px-1 text-xs last:border-b-0"
               >
                 <span className="text-slate-500">{payment.date}</span>
                 <span className="flex min-w-0 flex-col gap-0.5">

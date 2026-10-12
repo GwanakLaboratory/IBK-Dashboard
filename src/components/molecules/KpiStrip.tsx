@@ -1,4 +1,6 @@
+import { ChevronRight } from 'lucide-react';
 import { type ReactNode } from 'react';
+import { Link } from 'react-router';
 
 export type KpiItem = {
   label: string;
@@ -9,6 +11,8 @@ export type KpiItem = {
   /** 보조 문구 앞에 붙는 배지 (예: DeltaBadge) */
   badge?: ReactNode;
   sub?: ReactNode;
+  /** 있으면 칸 전체가 이 경로로 가는 링크가 된다 (예: 해당 상품 상세) */
+  to?: string;
 };
 
 type KpiStripProps = {
@@ -44,43 +48,63 @@ export function KpiStrip({ items, size = 'md' }: KpiStripProps) {
 
   return (
     <div
-      className="grid divide-x divide-slate-100 rounded-2xl border border-slate-200 bg-white"
+      className="grid shrink-0 divide-x divide-slate-100 overflow-hidden rounded-2xl border border-slate-200 bg-white"
       style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
     >
-      {items.map((item) => (
-        <div
-          key={item.label}
-          className={`flex min-w-0 flex-col justify-center ${sizeClassName.cell}`}
-        >
-          <span
-            className={`font-bold ${sizeClassName.label} ${item.labelClassName ?? 'text-slate-900'}`}
-          >
-            {item.label}
-          </span>
-          <div className="flex items-baseline gap-1">
+      {items.map((item) => {
+        const cellClassName = `flex min-w-0 flex-col justify-center ${sizeClassName.cell}`;
+        const content = (
+          <>
             <span
-              className={`${sizeClassName.value} font-bold leading-none tracking-tight`}
+              className={`flex items-center gap-1 font-bold ${sizeClassName.label} ${item.labelClassName ?? 'text-slate-900'}`}
             >
-              {item.value}
+              {item.label}
+              {item.to && (
+                <ChevronRight
+                  aria-hidden="true"
+                  className="size-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5"
+                  strokeWidth={2.4}
+                />
+              )}
             </span>
-            {item.unit && (
-              <span className={`${sizeClassName.unit} font-bold`}>
-                {item.unit}
+            <div className="flex items-baseline gap-1">
+              <span
+                className={`${sizeClassName.value} font-bold leading-none tracking-tight`}
+              >
+                {item.value}
               </span>
-            )}
-          </div>
-          {(item.badge || item.sub) && (
-            <div className="flex min-w-0 items-center gap-2">
-              {item.badge}
-              {item.sub && (
-                <span className="truncate text-xs text-slate-500">
-                  {item.sub}
+              {item.unit && (
+                <span className={`${sizeClassName.unit} font-bold`}>
+                  {item.unit}
                 </span>
               )}
             </div>
-          )}
-        </div>
-      ))}
+            {(item.badge || item.sub) && (
+              <div className="flex min-w-0 items-center gap-2">
+                {item.badge}
+                {item.sub && (
+                  <span className="truncate text-xs text-slate-500">
+                    {item.sub}
+                  </span>
+                )}
+              </div>
+            )}
+          </>
+        );
+        return item.to ? (
+          <Link
+            key={item.label}
+            to={item.to}
+            className={`group ${cellClassName} hover:bg-slate-50`}
+          >
+            {content}
+          </Link>
+        ) : (
+          <div key={item.label} className={cellClassName}>
+            {content}
+          </div>
+        );
+      })}
     </div>
   );
 }

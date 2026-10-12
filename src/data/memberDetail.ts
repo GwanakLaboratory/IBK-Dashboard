@@ -111,7 +111,8 @@ export function getMemberDetail(member: TargetMember) {
     usage,
     credit,
     tiles,
-    scoreDelta: churn[11] - churn[10],
+    // 화면에 "3개월 전 ○점"과 함께 보여주므로 증감도 3개월 전 대비로 계산한다
+    scoreDelta: churn[11] - churn[8],
     prev3: churn[8],
     aiText:
       drop > 30

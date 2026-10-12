@@ -80,13 +80,21 @@ export function ChatMessageContent({ text }: ChatMessageContentProps) {
   const blocks = parseBlocks(text);
 
   return (
-    <div className="space-y-5">
+    <div>
       {blocks.map((block, blockIndex) => {
+        // 문단 사이는 촘촘하게, 표 앞뒤는 넉넉하게 띄운다
+        const previous = blocks[blockIndex - 1];
+        const spacingClassName = !previous
+          ? ''
+          : block.type === 'table' || previous.type === 'table'
+            ? 'mt-4'
+            : 'mt-2.5';
+
         if (block.type === 'table') {
           return (
             <div
               key={blockIndex}
-              className="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm"
+              className={`overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm ${spacingClassName}`}
             >
               <table className="w-full text-xs">
                 <thead>
@@ -138,7 +146,7 @@ export function ChatMessageContent({ text }: ChatMessageContentProps) {
         }
 
         return (
-          <p key={blockIndex}>
+          <p key={blockIndex} className={spacingClassName}>
             {renderInlineBold(block.line, `p-${blockIndex}`)}
           </p>
         );

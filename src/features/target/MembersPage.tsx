@@ -22,21 +22,18 @@ import {
   type TargetMember,
 } from '@/data/target';
 import type { RiskLevel } from '@/types/churn';
-import {
-  RISK_LEVEL_META,
-  getRiskLevelFromScore,
-  interleaveByRiskLevel,
-} from '@/utils/risk';
+import { RISK_LEVEL_META, getRiskLevelFromScore } from '@/utils/risk';
 
 type LevelFilter = 'all' | RiskLevel;
 type QueryMode = 'name' | 'phone' | 'id';
-type SortKey = 'score' | 'idle';
+type SortKey = 'id' | 'score' | 'idle';
 
 const ALL_PRODUCTS = '전체 카드상품';
 const PAGE_SIZE = 10;
-// 가로 스크롤 없이 콘텐츠 폭에 맞추는 유동 열
+// 열 너비는 내용 폭에 맞춰 두고(카드상품·주요 이유는 최대 너비까지만 늘어남),
+// 화면이 넓을 때 남는 폭은 justify-between 으로 열 사이 간격에 고르게 나눈다.
 const GRID_COLUMNS =
-  'grid-cols-[76px_56px_96px_minmax(0,1fr)_96px_88px_minmax(0,1.3fr)_44px]';
+  'grid-cols-[84px_60px_112px_minmax(120px,200px)_112px_96px_minmax(120px,170px)_44px] justify-between';
 
 const LEVEL_CARDS: { key: LevelFilter; label: string; sub: string }[] = [
   { key: 'all', label: '분석 대상 전체', sub: '최근 2개월 신용카드 이용 고객' },
@@ -67,9 +64,29 @@ const LEVEL_OPTIONS: { value: LevelFilter; label: string }[] = [
 ];
 
 const SORT_TABS: { key: SortKey; label: string }[] = [
+  { key: 'id', label: '회원번호 순' },
   { key: 'score', label: '이탈 예측 점수 높은 순' },
   { key: 'idle', label: '미이용 기간 긴 순' },
 ];
+
+const DEFAULT_SORT: SortKey = 'id';
+
+/** 'C-204817' → 204817 (회원번호 순 정렬용) */
+const memberNumber = (member: TargetMember) =>
+  Number(member.id.replace(/\D/g, ''));
+
+// 값이 같으면 회원번호 순으로 이어서 정렬해 순서가 늘 같게 한다
+const SORT_COMPARE: Record<
+  SortKey,
+  (a: TargetMember, b: TargetMember) => number
+> = {
+  id: (a, b) => memberNumber(a) - memberNumber(b),
+  score: (a, b) => b.score - a.score || memberNumber(a) - memberNumber(b),
+  idle: (a, b) =>
+    b.idleDays - a.idleDays ||
+    b.score - a.score ||
+    memberNumber(a) - memberNumber(b),
+};
 
 const PRODUCT_OPTIONS = [ALL_PRODUCTS, ...CARD_PRODUCTS.map((c) => c.name)];
 
@@ -108,7 +125,7 @@ export function MembersPage() {
     mode: 'name',
     query: '',
   });
-  const [sort, setSort] = useState<SortKey>('score');
+  const [sort, setSort] = useState<SortKey>(DEFAULT_SORT);
   const [page, setPage] = useState(1);
 
   const filtered = useMemo(
@@ -118,30 +135,13 @@ export function MembersPage() {
           (level === 'all' || getRiskLevelFromScore(member.score) === level) &&
           (product === ALL_PRODUCTS || member.product === product) &&
           matchQuery(member, applied.mode, applied.query),
-      ).sort((a, b) =>
-        sort === 'idle'
-          ? b.idleDays - a.idleDays || b.score - a.score
-          : b.score - a.score,
-      ),
+      ).sort(SORT_COMPARE[sort]),
     [level, product, applied, sort],
-  );
-  // 전체 위험도 + 점수 순일 때는 위험 → 중위험 → 저위험을 번갈아 보여준다 (등급 안에서는 점수 순)
-  const rowsInOrder = useMemo(
-    () =>
-      level === 'all' && sort === 'score'
-        ? interleaveByRiskLevel(
-            filtered.map((member) => ({
-              member,
-              riskLevel: getRiskLevelFromScore(member.score),
-            })),
-          ).map((item) => item.member)
-        : filtered,
-    [filtered, level, sort],
   );
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
-  const rows = rowsInOrder.slice(
+  const rows = filtered.slice(
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE,
   );
@@ -158,6 +158,21 @@ export function MembersPage() {
       setPage(1);
     };
 
+  // 입력한 검색어가 아직 반영되지 않았을 때만 조회 버튼을 켠다.
+  // 검색어가 비어 있으면 검색 기준(이름/번호)만 바꿔도 결과가 같다.
+  const pendingQuery = draft.trim();
+  const isQueryChanged =
+    pendingQuery !== applied.query ||
+    (pendingQuery !== '' && queryMode !== applied.mode);
+  // 모든 조건이 처음 상태면 초기화할 게 없다
+  const isDefaultFilter =
+    level === 'all' &&
+    product === ALL_PRODUCTS &&
+    queryMode === 'name' &&
+    draft === '' &&
+    applied.query === '' &&
+    sort === DEFAULT_SORT;
+
   const applyQuery = () => {
     setApplied({ mode: queryMode, query: draft.trim() });
     setPage(1);
@@ -169,7 +184,7 @@ export function MembersPage() {
     setQueryMode('name');
     setDraft('');
     setApplied({ mode: 'name', query: '' });
-    setSort('score');
+    setSort(DEFAULT_SORT);
     setPage(1);
   };
 
@@ -180,7 +195,7 @@ export function MembersPage() {
         eyebrow="RISK TARGET · 회원"
         titleSize="lg"
         title="회원 목록"
-        description="이탈 예측 점수 높은 순 · 회원을 눌러 상세 이력을 확인할 수 있어요"
+        description="회원을 눌러 상세 이력을 확인할 수 있어요"
         back={{ label: '고객 분석', to: '/target' }}
         // 데이터 기준일·기준 월 표시는 이 화면에서 쓰지 않는다
         actions={false}
@@ -188,7 +203,10 @@ export function MembersPage() {
 
       <div className="grid grid-cols-4 gap-4">
         {LEVEL_CARDS.map((card) => {
-          const selected = card.key === level;
+          // 카드상품으로 걸러 보고 있으면 '분석 대상 전체'가 아니므로 전체 카드는 선택 표시를 하지 않는다
+          const selected =
+            card.key === level &&
+            !(card.key === 'all' && product !== ALL_PRODUCTS);
           const count = MEMBER_COUNT_BY_LEVEL[card.key];
           const meta = card.key === 'all' ? null : RISK_LEVEL_META[card.key];
           return (
@@ -268,13 +286,21 @@ export function MembersPage() {
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') applyQuery();
+                if (e.key === 'Enter' && isQueryChanged) applyQuery();
               }}
             />
-            <Button className="px-6" onClick={applyQuery}>
+            <Button
+              className="px-6"
+              disabled={!isQueryChanged}
+              onClick={applyQuery}
+            >
               조회
             </Button>
-            <Button variant="outline" onClick={resetFilter}>
+            <Button
+              variant="outline"
+              disabled={isDefaultFilter}
+              onClick={resetFilter}
+            >
               초기화
             </Button>
           </div>
@@ -327,7 +353,7 @@ export function MembersPage() {
               <Button
                 variant="outline"
                 onClick={() =>
-                  downloadTargetCsv(rowsInOrder.map(memberCsvRow), '회원목록')
+                  downloadTargetCsv(filtered.map(memberCsvRow), '회원목록')
                 }
               >
                 <Download className="size-4" strokeWidth={2} />
@@ -371,12 +397,9 @@ export function MembersPage() {
               <span className="truncate text-slate-700" title={member.product}>
                 {member.product}
               </span>
-              <ScoreBar score={member.score} barClassName="w-12" />
+              <ScoreBar score={member.score} />
               <span>
-                <RiskBadge
-                  riskLevel={getRiskLevelFromScore(member.score)}
-                  size="lg"
-                />
+                <RiskBadge riskLevel={getRiskLevelFromScore(member.score)} />
               </span>
               <span className="truncate text-slate-700" title={member.reason}>
                 {member.reason}

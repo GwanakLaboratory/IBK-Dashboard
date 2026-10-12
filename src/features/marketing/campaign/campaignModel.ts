@@ -40,6 +40,8 @@ export type MessageDraft = {
   aiTask: AiTask | null;
   /** 처음 펼칠 때 AI 생성을 이미 보여줬는지 */
   generated?: boolean;
+  /** '이 문구로 결정'을 눌렀는지. 문구·일정을 고치면 다시 false 가 된다. */
+  confirmed?: boolean;
 };
 
 export type SendDraft = {
@@ -246,6 +248,7 @@ export type MessageView = {
   time: string;
   aiTask: AiTask | null;
   generated: boolean;
+  confirmed: boolean;
 };
 
 export function buildMessageView(
@@ -265,6 +268,7 @@ export function buildMessageView(
     time: state.time ?? target.template.recommendedTime,
     aiTask: state.aiTask,
     generated: state.generated ?? false,
+    confirmed: state.confirmed ?? false,
   };
 }
 
@@ -272,6 +276,58 @@ export function hasTemplate(
   target: MessageTarget,
 ): target is MessageTarget & { template: MessageTemplate } {
   return target.template !== undefined;
+}
+
+/** 전달할 수 있는 대상: 문구를 결정했거나, 텔레마케팅처럼 문구가 필요 없는 대상 */
+function isDecided(
+  target: MessageTarget,
+  messages: Record<string, MessageDraft>,
+) {
+  return !hasTemplate(target) || messages[target.key]?.confirmed === true;
+}
+
+export function getDecidedTargets(
+  targets: MessageTarget[],
+  messages: Record<string, MessageDraft>,
+) {
+  return targets.filter((target) => isDecided(target, messages));
+}
+
+/** 문구를 아직 결정하지 않은 대상 수 */
+export function countPendingMessages(
+  targets: MessageTarget[],
+  messages: Record<string, MessageDraft>,
+) {
+  return targets.length - getDecidedTargets(targets, messages).length;
+}
+
+/**
+ * 확인 후 전달에 쓰는 요약. 문구를 결정한 대상만 인원·추출·전달에 포함한다.
+ * (buildTargetSummary 는 대상 선택 자체의 요약이라 문구 카드 목록을 만들 때도 쓴다)
+ */
+export function buildSendSummary(draft: SendDraft): TargetSummary {
+  const targets = getMessageTargets(draft);
+  const pendingCount = countPendingMessages(targets, draft.messages);
+  const base = buildTargetSummary(draft);
+  if (pendingCount === 0) return base;
+
+  const pendingNote = '발송 문구를 결정하면 인원이 계산돼요';
+  if (draft.mode === 'ai') {
+    const decidedKeys = new Set(
+      getDecidedTargets(targets, draft.messages).map((target) => target.key),
+    );
+    const summary = buildTargetSummary({
+      ...draft,
+      segmentIds: draft.segmentIds.filter((id) => decidedKeys.has(id)),
+    });
+    return {
+      ...summary,
+      chip: `${draft.segmentIds.length}개 중 ${decidedKeys.size}개 결정`,
+      note: summary.empty ? pendingNote : summary.note,
+    };
+  }
+  // 조건 · 무작위는 문구 카드가 하나라, 결정 전에는 전달할 대상이 없다
+  return { ...base, total: 0, empty: true, note: pendingNote };
 }
 
 export const REWRITE_OPTIONS: { key: RewriteKey; label: string }[] = [

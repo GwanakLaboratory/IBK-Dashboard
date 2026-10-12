@@ -28,6 +28,8 @@ export type MessageEditorHandlers = {
   onRegenerate: (targetKey: string) => void;
   /** request: 사용자가 입력한 다듬기 요청 (예: 더 짧고 친근하게) */
   onRewrite: (targetKey: string, request: string, message: string) => void;
+  /** '이 문구로 결정': 카드를 접고 다음 문구 카드를 펼친다 */
+  onConfirm: (targetKey: string) => void;
 };
 
 type MessageEditorProps = MessageEditorHandlers & {
@@ -93,6 +95,7 @@ function MessageCard({
   onUpdate,
   onRegenerate,
   onRewrite,
+  onConfirm,
 }: MessageEditorHandlers & {
   target: MessageTarget & { template: NonNullable<MessageTarget['template']> };
   view: MessageView;
@@ -120,6 +123,14 @@ function MessageCard({
     setRewriteOpen(false);
   };
 
+  // 접힌 카드 요약: AI가 문구를 만들기 전에는 예시 문구 대신 미정 상태를 보여준다
+  const hasMessage = view.generated && !view.aiTask;
+  const collapsedText = !view.generated
+    ? '문구 미정 · 펼치면 AI가 문구를 만들어요'
+    : view.aiTask
+      ? 'AI가 문구를 만들고 있어요'
+      : view.text;
+
   return (
     <>
       <button
@@ -133,11 +144,22 @@ function MessageCard({
           className={
             view.open
               ? 'grow'
-              : 'ml-1.5 min-w-0 grow truncate text-xs text-slate-600'
+              : `ml-1.5 min-w-0 grow truncate text-xs ${hasMessage ? 'text-slate-600' : 'text-slate-400'}`
           }
         >
-          {view.open ? '' : view.text}
+          {view.open ? '' : collapsedText}
         </span>
+        {view.confirmed ? (
+          <span className="inline-flex h-[26px] shrink-0 items-center gap-1 rounded-full bg-green-50 px-2.5 text-xs font-bold text-green-700">
+            <Check className="size-3" strokeWidth={3} />
+            결정
+          </span>
+        ) : (
+          // 결정하지 않은 카드는 생성 전 · 생성 중에도 '결정 전'으로 표시한다
+          <span className="inline-flex h-[26px] shrink-0 items-center rounded-full bg-amber-50 px-2.5 text-xs font-bold text-amber-700">
+            결정 전
+          </span>
+        )}
         <span className="inline-flex h-[26px] shrink-0 items-center rounded-full bg-slate-100 px-2.5 text-xs font-semibold text-slate-700">
           {formatSchedule(view)}
         </span>
@@ -347,6 +369,22 @@ function MessageCard({
                     className="w-full resize-y rounded-lg border border-slate-300 bg-white px-3.5 py-3 text-sm leading-relaxed text-slate-900 outline-none focus:border-blue-700"
                   />
                 )}
+              </div>
+
+              <div className="flex items-center justify-end gap-3">
+                {view.confirmed && (
+                  <span className="text-xs text-slate-500">
+                    이 문구로 결정했어요 · 고치면 다시 결정해야 해요
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => onConfirm(target.key)}
+                  className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-blue-700 px-4 text-sm font-bold text-white hover:bg-blue-800"
+                >
+                  <Check className="size-4" strokeWidth={2.6} />
+                  {view.confirmed ? '접기' : '이 문구로 결정'}
+                </button>
               </div>
             </>
           )}
