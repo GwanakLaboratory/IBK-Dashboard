@@ -29,14 +29,14 @@ export const MEMBER_COUNT_BY_LEVEL = {
 /** 시안에 있던 대표 회원 10명 */
 const SAMPLE_MEMBERS: TargetMember[] = [
   {
-    id: 'C-204817',
+    id: 'C-001024',
     name: '김*현',
     gender: '여',
     ageGroup: '30대',
     joinedAt: '2019.04',
     product: '해피메이트 IBK카드',
     score: 92,
-    idleDays: 74,
+    idleDays: 58,
     reason: '타사카드 사용량 증가',
     lastContact: '',
   },
@@ -48,7 +48,7 @@ const SAMPLE_MEMBERS: TargetMember[] = [
     joinedAt: '2017.11',
     product: 'K-패스(신용)',
     score: 88,
-    idleDays: 61,
+    idleDays: 52,
     reason: '카드 혜택 및 서비스 감소',
     lastContact: '09.18 앱 푸시',
   },
@@ -253,6 +253,9 @@ const CONTACTS = [
 /** 모든 카드 상품에 이탈 위험(40점 이상) 회원이 최소 몇 명씩 있게 할지 */
 const MIN_RISK_MEMBERS_PER_CARD = 3;
 
+/** 최근 2개월(60일) 안에 이용한 고객만 분석 대상이다 */
+const MAX_IDLE_DAYS = 59;
+
 /** 순번으로 정해지는 고정 회원 (새로고침해도 같음) */
 function makeFillerMember(
   n: number,
@@ -268,7 +271,11 @@ function makeFillerMember(
     product,
     score,
     // 점수가 낮을수록 미이용 기간도 짧게
-    idleDays: Math.max(1, Math.round(score * 0.7) + ((n * 13) % 15) - 7),
+    // 분석 대상은 최근 2개월 이용 고객이라 미이용은 60일 미만으로 둔다
+    idleDays: Math.min(
+      MAX_IDLE_DAYS,
+      Math.max(1, Math.round(score * 0.6) + ((n * 13) % 15) - 7),
+    ),
     reason: CHURN_REASONS[REASON_CYCLE[n % REASON_CYCLE.length]],
     lastContact: CONTACTS[n % CONTACTS.length],
   };

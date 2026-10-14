@@ -52,7 +52,7 @@ const QUERY_MODES: { key: QueryMode; label: string; placeholder: string }[] = [
   {
     key: 'id',
     label: '회원번호',
-    placeholder: '회원번호를 입력하세요 (예: C-204817)',
+    placeholder: '회원번호를 입력하세요 (예: C-001024)',
   },
 ];
 
@@ -71,7 +71,7 @@ const SORT_TABS: { key: SortKey; label: string }[] = [
 
 const DEFAULT_SORT: SortKey = 'id';
 
-/** 'C-204817' → 204817 (회원번호 순 정렬용) */
+/** 'C-001024' → 1024 (회원번호 순 정렬용) */
 const memberNumber = (member: TargetMember) =>
   Number(member.id.replace(/\D/g, ''));
 
