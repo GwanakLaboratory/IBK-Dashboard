@@ -1,10 +1,14 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import {
   ALL_MEMBER_COUNT,
   EMPTY_CONDITION_PICK,
   RANDOM_POOLS,
+  randomPoolLabel,
   RISK_OPTION_COUNT,
   SEND_SEGMENTS,
+  sendSegmentName,
+  sendSegmentText,
+  templateVariantText,
 } from '@/data/marketing';
 import {
   buildAiInsight,
@@ -25,6 +29,7 @@ import {
   parseRewriteRequest,
   rewriteByRequest,
 } from '@/features/marketing/campaign/campaignModel';
+import i18n from '@/i18n';
 import { getRiskLevelFromScore } from '@/utils/risk';
 
 // 위험 회원 모집단
@@ -42,17 +47,17 @@ describe('getConditionCount', () => {
 
   it('starts from risk counts and narrows by each picked group', () => {
     expect(
-      getConditionCount({ ...EMPTY_CONDITION_PICK, risk: ['위험', '중위험'] }),
-    ).toBe(RISK_OPTION_COUNT['위험'] + RISK_OPTION_COUNT['중위험']);
+      getConditionCount({ ...EMPTY_CONDITION_PICK, risk: ['high', 'medium'] }),
+    ).toBe(RISK_OPTION_COUNT.high + RISK_OPTION_COUNT.medium);
     // 위험 회원 × (1/5 × 1.08) × (1/3 × 1.08)
     expect(
       getConditionCount({
         ...EMPTY_CONDITION_PICK,
-        risk: ['위험'],
-        reason: ['타사카드 사용량 증가'],
-        spend: ['1천만 원 이상'],
+        risk: ['high'],
+        reason: ['otherCardUsage'],
+        spend: ['over10m'],
       }),
-    ).toBe(Math.round(RISK_OPTION_COUNT['위험'] * 0.2 * 1.08 * (1 / 3) * 1.08));
+    ).toBe(Math.round(RISK_OPTION_COUNT.high * 0.2 * 1.08 * (1 / 3) * 1.08));
   });
 });
 
@@ -62,7 +67,7 @@ describe('buildTargetSummary', () => {
     expect(summary.total).toBe(SEND_SEGMENTS[0].count);
     expect(summary.chip).toBe('1개 세그먼트 선택');
     expect(summary.items).toEqual([
-      { key: '텔레마케팅', value: SEND_SEGMENTS[0].name },
+      { key: '텔레마케팅', value: sendSegmentName('s1') },
     ]);
   });
 
@@ -93,9 +98,9 @@ describe('buildTargetSummary', () => {
         channel: 'kakao',
         conditions: {
           ...EMPTY_CONDITION_PICK,
-          risk: ['위험'],
-          reason: ['타사카드 사용량 증가'],
-          spend: ['1천만 원 이상'],
+          risk: ['high'],
+          reason: ['otherCardUsage'],
+          spend: ['over10m'],
         },
       }),
     );
@@ -116,7 +121,7 @@ describe('buildTargetSummary', () => {
     expect(summary.total).toBe(3000);
     expect(summary.items.map((item) => item.value)).toEqual([
       '카카오',
-      RANDOM_POOLS[0].label,
+      randomPoolLabel(RANDOM_POOLS[0]),
       '3,000명',
       '3,000명 (미발송)',
     ]);
@@ -126,14 +131,16 @@ describe('buildTargetSummary', () => {
 describe('buildAiInsight', () => {
   it('shows the segment insight for a single pick', () => {
     expect(buildAiInsight([SEND_SEGMENTS[1]]).highlight).toBe(
-      SEND_SEGMENTS[1].recommendation,
+      sendSegmentText('s2', 'recommendation'),
     );
   });
 
   it('summarises the best segment and a weighted response for several picks', () => {
     const [s1, s2] = SEND_SEGMENTS;
     const insight = buildAiInsight([s1, s2]);
-    expect(insight.text).toContain(`${s1.name}의 예상 반응(42.9%)`);
+    expect(insight.text).toContain(
+      `${sendSegmentName(s1.id)}의 예상 반응(42.9%)`,
+    );
     expect(insight.text).toContain('텔레마케팅 1개, 카카오 1개');
     const average = (42.9 * s1.count + 31.4 * s2.count) / (s1.count + s2.count);
     expect(insight.highlight).toBe(
@@ -237,7 +244,7 @@ describe('buildMessageView', () => {
       variantIndex: 0,
       time: '10:00',
       date: '2026-10-08',
-      text: target.template.variants[0].text,
+      text: templateVariantText(target.template, 0),
     });
   });
 
@@ -307,5 +314,41 @@ describe('rewriteByRequest', () => {
       task: 'custom',
       text: '반가워요! 첫 문장입니다.',
     });
+  });
+});
+
+describe('in English', () => {
+  afterEach(() => i18n.changeLanguage('ko'));
+
+  it('builds summaries, labels and rewrites in the current language', async () => {
+    await i18n.changeLanguage('en');
+    const summary = buildTargetSummary(
+      draftOf({
+        mode: 'cond',
+        channel: 'kakao',
+        conditions: {
+          ...EMPTY_CONDITION_PICK,
+          risk: ['high'],
+          age: ['60plus'],
+        },
+      }),
+    );
+    expect(summary.chip).toBe('2 conditions applied');
+    expect(summary.items).toEqual([
+      { key: 'Risk level', value: 'High' },
+      { key: 'Age group', value: '60+' },
+      { key: 'Channel', value: 'Kakao' },
+    ]);
+    expect(formatTimeLabel('19:00')).toBe('7:00 PM');
+    expect(formatDateLabel('2026-10-08')).toBe('Thu, Oct 8');
+    expect(parseRewriteRequest('Make it shorter and friendlier')).toEqual([
+      'short',
+      'friendly',
+    ]);
+    expect(rewriteMessage('Hello.', 'friendly')).toBe('Hi there! Hello.');
+
+    const target = getMessageTargets(draftOf({ segmentIds: ['s4'] }))[0];
+    if (!hasTemplate(target)) throw new Error('template expected');
+    expect(buildMessageView(target, undefined, true).text).toContain('{name}');
   });
 });

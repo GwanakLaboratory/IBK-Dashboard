@@ -1,4 +1,5 @@
 import { CalendarDays } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Dropdown, type DropdownOption } from '@/components/molecules/Dropdown';
 
 type MonthSelectProps = {
@@ -12,9 +13,10 @@ type MonthSelectProps = {
 
 /** 달력 아이콘이 붙은 기준 월 드롭다운 */
 export function MonthSelect({ align = 'right', ...props }: MonthSelectProps) {
+  const { t } = useTranslation();
   return (
     <Dropdown
-      label="기준 월"
+      label={t('common.monthSelect.label')}
       icon={CalendarDays}
       align={align}
       className="min-w-44"

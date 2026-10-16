@@ -1,5 +1,8 @@
 import type { ReactNode } from 'react';
-import { RISK_LEVEL_META } from '@/utils/risk';
+import { useTranslation } from 'react-i18next';
+import i18n, { SUPPORTED_LANGUAGES } from '@/i18n';
+import type { RiskLevel } from '@/types/churn';
+import { RISK_LEVEL_DISPLAY_ORDER, RISK_LEVEL_META } from '@/utils/risk';
 
 type ChatMessageContentProps = {
   text: string;
@@ -68,15 +71,40 @@ function renderInlineBold(line: string, keyPrefix: string): ReactNode {
   );
 }
 
+/*
+ * 위험도 이름이 다른 단어 속에 묻혀 있지 않은지 볼 때 쓴다.
+ * 앞은 영문자·한글이 아니어야 하고('중위험' 속 '위험' 제외),
+ * 뒤는 영문자만 아니면 된다('Highest' 제외, '위험군'처럼 한글이 붙는 건 허용).
+ */
+const BEFORE = '(^|[^A-Za-z\uAC00-\uD7A3])';
+const AFTER = '($|[^A-Za-z])';
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * 표 첫 칸에 위험도 이름이 있으면 그 위험도 색을 돌려준다.
+ * 이미 보낸 답변은 보낸 때의 언어로 남아 있으므로 모든 언어의 이름과 비교한다.
+ * '위험'은 '중위험'·'저위험' 안에도 들어 있으므로 긴 이름부터 비교하고,
+ */
 function findRowRiskColor(row: string[]): string | null {
   const label = row[0] ?? '';
-  const match = Object.values(RISK_LEVEL_META).find((meta) =>
-    label.includes(meta.label),
+  const candidates = SUPPORTED_LANGUAGES.flatMap((language) =>
+    RISK_LEVEL_DISPLAY_ORDER.map((level): [RiskLevel, string] => [
+      level,
+      i18n.t(`domain.riskLevel.${level}`, { lng: language }),
+    ]),
+  ).sort((a, b) => b[1].length - a[1].length);
+  const match = candidates.find(([, name]) =>
+    new RegExp(`${BEFORE}${escapeRegExp(name)}${AFTER}`).test(label),
   );
-  return match?.dotColorClassName ?? null;
+  return match ? RISK_LEVEL_META[match[0]].dotColorClassName : null;
 }
 
 export function ChatMessageContent({ text }: ChatMessageContentProps) {
+  // 언어를 바꾸면 다시 그린다
+  useTranslation();
   const blocks = parseBlocks(text);
 
   return (

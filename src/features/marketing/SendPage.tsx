@@ -1,5 +1,6 @@
 import { Check } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { EMPTY_CONDITION_PICK } from '@/data/marketing';
@@ -9,7 +10,6 @@ import {
   buildSendSummary,
   countPendingMessages,
   EMPTY_MESSAGE_DRAFT,
-  formatCount,
   formatSchedule,
   getDecidedTargets,
   getExtractMembers,
@@ -35,16 +35,19 @@ import {
 } from '@/features/marketing/campaign/targetCsv';
 import { TargetSelectPanel } from '@/features/marketing/campaign/TargetSelectPanel';
 import { TargetSummary } from '@/features/marketing/campaign/TargetSummary';
+import { channelLabel } from '@/i18n/domain';
+import { formatNumber } from '@/i18n/format';
 
 type DoneAction = 'extract' | 'cmo' | null;
 
 export function SendPage() {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState<SendDraft>(INITIAL_SEND_DRAFT);
   const [done, setDone] = useState<DoneAction>(null);
   const aiTimersRef = useRef(new Map<string, number>());
-  // 확인 후 전달은 문구를 결정한 대상만 센다
-  const summary = useMemo(() => buildSendSummary(draft), [draft]);
-  const messageTargets = useMemo(() => getMessageTargets(draft), [draft]);
+  // 확인 후 전달은 문구를 결정한 대상만 센다. 요약 문구가 현재 언어를 따르도록 렌더마다 만든다.
+  const summary = buildSendSummary(draft);
+  const messageTargets = getMessageTargets(draft);
   const decidedTargets = getDecidedTargets(messageTargets, draft.messages);
   const pendingMessageCount = countPendingMessages(
     messageTargets,
@@ -148,9 +151,14 @@ export function SendPage() {
       name: target.name,
       sub:
         target.channel.key === 'tm'
-          ? '텔레마케팅 · 상담원 순차 연결 · 스크립트는 CMO에서 설정'
-          : `${target.channel.label} · ${schedule}`,
-      count: `${formatCount(target.count)}명`,
+          ? t('marketingSend.complete.tmSub')
+          : t('marketingSend.complete.channelSub', {
+              channel: channelLabel(target.channel.key),
+              schedule,
+            }),
+      count: t('marketingSend.complete.count', {
+        value: formatNumber(target.count),
+      }),
     };
   });
   const isMultiSegment = draft.mode === 'ai' && decidedTargets.length > 1;
@@ -160,9 +168,9 @@ export function SendPage() {
       <PageHeader
         section="marketing"
         titleSize="lg"
-        eyebrow="TARGET MARKETING"
-        title="타겟 발송"
-        description="선택한 고객을 추출하거나 CMO로 바로 전달할 수 있어요"
+        eyebrow={t('marketingSend.page.eyebrow')}
+        title={t('marketingSend.page.title')}
+        description={t('marketingSend.page.description')}
         actions={false}
       />
 
@@ -175,15 +183,16 @@ export function SendPage() {
             <Check className="size-4" strokeWidth={2.6} />
           </span>
           <span className="grow text-sm text-green-900">
-            <strong>대상 목록을 내려받았어요</strong> ·{' '}
-            {formatCount(summary.total)}명 · 엑셀 파일 (회원번호 · 이름 · 이탈
-            예측 점수 포함)
+            <strong>{t('marketingSend.extractDone.title')}</strong> ·{' '}
+            {t('marketingSend.extractDone.detail', {
+              value: formatNumber(summary.total),
+            })}
           </span>
           <Link
             to="/marketing/history"
             className="inline-flex h-[34px] items-center rounded-lg border border-green-300 bg-white px-3 text-xs font-bold text-green-700 hover:bg-green-50"
           >
-            접촉 이력 보기 →
+            {t('marketingSend.extractDone.viewHistory')}
           </Link>
         </div>
       )}
@@ -235,7 +244,13 @@ export function SendPage() {
 
       {done === 'cmo' && (
         <SendCompleteModal
-          subtitle={`${draft.mode === 'ai' ? `${decidedTargets.length}개 대상` : '1개 대상'} · 총 ${formatCount(summary.total)}명${isMultiSegment ? ' (중복 제외)' : ''}`}
+          subtitle={t('marketingSend.complete.subtitle', {
+            targets: t('marketingSend.complete.targetCount', {
+              count: draft.mode === 'ai' ? decidedTargets.length : 1,
+            }),
+            total: formatNumber(summary.total),
+            dedupe: isMultiSegment ? t('marketingSend.complete.dedupe') : '',
+          })}
           rows={cmoRows}
           onConfirm={handleCmoConfirm}
         />

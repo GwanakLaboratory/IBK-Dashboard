@@ -1,4 +1,5 @@
 import { Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { Modal } from '@/components/molecules/Modal';
 
@@ -17,7 +18,8 @@ export function SendCompleteModal({
   rows,
   onConfirm,
 }: SendCompleteModalProps) {
-  const title = 'CMO로 전달했어요';
+  const { t } = useTranslation();
+  const title = t('marketingSend.complete.title');
 
   return (
     <Modal label={title} onClose={onConfirm}>
@@ -54,14 +56,14 @@ export function SendCompleteModal({
             to="/marketing/history"
             className="inline-flex h-12 items-center justify-center rounded-xl border border-slate-300 bg-white text-sm font-semibold text-slate-900 hover:bg-slate-50"
           >
-            접촉 이력에서 보기
+            {t('marketingSend.complete.viewHistory')}
           </Link>
           <button
             type="button"
             onClick={onConfirm}
             className="h-12 rounded-xl bg-blue-700 text-sm font-bold text-white hover:bg-blue-800"
           >
-            확인
+            {t('common.action.confirm')}
           </button>
         </div>
       </div>

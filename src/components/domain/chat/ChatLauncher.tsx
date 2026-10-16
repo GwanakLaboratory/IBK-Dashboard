@@ -12,11 +12,12 @@ import {
   X,
 } from 'lucide-react';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { ChatMessageContent } from '@/components/domain/chat/ChatMessageContent';
 import {
-  SUGGESTED_QUESTIONS,
   getDemoAnswer,
+  getSuggestedQuestions,
   type DemoAnswer,
 } from '@/components/domain/chat/demoAnswers';
 
@@ -29,22 +30,16 @@ type ChatMessage = {
   isError?: boolean;
 };
 
-const GREETING =
-  '안녕하세요! 카드 회원 이탈 예측 데이터에 대해 궁금한 점을 물어보세요.\n\n위험 고객 현황, 고객 특성, 캠페인 성과 등을 바로 확인해드릴게요.';
-
 // 데모용이라 답변은 즉시 만들어지지만, 실제 어시스턴트처럼 보이도록
-// 진행 문구를 잠깐 보여준 뒤 답변을 띄운다.
-const PROGRESS_STAGES = [
-  '질문을 확인하고 있어요',
-  '현황 자료를 조회하고 있어요',
-  '답변을 작성하고 있어요',
-];
+// 진행 문구를 잠깐 보여준 뒤 답변을 띄운다. 문구는 chat.thinking.<key>
+const PROGRESS_STAGES = ['check', 'lookup', 'write'] as const;
 const STAGE_DELAY_MS = 700;
 const ANSWER_DELAY_MS = 2200;
 /** 이만큼(px) 내려 읽으면 맨 위로 버튼을 보여준다 */
 const SCROLL_TOP_THRESHOLD = 240;
 
 export function ChatLauncher() {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const launcherRef = useRef<HTMLButtonElement>(null);
@@ -136,15 +131,23 @@ export function ChatLauncher() {
         <header className="flex items-center justify-between rounded-t-2xl bg-sidebar px-4 py-3.5 text-white">
           <div className="flex items-center gap-2.5">
             <img src="/logo-rising-bar.svg" alt="" className="size-6" />
-            <p className="text-sm font-bold">AI 어시스턴트</p>
+            <p className="text-sm font-bold">{t('chat.launcher.title')}</p>
           </div>
           <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => setIsExpanded((prev) => !prev)}
               className="flex h-7 w-7 items-center justify-center rounded-md text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-              aria-label={isExpanded ? '작게 보기' : '크게 보기'}
-              title={isExpanded ? '작게 보기' : '크게 보기'}
+              aria-label={
+                isExpanded
+                  ? t('chat.launcher.shrink')
+                  : t('chat.launcher.expand')
+              }
+              title={
+                isExpanded
+                  ? t('chat.launcher.shrink')
+                  : t('chat.launcher.expand')
+              }
             >
               {isExpanded ? (
                 <Minimize2 className="h-3.5 w-3.5" />
@@ -156,8 +159,8 @@ export function ChatLauncher() {
               type="button"
               onClick={() => setMessages([])}
               className="flex h-7 w-7 items-center justify-center rounded-md text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-              aria-label="대화 초기화"
-              title="대화 초기화"
+              aria-label={t('chat.launcher.reset')}
+              title={t('chat.launcher.reset')}
             >
               <RotateCcw className="h-3.5 w-3.5" />
             </button>
@@ -178,10 +181,10 @@ export function ChatLauncher() {
             {/* 인사말과 추천 질문은 한 덩어리로 붙이고, 아래 대화와는 넉넉히 띄운다 */}
             <div className="space-y-2.5 pb-4">
               <div className="max-w-[80%] whitespace-pre-line rounded-2xl rounded-bl-lg bg-slate-100 px-4 py-3 text-sm font-medium leading-relaxed text-slate-800">
-                {GREETING}
+                {t('chat.greeting')}
               </div>
               <QuestionChips
-                questions={SUGGESTED_QUESTIONS}
+                questions={getSuggestedQuestions()}
                 disabled={isAsking}
                 onSelect={send}
               />
@@ -247,7 +250,7 @@ export function ChatLauncher() {
                   <div className="mb-2 flex items-center justify-between">
                     <p className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
                       <Sparkles className="h-3.5 w-3.5 text-blue-600" />
-                      답변 준비 중
+                      {t('chat.launcher.preparing')}
                     </p>
                     <span className="text-xs font-semibold tabular-nums text-blue-600">
                       {stage + 1}
@@ -266,13 +269,13 @@ export function ChatLauncher() {
                     />
                   </div>
                   <ol>
-                    {PROGRESS_STAGES.map((label, index) => {
+                    {PROGRESS_STAGES.map((stageKey, index) => {
                       const isDone = index < stage;
                       const isCurrent = index === stage;
                       const isLast = index === PROGRESS_STAGES.length - 1;
                       return (
                         <li
-                          key={label}
+                          key={stageKey}
                           className="relative flex items-center gap-2.5 pb-3 last:pb-0"
                         >
                           {!isLast && (
@@ -306,7 +309,7 @@ export function ChatLauncher() {
                                   : 'text-slate-300'
                             }`}
                           >
-                            {label}
+                            {t(`chat.thinking.${stageKey}`)}
                           </span>
                         </li>
                       );
@@ -326,8 +329,8 @@ export function ChatLauncher() {
             onClick={() =>
               listRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
             }
-            aria-label="맨 위로"
-            title="맨 위로"
+            aria-label={t('chat.launcher.scrollTop')}
+            title={t('chat.launcher.scrollTop')}
             tabIndex={showScrollTop ? 0 : -1}
             className={`absolute bottom-2 right-3.5 flex size-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-md transition-all duration-200 hover:text-blue-700 ${
               showScrollTop
@@ -345,14 +348,14 @@ export function ChatLauncher() {
               onChange={(event) => setQuestion(event.target.value)}
               value={question}
               disabled={isAsking}
-              placeholder="궁금한 점을 물어보세요..."
+              placeholder={t('chat.launcher.placeholder')}
               className="h-full flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={isAsking || !question.trim()}
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-200 text-slate-400 transition-colors enabled:bg-blue-700 enabled:text-white"
-              aria-label="전송"
+              aria-label={t('chat.launcher.send')}
             >
               <Send className="h-4 w-4" />
             </button>
@@ -363,8 +366,10 @@ export function ChatLauncher() {
       <button
         ref={launcherRef}
         type="button"
-        aria-label={isOpen ? 'AI 어시스턴트 닫기' : 'AI 어시스턴트 열기'}
-        title={isOpen ? '닫기' : 'AI 어시스턴트'}
+        aria-label={isOpen ? t('chat.launcher.close') : t('chat.launcher.open')}
+        title={
+          isOpen ? t('chat.launcher.closeShort') : t('chat.launcher.title')
+        }
         onClick={() => setIsOpen((prev) => !prev)}
         className="group fixed bottom-7 right-7 z-50 flex size-14 items-center justify-center rounded-full bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700 text-white shadow-launcher transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
       >

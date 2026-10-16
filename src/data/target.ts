@@ -1,21 +1,34 @@
 import { ibkCreditCardInfos } from '@/data/ibkCreditCardInfo';
+import type { LastContact } from '@/i18n/domain';
+import type {
+  AgeGroup,
+  BenefitCategory,
+  CardBrand,
+  CardId,
+  ChurnReason,
+  Gender,
+  MemberName,
+} from '@/types/churn';
 
-/* 위험 타겟 화면 공통 목데이터 (회원 · 카드 상품). 회원은 시안 값, 카드는 IBK 실제 상품 기준. */
+/*
+ * 위험 타겟 화면 공통 목데이터 (회원 · 카드 상품). 회원은 시안 값, 카드는 IBK 실제 상품 기준.
+ * 문구 대신 코드값을 두고, 화면에서 @/i18n/domain 함수로 현재 언어 문구로 바꾼다.
+ */
 
 export type TargetMember = {
   id: string;
-  name: string;
-  gender: '남' | '여';
-  ageGroup: string;
+  name: MemberName;
+  gender: Gender;
+  ageGroup: AgeGroup;
   joinedAt: string;
-  product: string;
+  productId: CardId;
   /** 이탈 예측 점수 0–100 */
   score: number;
   /** 미이용 일수 */
   idleDays: number;
-  reason: string;
-  /** 최근 접촉 (없으면 빈 문자열) */
-  lastContact: string;
+  reason: ChurnReason;
+  /** 최근 접촉 (없으면 null) */
+  lastContact: LastContact;
 };
 
 /** 위험도별 전체 회원 수 (목록 상단 카드). 전체 = 대시보드 이용 고객, 위험 + 중위험 = 대시보드 이탈 위험 고객 */
@@ -30,133 +43,133 @@ export const MEMBER_COUNT_BY_LEVEL = {
 const SAMPLE_MEMBERS: TargetMember[] = [
   {
     id: 'C-001024',
-    name: '김*현',
-    gender: '여',
-    ageGroup: '30대',
+    name: { surname: 'kim', given: 'hyun' },
+    gender: 'female',
+    ageGroup: '30s',
     joinedAt: '2019.04',
-    product: '해피메이트 IBK카드',
+    productId: 'happy-mate',
     score: 92,
     idleDays: 58,
-    reason: '타사카드 사용량 증가',
-    lastContact: '',
+    reason: 'otherCardUsage',
+    lastContact: null,
   },
   {
     id: 'C-118302',
-    name: '이*준',
-    gender: '남',
-    ageGroup: '40대',
+    name: { surname: 'lee', given: 'jun' },
+    gender: 'male',
+    ageGroup: '40s',
     joinedAt: '2017.11',
-    product: 'K-패스(신용)',
+    productId: 'k-pass',
     score: 88,
     idleDays: 52,
-    reason: '카드 혜택 및 서비스 감소',
-    lastContact: '09.18 앱 푸시',
+    reason: 'benefitDecline',
+    lastContact: { date: '09.18', channel: 'push' },
   },
   {
     id: 'C-330915',
-    name: '박*영',
-    gender: '여',
-    ageGroup: '20대',
+    name: { surname: 'park', given: 'young' },
+    gender: 'female',
+    ageGroup: '20s',
     joinedAt: '2023.02',
-    product: 'IBK포인트(신용)',
+    productId: 'point',
     score: 81,
     idleDays: 45,
-    reason: '타사카드 사용량 증가',
-    lastContact: '',
+    reason: 'otherCardUsage',
+    lastContact: null,
   },
   {
     id: 'C-097266',
-    name: '최*호',
-    gender: '남',
-    ageGroup: '50대',
+    name: { surname: 'choi', given: 'ho' },
+    gender: 'male',
+    ageGroup: '50s',
     joinedAt: '2015.06',
-    product: '해피메이트 IBK카드',
+    productId: 'happy-mate',
     score: 76,
     idleDays: 38,
-    reason: '은행 거래 관계 약화',
-    lastContact: '09.10 알림톡',
+    reason: 'bankRelationship',
+    lastContact: { date: '09.10', channel: 'kakao' },
   },
   {
     id: 'C-452190',
-    name: '정*은',
-    gender: '여',
-    ageGroup: '30대',
+    name: { surname: 'jung', given: 'eun' },
+    gender: 'female',
+    ageGroup: '30s',
     joinedAt: '2020.09',
-    product: 'I-PET',
+    productId: 'i-pet',
     score: 71,
     idleDays: 33,
-    reason: '카드 혜택 및 서비스 감소',
-    lastContact: '09.10 알림톡',
+    reason: 'benefitDecline',
+    lastContact: { date: '09.10', channel: 'kakao' },
   },
   {
     id: 'C-261734',
-    name: '강*민',
-    gender: '남',
-    ageGroup: '40대',
+    name: { surname: 'kang', given: 'min' },
+    gender: 'male',
+    ageGroup: '40s',
     joinedAt: '2018.03',
-    product: 'IBK포인트(신용)',
+    productId: 'point',
     score: 64,
     idleDays: 21,
-    reason: '타사카드 사용량 증가',
-    lastContact: '',
+    reason: 'otherCardUsage',
+    lastContact: null,
   },
   {
     id: 'C-389051',
-    name: '조*아',
-    gender: '여',
-    ageGroup: '20대',
+    name: { surname: 'cho', given: 'a' },
+    gender: 'female',
+    ageGroup: '20s',
     joinedAt: '2025.12',
-    product: 'IBK KaPick',
+    productId: 'kapick',
     score: 57,
     idleDays: 17,
-    reason: '직업 및 소득 환경 변화',
-    lastContact: '09.24 앱 푸시',
+    reason: 'jobIncomeChange',
+    lastContact: { date: '09.24', channel: 'push' },
   },
   {
     id: 'C-173648',
-    name: '윤*석',
-    gender: '남',
-    ageGroup: '60대',
+    name: { surname: 'yoon', given: 'seok' },
+    gender: 'male',
+    ageGroup: '60s',
     joinedAt: '2012.08',
-    product: 'K-패스(신용)',
+    productId: 'k-pass',
     score: 48,
     idleDays: 12,
-    reason: '은행 거래 관계 약화',
-    lastContact: '09.02 이메일',
+    reason: 'bankRelationship',
+    lastContact: { date: '09.02', channel: 'email' },
   },
   {
     id: 'C-506427',
-    name: '장*희',
-    gender: '여',
-    ageGroup: '30대',
+    name: { surname: 'jang', given: 'hee' },
+    gender: 'female',
+    ageGroup: '30s',
     joinedAt: '2021.05',
-    product: '해피메이트 IBK카드',
+    productId: 'happy-mate',
     score: 31,
     idleDays: 5,
-    reason: '모집인 경로',
-    lastContact: '',
+    reason: 'recruiterChannel',
+    lastContact: null,
   },
   {
     id: 'C-044819',
-    name: '임*우',
-    gender: '남',
-    ageGroup: '50대',
+    name: { surname: 'lim', given: 'woo' },
+    gender: 'male',
+    ageGroup: '50s',
     joinedAt: '2016.01',
-    product: 'I-PET',
+    productId: 'i-pet',
     score: 18,
     idleDays: 2,
-    reason: '카드 혜택 및 서비스 감소',
-    lastContact: '',
+    reason: 'benefitDecline',
+    lastContact: null,
   },
 ];
 
 /** 이탈 사유 (회원 수가 많은 순) */
-export const CHURN_REASONS = [
-  '타사카드 사용량 증가',
-  '카드 혜택 및 서비스 감소',
-  '은행 거래 관계 약화',
-  '직업 및 소득 환경 변화',
-  '모집인 경로',
+export const CHURN_REASONS: ChurnReason[] = [
+  'otherCardUsage',
+  'benefitDecline',
+  'bankRelationship',
+  'jobIncomeChange',
+  'recruiterChannel',
 ];
 
 /**
@@ -167,13 +180,11 @@ const REASON_CYCLE = [
   0, 1, 0, 2, 0, 1, 3, 0, 2, 1, 0, 4, 0, 1, 2, 3, 0, 1, 2, 3,
 ];
 
+/** 카드 상품. 이름 · 요약은 cardName(id) · cardSummary(id)로 보여준다 */
 export type CardProduct = {
-  name: string;
-  summary: string;
-  tags: string[];
-  brands: string[];
-  /** 화면 표시용 브랜드 (예: 'BC · VISA') */
-  brand: string;
+  id: CardId;
+  tags: BenefitCategory[];
+  brands: CardBrand[];
   members: number;
   /** 이탈률 % */
   churnRate: number;
@@ -187,11 +198,9 @@ export type CardProduct = {
 /** IBK 실제 카드 상품(ibkCreditCardInfos)에 데모 지표를 붙인 목록. 지표는 상품 순서로 정해지는 고정값. */
 export const CARD_PRODUCTS: CardProduct[] = ibkCreditCardInfos.map(
   (info, index) => ({
-    name: info.name,
-    summary: info.summary,
+    id: info.id,
     tags: info.benefitCategories,
     brands: info.brands,
-    brand: info.brands.join(' · '),
     members: 30000 + ((index * 7919) % 23) * 8000 + ((index * 131) % 9) * 1000,
     churnRate: +(1.2 + ((index * 37) % 25) / 10).toFixed(1),
     churnRateDelta: +((((index * 13) % 9) - 3) / 10).toFixed(1),
@@ -202,52 +211,52 @@ export const CARD_PRODUCTS: CardProduct[] = ibkCreditCardInfos.map(
   }),
 );
 
-const SURNAMES = [
-  '김',
-  '이',
-  '박',
-  '최',
-  '정',
-  '강',
-  '조',
-  '윤',
-  '장',
-  '임',
-  '한',
-  '오',
-  '서',
-  '신',
-  '권',
-  '황',
-  '안',
-  '송',
-  '류',
-  '홍',
+const SURNAMES: MemberName['surname'][] = [
+  'kim',
+  'lee',
+  'park',
+  'choi',
+  'jung',
+  'kang',
+  'cho',
+  'yoon',
+  'jang',
+  'lim',
+  'han',
+  'oh',
+  'seo',
+  'shin',
+  'kwon',
+  'hwang',
+  'ahn',
+  'song',
+  'ryu',
+  'hong',
 ];
-const NAME_ENDINGS = [
-  '민',
-  '서',
-  '준',
-  '윤',
-  '현',
-  '진',
-  '우',
-  '아',
-  '희',
-  '호',
-  '영',
-  '은',
-  '수',
-  '연',
+const NAME_ENDINGS: MemberName['given'][] = [
+  'min',
+  'seo',
+  'jun',
+  'yun',
+  'hyun',
+  'jin',
+  'woo',
+  'a',
+  'hee',
+  'ho',
+  'young',
+  'eun',
+  'su',
+  'yeon',
 ];
-const AGE_GROUPS = ['20대', '30대', '40대', '50대', '60대'];
-const CONTACTS = [
-  '',
-  '09.18 앱 푸시',
-  '09.10 알림톡',
-  '',
-  '09.24 문자',
-  '09.02 이메일',
+const AGE_GROUPS: AgeGroup[] = ['20s', '30s', '40s', '50s', '60s'];
+const CONTACTS: LastContact[] = [
+  null,
+  { date: '09.18', channel: 'push' },
+  { date: '09.10', channel: 'kakao' },
+  null,
+  { date: '09.24', channel: 'sms' },
+  { date: '09.02', channel: 'email' },
 ];
 
 /** 모든 카드 상품에 이탈 위험(40점 이상) 회원이 최소 몇 명씩 있게 할지 */
@@ -259,16 +268,19 @@ const MAX_IDLE_DAYS = 59;
 /** 순번으로 정해지는 고정 회원 (새로고침해도 같음) */
 function makeFillerMember(
   n: number,
-  product: string,
+  productId: CardId,
   score: number,
 ): TargetMember {
   return {
     id: `C-${String(600000 + n * 7919).padStart(6, '0')}`,
-    name: `${SURNAMES[(n * 7) % SURNAMES.length]}*${NAME_ENDINGS[(n * 5) % NAME_ENDINGS.length]}`,
-    gender: n % 2 === 0 ? '여' : '남',
+    name: {
+      surname: SURNAMES[(n * 7) % SURNAMES.length],
+      given: NAME_ENDINGS[(n * 5) % NAME_ENDINGS.length],
+    },
+    gender: n % 2 === 0 ? 'female' : 'male',
     ageGroup: AGE_GROUPS[(n * 3) % AGE_GROUPS.length],
     joinedAt: `20${15 + (n % 11)}.${String(1 + ((n * 5) % 12)).padStart(2, '0')}`,
-    product,
+    productId,
     score,
     // 점수가 낮을수록 미이용 기간도 짧게
     // 분석 대상은 최근 2개월 이용 고객이라 미이용은 60일 미만으로 둔다
@@ -287,19 +299,19 @@ function makeFillerMember(
  */
 function buildFillerMembers(): TargetMember[] {
   const fillers: TargetMember[] = [];
-  const add = (product: string, score: number) =>
-    fillers.push(makeFillerMember(fillers.length, product, score));
+  const add = (productId: CardId, score: number) =>
+    fillers.push(makeFillerMember(fillers.length, productId, score));
 
   CARD_PRODUCTS.forEach((card) => {
     const existing = SAMPLE_MEMBERS.filter(
-      (member) => member.product === card.name && member.score >= 40,
+      (member) => member.productId === card.id && member.score >= 40,
     ).length;
     for (let k = existing; k < MIN_RISK_MEMBERS_PER_CARD; k += 1) {
       // 카드 안에서 1위가 가장 높도록 순번이 뒤일수록 점수를 낮춘다
-      add(card.name, 90 - k * 9 - ((fillers.length * 7) % 12));
+      add(card.id, 90 - k * 9 - ((fillers.length * 7) % 12));
     }
-    add(card.name, 42 + ((fillers.length * 11) % 26)); // 중위험 40–69
-    add(card.name, 8 + ((fillers.length * 13) % 30)); // 저위험 0–39
+    add(card.id, 42 + ((fillers.length * 11) % 26)); // 중위험 40–69
+    add(card.id, 8 + ((fillers.length * 13) % 30)); // 저위험 0–39
   });
   return fillers;
 }
@@ -319,8 +331,8 @@ export function findMember(memberId: string | undefined) {
   return TARGET_MEMBERS.find((member) => member.id === memberId);
 }
 
-export function findCardProduct(cardName: string | undefined) {
-  return CARD_PRODUCTS.find((card) => card.name === cardName);
+export function findCardProduct(cardId: string | undefined) {
+  return CARD_PRODUCTS.find((card) => card.id === cardId);
 }
 
 /** 회원 상세에서 카드 상세로 갈 때 넘기는 state (뒤로가기를 회원 상세로) */

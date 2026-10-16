@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { DeltaBadge } from '@/components/domain/DeltaBadge';
 import { RankBadge } from '@/components/domain/RankBadge';
 import { PageHeader, UpdatedAtLabel } from '@/components/layout/PageHeader';
@@ -15,15 +16,16 @@ import {
   MONTHS,
   RISK_COUNTS,
   RISK_RATIOS,
-  formatNumber,
-  fullMonthLabel,
 } from '@/data/overview';
+import { churnReasonLabel } from '@/i18n/domain';
+import { formatFullMonth, formatNumber } from '@/i18n/format';
 
 /* 대시보드 · 고객 이탈 인사이트 (한 화면 요약) */
 
 const TOP5_GRID = 'grid grid-cols-[40px_minmax(0,1fr)_90px_90px_90px_90px]';
 
 export function OverviewPage() {
+  const { t } = useTranslation();
   const [month, setMonth] = useState(MONTHS[MONTHS.length - 1]);
   const [range, setRange] = useState<6 | 12>(6);
   const [unit, setUnit] = useState<'ratio' | 'count'>('ratio');
@@ -73,7 +75,7 @@ export function OverviewPage() {
                 .reverse()
                 .map((option) => ({
                   value: option,
-                  label: fullMonthLabel(option),
+                  label: formatFullMonth(option),
                 }))}
               value={month}
               onChange={setMonth}
@@ -86,34 +88,38 @@ export function OverviewPage() {
       <div className="grid grid-cols-[minmax(0,1fr)_max-content_minmax(0,0.8fr)] rounded-2xl border border-slate-200 bg-white">
         <div className="flex flex-col justify-center gap-2.5 px-6 py-5">
           <span className="text-lg font-bold text-blue-700">
-            최근 2개월 이용 고객
+            {t('overview.kpi.activeCustomers.label')}
           </span>
           <div className="flex items-baseline gap-1.5">
             <span className="text-5xl font-bold leading-none tracking-tight">
               {formatNumber(total)}
             </span>
-            <span className="text-xl font-bold">명</span>
+            <span className="text-xl font-bold">
+              {t('common.unit.peopleSuffix')}
+            </span>
           </div>
           <span className="text-xs text-gray-600">
-            직전 2개월 신용카드 이용실적이 있는 고객
+            {t('overview.kpi.activeCustomers.description')}
           </span>
           <span className="inline-flex h-7 items-center self-start rounded-full bg-slate-100 px-2.5 text-xs text-gray-600">
-            전체 카드 고객의 100% 기준치 아님
+            {t('overview.kpi.activeCustomers.note')}
           </span>
         </div>
 
         <div className="flex flex-col justify-center gap-3 border-x border-slate-100 px-6 py-5">
-          <span className="text-lg font-bold">최근 이용 고객 구성</span>
+          <span className="text-lg font-bold">
+            {t('overview.kpi.composition.label')}
+          </span>
           <div className="flex items-baseline justify-between">
             <CompositionValue
-              label="이탈 위험 고객"
+              label={t('overview.kpi.composition.atRisk')}
               value={risk}
               dotClassName="bg-red-500"
               labelClassName="text-red-700"
               valueClassName="text-red-600"
             />
             <CompositionValue
-              label="위험 외 고객"
+              label={t('overview.kpi.composition.notAtRisk')}
               value={total - risk}
               dotClassName="bg-blue-700"
               labelClassName="text-blue-800"
@@ -132,18 +138,25 @@ export function OverviewPage() {
             </div>
           </div>
           <span className="whitespace-nowrap text-xs text-gray-600">
-            최근 2개월 이용 고객{' '}
-            <strong className="text-slate-900">{formatNumber(total)}명</strong>{' '}
-            중{' '}
-            <strong className="text-red-600">
-              {formatNumber(risk)}명({ratio.toFixed(1)}%)
-            </strong>
-            이 이번 달 미이용 위험으로 예측됩니다.
+            <Trans
+              i18nKey="overview.kpi.composition.summary"
+              values={{
+                total: formatNumber(total),
+                risk: formatNumber(risk),
+                ratio: ratio.toFixed(1),
+              }}
+              components={{
+                total: <strong className="text-slate-900" />,
+                risk: <strong className="text-red-600" />,
+              }}
+            />
           </span>
         </div>
 
         <div className="flex flex-col justify-center gap-3 px-6 py-5">
-          <span className="text-lg font-bold text-red-700">위험 비중</span>
+          <span className="text-lg font-bold text-red-700">
+            {t('overview.kpi.riskRatio.label')}
+          </span>
           <div className="flex items-baseline gap-0.5">
             <span className="text-5xl font-bold leading-none tracking-tight">
               {ratio.toFixed(1)}
@@ -153,7 +166,9 @@ export function OverviewPage() {
           <div className="flex items-center gap-2">
             <DeltaBadge delta={ratioDelta} size="md" />
             <span className="text-xs text-gray-500">
-              (전월 {prevRatio.toFixed(1)}%)
+              {t('overview.kpi.riskRatio.previous', {
+                ratio: prevRatio.toFixed(1),
+              })}
             </span>
           </div>
         </div>
@@ -161,7 +176,7 @@ export function OverviewPage() {
 
       {/* 추이 */}
       <Card
-        title="이탈 위험 고객 추이"
+        title={t('overview.trend.title')}
         titleSize="lg"
         gapClassName="gap-2.5"
         className="pb-3"
@@ -169,14 +184,14 @@ export function OverviewPage() {
           <div className="flex items-center gap-6">
             <RiskTrendLegend />
             <Dropdown
-              label="추이 기간"
+              label={t('overview.trend.range.label')}
               size="sm"
               align="right"
               value={String(range)}
               onChange={(value) => setRange(Number(value) as 6 | 12)}
               options={[
-                { value: '6', label: '최근 6개월' },
-                { value: '12', label: '최근 12개월' },
+                { value: '6', label: t('overview.trend.range.last6') },
+                { value: '12', label: t('overview.trend.range.last12') },
               ]}
               className="w-32"
             />
@@ -184,10 +199,10 @@ export function OverviewPage() {
         }
         titleAddon={
           <Tabs
-            label="표시 기준"
+            label={t('overview.trend.metric.label')}
             tabs={[
-              { key: 'count', label: '고객 수' },
-              { key: 'ratio', label: '위험 비중' },
+              { key: 'count', label: t('overview.trend.metric.count') },
+              { key: 'ratio', label: t('overview.trend.metric.ratio') },
             ]}
             value={metric}
             onChange={setMetric}
@@ -195,8 +210,8 @@ export function OverviewPage() {
         }
       >
         <div className="-mb-1.5 flex justify-between text-2xs text-gray-500">
-          <span>고객 수 (명)</span>
-          <span>위험 비중 (%)</span>
+          <span>{t('overview.trend.axis.count')}</span>
+          <span>{t('overview.trend.axis.ratio')}</span>
         </div>
         <RiskTrendComboChart
           months={MONTHS.slice(start, idx + 1)}
@@ -209,14 +224,14 @@ export function OverviewPage() {
       {/* 하단 */}
       <div className="grid shrink-0 grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-4">
         <Card
-          title="주요 이탈 사유별 이탈 위험 비중"
+          title={t('overview.reasonShare.title')}
           titleSize="lg"
           actions={
             <Tabs
-              label="표시 단위"
+              label={t('overview.reasonShare.unit.label')}
               tabs={[
-                { key: 'count', label: '고객 수' },
-                { key: 'ratio', label: '비중' },
+                { key: 'count', label: t('overview.reasonShare.unit.count') },
+                { key: 'ratio', label: t('overview.reasonShare.unit.ratio') },
               ]}
               value={unit}
               onChange={setUnit}
@@ -239,7 +254,7 @@ export function OverviewPage() {
                   <span
                     className={`whitespace-nowrap text-xs text-gray-900 ${isTop ? 'font-bold' : 'font-medium'}`}
                   >
-                    {group.name}
+                    {churnReasonLabel(group.name)}
                   </span>
                   <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
                     <div
@@ -252,7 +267,7 @@ export function OverviewPage() {
                   >
                     {unit === 'ratio'
                       ? `${group.ratio.toFixed(1)}%`
-                      : `${formatNumber(group.count)}명`}
+                      : t('common.unit.people', { count: group.count })}
                   </span>
                 </li>
               );
@@ -261,11 +276,11 @@ export function OverviewPage() {
         </Card>
 
         <Card
-          title="전월 대비 위험 증감 TOP5"
+          title={t('overview.topChanges.title')}
           titleSize="lg"
           titleAddon={
             <span className="inline-flex h-6 items-center rounded-full bg-slate-100 px-2.5 text-xs font-semibold text-slate-600">
-              고객 수
+              {t('overview.topChanges.badge')}
             </span>
           }
         >
@@ -273,12 +288,20 @@ export function OverviewPage() {
             <div
               className={`${TOP5_GRID} h-8 items-center gap-2 border-b border-slate-200 px-1 text-xs font-semibold text-slate-500`}
             >
-              <span>순위</span>
-              <span>이탈 사유</span>
-              <span className="text-right">전월</span>
-              <span className="text-right">이번 달</span>
-              <span className="text-right">증감</span>
-              <span className="text-right">증감률</span>
+              <span>{t('overview.topChanges.column.rank')}</span>
+              <span>{t('overview.topChanges.column.reason')}</span>
+              <span className="text-right">
+                {t('overview.topChanges.column.previous')}
+              </span>
+              <span className="text-right">
+                {t('overview.topChanges.column.current')}
+              </span>
+              <span className="text-right">
+                {t('overview.topChanges.column.change')}
+              </span>
+              <span className="text-right">
+                {t('overview.topChanges.column.changeRate')}
+              </span>
             </div>
             {topRows.map((row, index) => (
               <div
@@ -287,7 +310,7 @@ export function OverviewPage() {
               >
                 <RankBadge rank={index + 1} highlight="dark" size="md" />
                 <span className="truncate font-semibold text-slate-900">
-                  {row.name}
+                  {churnReasonLabel(row.name)}
                 </span>
                 <span className="text-right text-slate-500">
                   {formatNumber(row.prev)}
@@ -323,6 +346,7 @@ function CompositionValue({
   labelClassName: string;
   valueClassName: string;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-baseline gap-2.5">
       <span
@@ -335,7 +359,9 @@ function CompositionValue({
         className={`whitespace-nowrap text-2xl font-bold leading-none tracking-tight ${valueClassName}`}
       >
         {formatNumber(value)}
-        <span className="ml-1 text-sm font-semibold">명</span>
+        <span className="ml-1 text-sm font-semibold">
+          {t('common.unit.peopleSuffix')}
+        </span>
       </span>
     </div>
   );

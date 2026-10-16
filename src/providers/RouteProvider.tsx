@@ -26,7 +26,7 @@ const router = createBrowserRouter([
       { path: '/target/members', element: <MembersPage /> },
       { path: '/target/members/:memberId', element: <MemberDetailPage /> },
       { path: '/target/cards', element: <CardsPage /> },
-      { path: '/target/cards/:cardName', element: <CardDetailPage /> },
+      { path: '/target/cards/:cardId', element: <CardDetailPage /> },
       {
         path: '/marketing',
         element: <Navigate to="/marketing/send" replace />,

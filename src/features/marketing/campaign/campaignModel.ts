@@ -3,13 +3,19 @@ import {
   ALL_MEMBER_COUNT,
   CHANNEL_MESSAGES,
   CONDITION_GROUPS,
+  conditionGroupLabel,
+  conditionOptionLabel,
   DEFAULT_SEND_DATE,
   findSendChannel,
   RANDOM_POOLS,
+  randomPoolLabel,
   RISK_OPTION_COUNT,
   RISK_OPTION_LEVEL,
   SEGMENT_MESSAGES,
   SEND_SEGMENTS,
+  sendSegmentName,
+  sendSegmentText,
+  templateVariantText,
   type ConditionPick,
   type MessageTemplate,
   type RandomPool,
@@ -18,6 +24,9 @@ import {
   type SendSegment,
 } from '@/data/marketing';
 import { TARGET_MEMBERS } from '@/data/target';
+import i18n from '@/i18n';
+import { channelShortLabel } from '@/i18n/domain';
+import { currentLocale, formatNumber } from '@/i18n/format';
 import { getRiskLevelFromScore } from '@/utils/risk';
 import type { RiskLevel } from '@/types/churn';
 
@@ -81,8 +90,6 @@ export const EMPTY_MESSAGE_DRAFT: MessageDraft = {
 /** AI 문구 생성 대기 연출 시간 (실제 LLM 연동 전 목업). 로딩 단계 표시가 이 시간에 맞춰 넘어간다. */
 export const AI_GENERATING_MS = 2400;
 
-export const formatCount = (n: number) => n.toLocaleString('ko-KR');
-
 export function getSelectedSegments(draft: SendDraft) {
   return SEND_SEGMENTS.filter((segment) =>
     draft.segmentIds.includes(segment.id),
@@ -123,10 +130,17 @@ export type TargetSummary = {
   note: string;
 };
 
+/*
+ * 아래 요약 · 문구 함수들은 현재 언어 문구를 만든다.
+ * 렌더 중에 호출하므로 언어를 바꾸면 화면(useTranslation)과 함께 다시 계산된다.
+ */
+const t = i18n.getFixedT(null, null);
+
 export function buildTargetSummary(draft: SendDraft): TargetSummary {
-  const channelLabel = draft.channel
-    ? findSendChannel(draft.channel).shortLabel
-    : '선택 전';
+  const notSelected = t('marketingSend.summary.value.notSelected');
+  const channelName = draft.channel
+    ? channelShortLabel(draft.channel)
+    : notSelected;
   let total: number;
   let items: SummaryItem[];
   let chip: string;
@@ -136,21 +150,27 @@ export function buildTargetSummary(draft: SendDraft): TargetSummary {
     // 세그먼트끼리 겹치는 고객은 한 번만 센다
     total = segments.length > 1 ? Math.round(raw * 0.96) : raw;
     items = segments.map((segment) => ({
-      key: findSendChannel(segment.channel).shortLabel,
-      value: segment.name,
+      key: channelShortLabel(segment.channel),
+      value: sendSegmentName(segment.id),
     }));
-    chip = `${segments.length}개 세그먼트 선택`;
+    chip = t('marketingSend.summary.chip.segments', {
+      count: segments.length,
+    });
   } else if (draft.mode === 'cond') {
     const groups = getPickedConditionGroups(draft.conditions);
     total = getConditionCount(draft.conditions);
     items = [
       ...groups.map((group) => ({
-        key: group.label,
-        value: draft.conditions[group.key].join(' · '),
+        key: conditionGroupLabel(group.key),
+        value: draft.conditions[group.key]
+          .map((option) => conditionOptionLabel(group.key, option))
+          .join(' · '),
       })),
-      { key: '발송 채널', value: channelLabel },
+      { key: t('marketingSend.summary.item.channel'), value: channelName },
     ];
-    chip = `조건 ${groups.length}개 적용`;
+    chip = t('marketingSend.summary.chip.conditions', {
+      count: groups.length,
+    });
     // 조건과 채널을 모두 골라야 대상이 정해진다
     if (!groups.length || !draft.channel) total = 0;
   } else {
@@ -158,24 +178,37 @@ export function buildTargetSummary(draft: SendDraft): TargetSummary {
     const size = draft.size ?? 0;
     // 모집단·인원·채널을 모두 골라야 대상이 정해진다
     total = pool && draft.channel ? size : 0;
+    const sizeValue = formatNumber(size);
     items = [
-      { key: '발송 채널', value: channelLabel },
-      { key: '모집단', value: pool?.label ?? '선택 전' },
-      { key: '추출', value: size ? `${formatCount(size)}명` : '선택 전' },
+      { key: t('marketingSend.summary.item.channel'), value: channelName },
       {
-        key: '대조군',
+        key: t('marketingSend.summary.item.pool'),
+        value: pool ? randomPoolLabel(pool) : notSelected,
+      },
+      {
+        key: t('marketingSend.summary.item.size'),
+        value: size
+          ? t('marketingSend.summary.value.people', { value: sizeValue })
+          : notSelected,
+      },
+      {
+        key: t('marketingSend.summary.item.control'),
         value:
-          draft.control && size ? `${formatCount(size)}명 (미발송)` : '없음',
+          draft.control && size
+            ? t('marketingSend.summary.value.controlPeople', {
+                value: sizeValue,
+              })
+            : t('marketingSend.summary.value.none'),
       },
     ];
-    chip = '무작위 추출';
+    chip = t('marketingSend.summary.chip.random');
   }
   const empty = total === 0 || items.length === 0;
   const note = empty
-    ? '대상을 고르면 인원이 계산돼요'
+    ? t('marketingSend.summary.note.empty')
     : draft.mode === 'ai' && segments.length > 1
-      ? '세그먼트끼리 겹치는 고객은 한 번만 셌어요'
-      : '선택한 고객을 대상으로 원하는 기능을 실행하세요';
+      ? t('marketingSend.summary.note.overlap')
+      : t('marketingSend.summary.note.ready');
   return { total, items, chip, empty, note };
 }
 
@@ -183,7 +216,10 @@ export function buildTargetSummary(draft: SendDraft): TargetSummary {
 export function buildAiInsight(segments: SendSegment[]) {
   if (segments.length < 2) {
     const base = segments[0] ?? SEND_SEGMENTS[0];
-    return { text: base.insight, highlight: base.recommendation };
+    return {
+      text: sendSegmentText(base.id, 'insight'),
+      highlight: sendSegmentText(base.id, 'recommendation'),
+    };
   }
   const best = [...segments].sort(
     (a, b) => b.expectedResponse - a.expectedResponse,
@@ -196,15 +232,24 @@ export function buildAiInsight(segments: SendSegment[]) {
     ) / totalCount;
   const channelCounts = new Map<string, number>();
   segments.forEach((segment) => {
-    const label = findSendChannel(segment.channel).shortLabel;
+    const label = channelShortLabel(segment.channel);
     channelCounts.set(label, (channelCounts.get(label) ?? 0) + 1);
   });
   const channels = [...channelCounts]
-    .map(([label, count]) => `${label} ${count}개`)
+    .map(([label, count]) =>
+      t('marketingSend.ai.channelCount', { channel: label, count }),
+    )
     .join(', ');
   return {
-    text: `선택한 ${segments.length}개 중 ${best.name}의 예상 반응(${best.expectedResponse}%)이 가장 높아요. 채널별로는 ${channels}예요.`,
-    highlight: `전체 예상 반응 ${average.toFixed(1)}% (인원 가중 평균)`,
+    text: t('marketingSend.ai.multiInsight', {
+      count: segments.length,
+      name: sendSegmentName(best.id),
+      rate: best.expectedResponse,
+      channels,
+    }),
+    highlight: t('marketingSend.ai.multiHighlight', {
+      rate: average.toFixed(1),
+    }),
   };
 }
 
@@ -221,7 +266,7 @@ export function getMessageTargets(draft: SendDraft): MessageTarget[] {
   if (draft.mode === 'ai') {
     return getSelectedSegments(draft).map((segment) => ({
       key: segment.id,
-      name: segment.name,
+      name: sendSegmentName(segment.id),
       channel: findSendChannel(segment.channel),
       template: SEGMENT_MESSAGES[segment.id],
       count: segment.count,
@@ -232,7 +277,7 @@ export function getMessageTargets(draft: SendDraft): MessageTarget[] {
   return [
     {
       key: draft.mode,
-      name: draft.mode === 'cond' ? '조건 직접 선택 대상' : '무작위 추출 대상',
+      name: t(`marketingSend.targetName.${draft.mode}`),
       channel: findSendChannel(draft.channel),
       template: CHANNEL_MESSAGES[draft.channel],
       count: summary.total,
@@ -263,7 +308,7 @@ export function buildMessageView(
   return {
     open: state.open ?? isFirst,
     variantIndex,
-    text: state.text ?? target.template.variants[variantIndex].text,
+    text: state.text ?? templateVariantText(target.template, variantIndex),
     date: state.date ?? DEFAULT_SEND_DATE,
     time: state.time ?? target.template.recommendedTime,
     aiTask: state.aiTask,
@@ -311,7 +356,7 @@ export function buildSendSummary(draft: SendDraft): TargetSummary {
   const base = buildTargetSummary(draft);
   if (pendingCount === 0) return base;
 
-  const pendingNote = '발송 문구를 결정하면 인원이 계산돼요';
+  const pendingNote = t('marketingSend.summary.note.pendingMessage');
   if (draft.mode === 'ai') {
     const decidedKeys = new Set(
       getDecidedTargets(targets, draft.messages).map((target) => target.key),
@@ -322,7 +367,10 @@ export function buildSendSummary(draft: SendDraft): TargetSummary {
     });
     return {
       ...summary,
-      chip: `${draft.segmentIds.length}개 중 ${decidedKeys.size}개 결정`,
+      chip: t('marketingSend.summary.chip.decided', {
+        total: draft.segmentIds.length,
+        decided: decidedKeys.size,
+      }),
       note: summary.empty ? pendingNote : summary.note,
     };
   }
@@ -330,26 +378,39 @@ export function buildSendSummary(draft: SendDraft): TargetSummary {
   return { ...base, total: 0, empty: true, note: pendingNote };
 }
 
-export const REWRITE_OPTIONS: { key: RewriteKey; label: string }[] = [
-  { key: 'short', label: '더 짧게' },
-  { key: 'friendly', label: '더 친근하게' },
-  { key: 'benefit', label: '혜택 강조' },
-];
-
-const FRIENDLY_PREFIX = '반가워요! ';
-const BENEFIT_PREFIX = '[혜택] ';
+/** AI 다듬기 예시 순서. 문구는 marketingSend.message.rewrite.option.<key> */
+export const REWRITE_OPTIONS: RewriteKey[] = ['short', 'friendly', 'benefit'];
 
 /** AI 다듬기 목업. 같은 입력이면 항상 같은 결과를 낸다. */
-/** 요청 문장에서 다듬을 방향을 찾는다 (실제 AI 연동 전 키워드 매칭) */
+/** 요청 문장에서 다듬을 방향을 찾는다 (실제 AI 연동 전 키워드 매칭, 한국어 · 영어 모두) */
 const REWRITE_KEYWORDS: Record<RewriteKey, string[]> = {
-  short: ['짧', '간단', '줄여', '요약'],
-  friendly: ['친근', '부드럽', '다정', '편하게'],
-  benefit: ['혜택', '할인', '적립', '강조'],
+  short: ['짧', '간단', '줄여', '요약', 'short', 'brief', 'concise', 'trim'],
+  friendly: [
+    '친근',
+    '부드럽',
+    '다정',
+    '편하게',
+    'friend',
+    'warm',
+    'casual',
+    'soft',
+  ],
+  benefit: [
+    '혜택',
+    '할인',
+    '적립',
+    '강조',
+    'benefit',
+    'discount',
+    'reward',
+    'highlight',
+  ],
 };
 
 export function parseRewriteRequest(request: string): RewriteKey[] {
+  const normalized = request.toLowerCase();
   const keys = (Object.keys(REWRITE_KEYWORDS) as RewriteKey[]).filter((key) =>
-    REWRITE_KEYWORDS[key].some((keyword) => request.includes(keyword)),
+    REWRITE_KEYWORDS[key].some((keyword) => normalized.includes(keyword)),
   );
   // 알아들은 방향이 없으면 말투만 부드럽게 다듬는다
   return keys.length ? keys : ['friendly'];
@@ -369,20 +430,28 @@ export function rewriteMessage(message: string, key: RewriteKey) {
     const end = message.search(/[.!?]\s/);
     return end > 0 ? message.slice(0, end + 1) : message;
   }
-  const prefix = key === 'friendly' ? FRIENDLY_PREFIX : BENEFIT_PREFIX;
+  const prefix =
+    key === 'friendly'
+      ? t('marketingSend.message.rewrite.friendlyPrefix')
+      : t('marketingSend.message.rewrite.benefitPrefix');
   return message.startsWith(prefix.trim()) ? message : prefix + message;
 }
 
-/** 'HH:mm' → '오전 10:00' */
+/** 'HH:mm' → '오전 10:00' / '10:00 AM' */
 export function formatTimeLabel(time: string) {
-  const hour = parseInt(time, 10);
-  return `${hour < 12 ? '오전' : '오후'} ${((hour + 11) % 12) + 1}:${time.slice(3)}`;
+  return new Intl.DateTimeFormat(currentLocale(), {
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(new Date(`2000-01-01T${time}:00`));
 }
 
-/** '2026-10-08' → '10월 8일 (목)' */
+/** '2026-10-08' → '10월 8일 (목)' / 'Thu, Oct 8' */
 export function formatDateLabel(iso: string) {
-  const date = new Date(`${iso}T00:00:00`);
-  return `${date.getMonth() + 1}월 ${date.getDate()}일 (${'일월화수목금토'[date.getDay()]})`;
+  return new Intl.DateTimeFormat(currentLocale(), {
+    month: i18n.resolvedLanguage === 'en' ? 'short' : 'long',
+    day: 'numeric',
+    weekday: 'short',
+  }).format(new Date(`${iso}T00:00:00`));
 }
 
 export function formatSchedule(view: Pick<MessageView, 'date' | 'time'>) {

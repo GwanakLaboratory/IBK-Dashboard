@@ -7,13 +7,18 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   CONDITION_GROUPS,
+  conditionGroupLabel,
+  conditionOptionLabel,
   RANDOM_POOLS,
   RANDOM_SIZES,
+  randomPoolLabel,
   RISK_OPTION_LEVEL,
   SEND_CHANNELS,
   SEND_SEGMENTS,
+  sendSegmentText,
   type ConditionGroupKey,
   type RandomPool,
   type SendChannelKey,
@@ -21,20 +26,18 @@ import {
 import { AiInsightBox } from '@/features/marketing/campaign/AiInsightBox';
 import {
   buildAiInsight,
-  formatCount,
   getPickedConditionGroups,
   getRandomPool,
   getSelectedSegments,
   type SendDraft,
   type TargetMode,
 } from '@/features/marketing/campaign/campaignModel';
+import { channelShortLabel } from '@/i18n/domain';
+import { formatNumber } from '@/i18n/format';
 import { RISK_LEVEL_META } from '@/utils/risk';
 
-const MODES: { key: TargetMode; label: string }[] = [
-  { key: 'ai', label: 'AI 추천 세그먼트' },
-  { key: 'cond', label: '조건 직접 선택' },
-  { key: 'rand', label: '무작위 추출' },
-];
+/** 탭 순서. 이름은 marketingSend.mode.<key> */
+const MODES: TargetMode[] = ['ai', 'cond', 'rand'];
 
 const CHIP_CLASS_NAME =
   'inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-lg border px-3 text-xs';
@@ -69,30 +72,31 @@ export function TargetSelectPanel({
   onSelectControl,
   onSelectChannel,
 }: TargetSelectPanelProps) {
+  const { t } = useTranslation();
   return (
     <section className="flex flex-col gap-3">
-      <StepHeading step={1} title="대상 선택" />
+      <StepHeading step={1} title={t('marketingSend.step.target')} />
       <div
         role="tablist"
-        aria-label="대상 선택 방식"
+        aria-label={t('marketingSend.mode.label')}
         className="flex gap-1 rounded-xl bg-slate-200/70 p-1"
       >
         {MODES.map((mode) => {
-          const selected = mode.key === draft.mode;
+          const selected = mode === draft.mode;
           return (
             <button
-              key={mode.key}
+              key={mode}
               type="button"
               role="tab"
               aria-selected={selected}
-              onClick={() => onSelectMode(mode.key)}
+              onClick={() => onSelectMode(mode)}
               className={`flex h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-lg px-3 text-sm transition-colors ${
                 selected
                   ? 'bg-white font-bold text-blue-700 shadow-sm ring-1 ring-slate-900/5'
                   : 'font-semibold text-slate-500 hover:text-slate-700'
               }`}
             >
-              {mode.label}
+              {t(`marketingSend.mode.${mode}`)}
             </button>
           );
         })}
@@ -118,7 +122,9 @@ export function TargetSelectPanel({
         )}
         {draft.mode !== 'ai' && (
           <div className="grid grid-cols-[112px_minmax(0,1fr)] items-center gap-3 border-t border-slate-100 pt-4">
-            <span className="text-sm font-bold text-slate-900">발송 채널</span>
+            <span className="text-sm font-bold text-slate-900">
+              {t('marketingSend.channel.label')}
+            </span>
             <div className="flex flex-wrap items-center gap-1.5">
               {SEND_CHANNELS.map((channel) => {
                 const selected = channel.key === draft.channel;
@@ -137,13 +143,13 @@ export function TargetSelectPanel({
                     <span
                       className={`size-[7px] shrink-0 rounded-full ${channel.dotClassName}`}
                     />
-                    {channel.shortLabel}
+                    {channelShortLabel(channel.key)}
                   </button>
                 );
               })}
               {draft.channel === 'tm' && (
                 <span className="ml-2 text-xs text-slate-500">
-                  상담원이 직접 연락해서 문구가 필요 없어요
+                  {t('marketingSend.channel.tmNoMessage')}
                 </span>
               )}
             </div>
@@ -192,6 +198,7 @@ function AiSegmentBody({
   draft,
   onToggleSegment,
 }: Pick<TargetSelectPanelProps, 'draft' | 'onToggleSegment'>) {
+  const { t } = useTranslation();
   const selectedSegments = getSelectedSegments(draft);
   const insight = buildAiInsight(selectedSegments);
   return (
@@ -199,8 +206,8 @@ function AiSegmentBody({
       <BodyHeading
         icon={Sparkles}
         iconClassName="text-violet-700"
-        title="AI 추천 세그먼트"
-        description="이탈 위험 · 반응 가능성 · 연간 이용금액을 함께 분석했어요"
+        title={t('marketingSend.ai.title')}
+        description={t('marketingSend.ai.description')}
       />
       <div className="grid grid-cols-2 gap-3">
         {SEND_SEGMENTS.map((segment) => {
@@ -224,33 +231,40 @@ function AiSegmentBody({
                 <span className="flex min-w-0 items-center gap-2.5">
                   <CheckBox checked={selected} />
                   <span className="truncate text-base font-bold text-slate-900">
-                    {segment.name}
+                    {sendSegmentText(segment.id, 'name')}
                   </span>
                 </span>
                 <span
                   className={`inline-flex h-6 items-center self-start whitespace-nowrap rounded-full px-2.5 text-xs font-bold ${channel?.chipClassName}`}
                 >
-                  {segment.benefit} · {channel?.shortLabel}
+                  {sendSegmentText(segment.id, 'benefit')} ·{' '}
+                  {channelShortLabel(segment.channel)}
                 </span>
                 <span className="text-xs font-semibold text-slate-700">
-                  {segment.condition}
+                  {sendSegmentText(segment.id, 'condition')}
                 </span>
                 <span className="text-xs leading-relaxed text-slate-500">
-                  {segment.description}
+                  {sendSegmentText(segment.id, 'description')}
                 </span>
               </span>
               <span className="flex flex-col justify-center gap-2.5 border-l border-slate-100 pl-[18px]">
                 <span className="flex flex-col gap-0.5">
-                  <span className="text-xs text-slate-500">대상</span>
+                  <span className="text-xs text-slate-500">
+                    {t('marketingSend.ai.count')}
+                  </span>
                   <span className="flex items-baseline gap-0.5">
                     <span className="text-xl font-bold text-slate-900">
-                      {formatCount(segment.count)}
+                      {formatNumber(segment.count)}
                     </span>
-                    <span className="text-xs font-bold">명</span>
+                    <span className="text-xs font-bold">
+                      {t('marketingSend.unit.people')}
+                    </span>
                   </span>
                 </span>
                 <span className="flex flex-col gap-0.5">
-                  <span className="text-xs text-slate-500">평균 이탈점수</span>
+                  <span className="text-xs text-slate-500">
+                    {t('marketingSend.ai.averageScore')}
+                  </span>
                   <span className="text-xl font-bold text-red-600">
                     {segment.averageScore}
                   </span>
@@ -266,9 +280,7 @@ function AiSegmentBody({
           {insight.text}
         </AiInsightBox>
       ) : (
-        <AiInsightBox>
-          세그먼트를 고르면 AI가 대상 특성을 분석해 드려요
-        </AiInsightBox>
+        <AiInsightBox>{t('marketingSend.ai.emptyInsight')}</AiInsightBox>
       )}
     </>
   );
@@ -325,19 +337,20 @@ function ConditionBody({
   TargetSelectPanelProps,
   'draft' | 'onToggleCondition' | 'onResetConditions'
 >) {
+  const { t } = useTranslation();
   const pickedCount = getPickedConditionGroups(draft.conditions).length;
   return (
     <>
       <BodyHeading
         icon={SlidersHorizontal}
         iconClassName="text-blue-700"
-        title="조건 직접 선택"
-        description="조건을 고르면 해당 고객 수를 바로 계산해요"
+        title={t('marketingSend.condition.title')}
+        description={t('marketingSend.condition.description')}
       >
         <span className="grow" />
         {pickedCount > 0 && (
           <span className="text-xs font-bold text-blue-700">
-            {pickedCount}개 조건 선택
+            {t('marketingSend.condition.pickedGroups', { count: pickedCount })}
           </span>
         )}
         <button
@@ -346,7 +359,7 @@ function ConditionBody({
           className="inline-flex h-8 items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
         >
           <RotateCw className="size-[13px]" strokeWidth={2.4} />
-          초기화
+          {t('marketingSend.condition.reset')}
         </button>
       </BodyHeading>
       <div className="grid grid-cols-2 gap-x-10 border-t border-slate-100 pt-1.5">
@@ -355,8 +368,14 @@ function ConditionBody({
           return (
             <OptionRow
               key={group.key}
-              label={group.label}
-              status={picked.length ? `${picked.length}개 선택` : '선택 안 함'}
+              label={conditionGroupLabel(group.key)}
+              status={
+                picked.length
+                  ? t('marketingSend.condition.status.picked', {
+                      count: picked.length,
+                    })
+                  : t('marketingSend.condition.status.none')
+              }
               statusActive={picked.length > 0}
             >
               {group.options.map((option) => {
@@ -384,7 +403,7 @@ function ConditionBody({
                     {selected && !isRisk && (
                       <Check className="size-3" strokeWidth={3} />
                     )}
-                    {option}
+                    {conditionOptionLabel(group.key, option)}
                   </button>
                 );
               })}
@@ -411,17 +430,18 @@ function RandomBody({
   TargetSelectPanelProps,
   'draft' | 'onSelectPool' | 'onSelectSize' | 'onSelectControl'
 >) {
+  const { t } = useTranslation();
   const pool = getRandomPool(draft);
   return (
     <>
       <BodyHeading
         icon={Shuffle}
         iconClassName="text-teal-700"
-        title="무작위 추출"
-        description="모집단에서 무작위로 고객을 뽑아요 · 효과 비교용 대조군 추출 가능"
+        title={t('marketingSend.random.title')}
+        description={t('marketingSend.random.description')}
       />
       <div className="grid grid-cols-2 gap-x-10 border-t border-slate-100 pt-1.5">
-        <OptionRow label="모집단">
+        <OptionRow label={t('marketingSend.random.pool.label')}>
           {RANDOM_POOLS.map((item) => {
             const selected = item.key === pool?.key;
             return (
@@ -438,12 +458,12 @@ function RandomBody({
                     className={`size-[7px] shrink-0 rounded-full ${RISK_LEVEL_META[level].dotColorClassName}`}
                   />
                 ))}
-                {item.label}
+                {randomPoolLabel(item)}
               </button>
             );
           })}
         </OptionRow>
-        <OptionRow label="추출 인원">
+        <OptionRow label={t('marketingSend.random.size.label')}>
           {RANDOM_SIZES.map((size) => {
             const selected = size === draft.size;
             return (
@@ -455,12 +475,14 @@ function RandomBody({
                 className={chipClassName(selected)}
               >
                 {selected && <Check className="size-3" strokeWidth={3} />}
-                {formatCount(size)}명
+                {t('marketingSend.random.size.value', {
+                  value: formatNumber(size),
+                })}
               </button>
             );
           })}
         </OptionRow>
-        <OptionRow label="대조군">
+        <OptionRow label={t('marketingSend.random.control.label')}>
           {[true, false].map((control) => {
             const selected = control === draft.control;
             return (
@@ -472,7 +494,9 @@ function RandomBody({
                 className={chipClassName(selected)}
               >
                 {selected && <Check className="size-3" strokeWidth={3} />}
-                {control ? '같은 수만큼 함께 뽑기' : '뽑지 않기'}
+                {control
+                  ? t('marketingSend.random.control.yes')
+                  : t('marketingSend.random.control.no')}
               </button>
             );
           })}

@@ -1,0 +1,1434 @@
+{
+  "common": {
+    "all": "All",
+    "unit": {
+      "people_one": "{{count, number}}",
+      "people_other": "{{count, number}}",
+      "cases_one": "{{count, number}} case",
+      "cases_other": "{{count, number}} cases",
+      "points_one": "{{count, number}} pt",
+      "points_other": "{{count, number}} pts",
+      "days_one": "{{count, number}}d",
+      "days_other": "{{count, number}}d",
+      "peopleSuffix": ""
+    },
+    "action": {
+      "close": "Close",
+      "cancel": "Cancel",
+      "confirm": "OK",
+      "viewDetail": "View {{name}} details"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "monthSelect": {
+      "label": "Reference month"
+    },
+    "dataBase": {
+      "updatedAt": "As of {{date}} · Updated on the 1st of each month"
+    },
+    "demoNotice": {
+      "logout": "Log out isn't available in the demo",
+      "baseMonth": "Changing the reference month isn't available in the demo"
+    }
+  },
+  "layout": {
+    "documentTitle": "Gwanak Lab | Customer Risk Dashboard",
+    "header": {
+      "title": "CARD RISK INSIGHT",
+      "support": "Customer support: {{phone}}",
+      "department": "Card Business Division",
+      "userName": "Gwanak Lab",
+      "logout": "Log out",
+      "language": {
+        "label": "Language",
+        "ko": "KO",
+        "en": "EN",
+        "koName": "한국어",
+        "enName": "English"
+      }
+    },
+    "sidebar": {
+      "label": "Menu",
+      "logoAlt": "Gwanak Lab logo",
+      "nav": {
+        "status": "Dashboard",
+        "target": "Customer Analysis",
+        "marketing": "Marketing Actions",
+        "marketingSend": "Targeted Send",
+        "marketingHistory": "Contact History",
+        "performance": "Performance"
+      },
+      "poweredBy": "POWERED BY"
+    },
+    "pageHead": {
+      "status": {
+        "eyebrow": "RETENTION OVERVIEW",
+        "title": "Customer Churn Insights",
+        "description": "Churn risk among recently active customers"
+      },
+      "target": {
+        "eyebrow": "RISK TARGET",
+        "title": "Customer Analysis",
+        "description": "Find priority segments and compare churn risk by attribute"
+      },
+      "marketing": {
+        "eyebrow": "MARKETING",
+        "title": "Marketing Actions",
+        "description": "Send tailored messages to at-risk members and track responses"
+      },
+      "performance": {
+        "eyebrow": "PERFORMANCE",
+        "title": "Campaign Results",
+        "description": "Compare against a control group to see if retention efforts reduced churn"
+      }
+    }
+  },
+  "domain": {
+    "riskLevel": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "churnReason": {
+      "otherCardUsage": "Using other cards",
+      "benefitDecline": "Benefit reduction",
+      "bankRelationship": "Low bank engagement",
+      "jobIncomeChange": "Job/income change",
+      "recruiterChannel": "Recruiter-acquired"
+    },
+    "gender": {
+      "female": "Female",
+      "male": "Male"
+    },
+    "ageGroup": {
+      "20s": "20s",
+      "30s": "30s",
+      "40s": "40s",
+      "50s": "50s",
+      "60s": "60s"
+    },
+    "channel": {
+      "tm": {
+        "label": "Telemarketing",
+        "short": "TM"
+      },
+      "kakao": {
+        "label": "KakaoTalk message",
+        "short": "Kakao"
+      },
+      "sms": {
+        "label": "SMS",
+        "short": "SMS"
+      },
+      "push": {
+        "label": "Push notification",
+        "short": "Push"
+      },
+      "email": {
+        "label": "Email",
+        "short": "Email"
+      }
+    },
+    "contact": {
+      "withChannel": "{{date}} {{channel}}"
+    },
+    "benefitCategory": {
+      "specialService": "Specialty services",
+      "reward": "Reward",
+      "cafeDining": "Cafés & dining",
+      "transportTelecomFuelCar": "Transit & auto",
+      "leisureSports": "Leisure & sports",
+      "cultureShows": "Culture",
+      "shoppingFashionBeauty": "Shopping & beauty",
+      "finance": "Finance",
+      "travelStay": "Travel & lodging",
+      "living": "Living",
+      "nationalVoucher": "National vouchers"
+    },
+    "brand": {
+      "BC": "BC",
+      "VISA": "VISA",
+      "MASTER": "MASTER",
+      "UNIONPAY": "UNIONPAY",
+      "JCB": "JCB",
+      "BC_GLOBAL": "BC Global"
+    },
+    "memberName": {
+      "format": "{{surname}} {{given}}",
+      "surname": {
+        "kim": "Kim",
+        "lee": "Lee",
+        "park": "Park",
+        "choi": "Choi",
+        "jung": "Jung",
+        "kang": "Kang",
+        "cho": "Cho",
+        "yoon": "Yoon",
+        "jang": "Jang",
+        "lim": "Lim",
+        "han": "Han",
+        "oh": "Oh",
+        "seo": "Seo",
+        "shin": "Shin",
+        "kwon": "Kwon",
+        "hwang": "Hwang",
+        "ahn": "Ahn",
+        "song": "Song",
+        "ryu": "Ryu",
+        "hong": "Hong"
+      },
+      "given": {
+        "min": "M.",
+        "seo": "S.",
+        "jun": "J.",
+        "yun": "Y.",
+        "hyun": "H.",
+        "jin": "J.",
+        "woo": "W.",
+        "a": "A.",
+        "hee": "H.",
+        "ho": "H.",
+        "young": "Y.",
+        "eun": "E.",
+        "su": "S.",
+        "yeon": "Y.",
+        "seok": "S."
+      }
+    },
+    "card": {
+      "happy-mate": {
+        "name": "Happy Mate Card",
+        "summary": "Earn 1%–10% of spending as Happy Points"
+      },
+      "i-climate-commute": {
+        "name": "I-Climate Commute Card",
+        "summary": "0.5% off at all merchants + postpaid Climate Commute pass"
+      },
+      "point-3-8-toss": {
+        "name": "Gwanak Lab Point 3.8 Toss Card",
+        "summary": "1.5% points at all merchants and up to 6.5% overseas"
+      },
+      "point": {
+        "name": "Gwanak Lab Point",
+        "summary": "0.6%–3.3% points by transaction amount"
+      },
+      "point-3-8": {
+        "name": "Gwanak Lab Point 3.8",
+        "summary": "1.5% points at all merchants and up to 6.5% overseas"
+      },
+      "kapa-the-value": {
+        "name": "KAPA The Value",
+        "summary": "Built for professionals' work and life, specialized in travel, meetings and leisure"
+      },
+      "kapa-the-highness": {
+        "name": "KAPA The Highness",
+        "summary": "Built for professionals' work and life, specialized in travel, meetings and leisure"
+      },
+      "kapick": {
+        "name": "Gwanak Lab KaPick",
+        "summary": "Kakao Pay PICK — meet the adorable Choonsik card!"
+      },
+      "i-anywhere-green": {
+        "name": "I-Anywhere Green Card",
+        "summary": "Earn Eco Money points on eco-friendly transport!"
+      },
+      "i-pet": {
+        "name": "I-PET",
+        "summary": "The best choice for pet lovers!"
+      },
+      "k-pass": {
+        "name": "K-Pass",
+        "summary": "Public transit card that earns mileage on every ride"
+      },
+      "i-nanum-general": {
+        "name": "I-Nanum (General)",
+        "summary": "The more you spend, the more you share"
+      },
+      "i-nanum-child-disability": {
+        "name": "I-Nanum (Kids & Disability)",
+        "summary": "The more you spend, the more you share"
+      },
+      "i-nanum-animal-environment": {
+        "name": "I-Nanum (Animals & Env.)",
+        "summary": "The more you spend, the more you share"
+      },
+      "i-all": {
+        "name": "I-ALL",
+        "summary": "For every part of my day, a card made for me"
+      },
+      "wellix": {
+        "name": "Gwanak Lab Wellix Card",
+        "summary": "Save by auto-paying your Wellix rental fees!"
+      },
+      "mobile-yearly-excitement": {
+        "name": "Year of Excitement (Mobile)",
+        "summary": "₩50,000–700,000 cashback per year"
+      },
+      "dailywith": {
+        "name": "DailyWith Card",
+        "summary": "Extra cashback every month, automatically — whatever your pattern or amount"
+      },
+      "oneair-unimile": {
+        "name": "OneAir (UniMile) Card",
+        "summary": "Earn UniMile usable on every domestic low-cost carrier"
+      },
+      "coway": {
+        "name": "Coway Card",
+        "summary": "Healthier benefits"
+      },
+      "shopping-n-joy": {
+        "name": "Shopping & Joy Card",
+        "summary": "₩5,000 off per online shopping purchase"
+      },
+      "jejuair-refresh-point": {
+        "name": "Jeju Air Refresh Point Card",
+        "summary": "A must-have for budget travel!"
+      },
+      "hybrid": {
+        "name": "Gwanak Lab Hybrid Card",
+        "summary": "One card, two ways to pay"
+      },
+      "cham-good-daiso": {
+        "name": "Cham! Good Daiso Card",
+        "summary": "Daiso discount partner card"
+      },
+      "daily-joy": {
+        "name": "Daily Joy Card",
+        "summary": "Discounts at Coupang, TMON and WeMakePrice"
+      },
+      "yearly-excitement": {
+        "name": "Year of Excitement Card",
+        "summary": "₩50,000–700,000 cashback per year"
+      },
+      "green-card-v2": {
+        "name": "Green Card v2",
+        "summary": "Smart spending, meaningful choices"
+      },
+      "kt-telecop-anshim-plus": {
+        "name": "kt telecop Anshim Plus Card",
+        "summary": "Up to ₩10,000/month off kt telecop auto-pay, plus transit, movie and mart discounts"
+      },
+      "yongin-citizen": {
+        "name": "Yongin Citizen Card",
+        "summary": "Discounts at public facilities in Yongin"
+      },
+      "syrup": {
+        "name": "Gwanak Lab Syrup Card",
+        "summary": "Sweet benefits on top of smart finance!"
+      },
+      "national-happiness": {
+        "name": "National Happiness Card",
+        "summary": "One Card - Multi Voucher & Service"
+      },
+      "cham-good-kt-wiz": {
+        "name": "Cham! Good kt wiz Card",
+        "summary": "kt wiz baseball partner card: ₩3,000 off Suwon kt wiz Park tickets and 10% off team gear"
+      },
+      "olleh-super-dc": {
+        "name": "olleh Super DC Card",
+        "summary": "Save up to ₩15,000/month on kt phone bills just by using the card with auto-pay"
+      },
+      "natural-dream": {
+        "name": "Natural Dream Card",
+        "summary": "7% statement credit on Natural Dream purchases"
+      },
+      "hi": {
+        "name": "Gwanak Lab hi Card",
+        "summary": "Transit discount card"
+      },
+      "hipass": {
+        "name": "Gwanak Lab Hi-pass (Personal)",
+        "summary": "Hi-pass-only card inserted into an in-vehicle unit, for highway tolls only"
+      },
+      "asiana-club": {
+        "name": "Asiana Club Card",
+        "summary": "Earn Asiana miles"
+      },
+      "korean-air-skypass": {
+        "name": "Korean Air SKYPASS Card",
+        "summary": "Earn Korean Air miles"
+      }
+    }
+  },
+  "overview": {
+    "kpi": {
+      "activeCustomers": {
+        "label": "Active customers",
+        "description": "Customers with credit card spending in the past 2 months",
+        "note": "Not all card customers"
+      },
+      "composition": {
+        "label": "Active customer mix",
+        "atRisk": "At-risk customers",
+        "notAtRisk": "Other customers",
+        "summary": "Of <total>{{total}}</total> active customers, <risk>{{risk}} ({{ratio}}%)</risk> are predicted to become inactive this month."
+      },
+      "riskRatio": {
+        "label": "At-risk share",
+        "previous": "(prev. {{ratio}}%)"
+      }
+    },
+    "trend": {
+      "title": "At-risk customer trend",
+      "range": {
+        "label": "Trend period",
+        "last6": "6 months",
+        "last12": "12 months"
+      },
+      "metric": {
+        "label": "View by",
+        "count": "Customers",
+        "ratio": "At-risk share"
+      },
+      "axis": {
+        "count": "Customers",
+        "ratio": "At-risk share (%)"
+      },
+      "chart": {
+        "vsLastMonth": "{{diff}} vs last month"
+      },
+      "legend": {
+        "count": "At-risk customers (left)",
+        "ratio": "At-risk share (right)"
+      }
+    },
+    "reasonShare": {
+      "title": "Risk share by reason",
+      "unit": {
+        "label": "Show as",
+        "count": "Customers",
+        "ratio": "Share"
+      }
+    },
+    "topChanges": {
+      "title": "Top 5 risk changes vs last month",
+      "badge": "Customers",
+      "column": {
+        "rank": "Rank",
+        "reason": "Reason",
+        "previous": "Last month",
+        "current": "This month",
+        "change": "Change",
+        "changeRate": "% Change"
+      }
+    }
+  },
+  "customerAnalysis": {
+    "membersLink": "At-risk members",
+    "filter": {
+      "month": "Reference month",
+      "product": "Card product",
+      "channel": "Issue channel",
+      "search": "Search",
+      "reset": "Reset",
+      "basis": "Customers active in each of the last 2 months"
+    },
+    "picks": {
+      "title": "Segments to prioritize",
+      "note": "Selected per criterion · Segments may overlap · Minimum size applied",
+      "goToChart": "Go to chart: {{kind}} – {{subject}}",
+      "highestRatio": {
+        "kind": "Top risk share",
+        "subject": "Tenure under 6 months",
+        "badge": "▲ +{{diff}}%p vs overall average"
+      },
+      "mostCustomers": {
+        "kind": "Most at risk",
+        "subject": "{{product}}",
+        "unit": "",
+        "badge": "Product risk share: {{ratio}}%"
+      },
+      "largestIncrease": {
+        "kind": "Biggest increase",
+        "subject": "Partner-channel customers",
+        "badge": "MoM · Current risk share {{ratio}}%"
+      }
+    },
+    "dimensions": {
+      "title": "Churn risk by attribute",
+      "unitTabs": {
+        "label": "Chart unit",
+        "ratio": "Risk share",
+        "count": "Customers"
+      },
+      "note": "Risk share = at-risk customers in segment ÷ customers scored in segment"
+    },
+    "dimension": {
+      "title": {
+        "product": "By card product",
+        "usage": "By monthly spend",
+        "tenure": "By tenure",
+        "age": "By age group",
+        "channel": "By issue channel",
+        "category": "By main spending category"
+      },
+      "showInsight": "Show insight: {{title}}",
+      "insight": {
+        "ratio": "‘{{label}}’ risk share is {{diff}}%p above average",
+        "count": "‘{{label}}’ has the most at-risk customers ({{value}})"
+      },
+      "viewAllCards": "View all card products",
+      "viewAll": "All",
+      "countValue": "{{value}}",
+      "viewCardDetail": "View {{label}} card details",
+      "rowValue": "{{label}} {{value}}"
+    },
+    "segment": {
+      "usageUnder300k": "Under ₩300K",
+      "usage300kTo500k": "₩300K–500K",
+      "usage500kTo1m": "₩500K–1M",
+      "usage1mTo2m": "₩1M–2M",
+      "usage2mOrMore": "₩2M+",
+      "tenureUnder6m": "Under 6 mo",
+      "tenure6mTo1y": "6 mo–1 yr",
+      "tenure1To3y": "1–3 yrs",
+      "tenure3To5y": "3–5 yrs",
+      "tenure5yOrMore": "5+ yrs",
+      "age20sOrUnder": "20s & under",
+      "age30s": "30s",
+      "age40s": "40s",
+      "age50s": "50s",
+      "age60sOrOver": "60s & over",
+      "branch": "Branch",
+      "iOneBank": "i-ONE Bank",
+      "cardApp": "Card app",
+      "partner": "Partners",
+      "other": "Other",
+      "shopping": "Shopping",
+      "dining": "Dining",
+      "fuel": "Fuel",
+      "utilities": "Utilities"
+    }
+  },
+  "members": {
+    "header": {
+      "eyebrow": "RISK TARGET · MEMBERS",
+      "title": "Members",
+      "description": "Select a member to see their detailed history",
+      "back": "Customer analysis"
+    },
+    "summary": {
+      "all": {
+        "label": "All analyzed",
+        "sub": "Active in last 2 months"
+      },
+      "high": {
+        "sub": "Churn score 70+ · Immediate action"
+      },
+      "medium": {
+        "sub": "Score 40–69 · Re-engage"
+      },
+      "low": {
+        "sub": "Score under 40 · Monitor"
+      },
+      "unit": ""
+    },
+    "search": {
+      "modeLabel": "Search by",
+      "inputLabel": "Search members by {{mode}}",
+      "submit": "Search",
+      "reset": "Reset",
+      "clear": "Clear search",
+      "applied": "{{mode}} · {{query}}",
+      "mode": {
+        "name": {
+          "label": "Name",
+          "placeholder": "Enter a member name"
+        },
+        "phone": {
+          "label": "Phone",
+          "placeholder": "Enter the last 4 digits of the phone number"
+        },
+        "id": {
+          "label": "Member ID",
+          "placeholder": "Enter a member ID (e.g. C-001024)"
+        }
+      }
+    },
+    "filter": {
+      "level": {
+        "label": "Risk level",
+        "all": "All risk levels"
+      },
+      "product": {
+        "label": "Card product",
+        "all": "All card products"
+      }
+    },
+    "sort": {
+      "label": "Sort",
+      "id": "Member ID",
+      "score": "Highest churn score",
+      "idle": "Longest inactive"
+    },
+    "download": {
+      "button": "Export to Excel",
+      "fileName": "members"
+    },
+    "table": {
+      "column": {
+        "id": "Member ID",
+        "name": "Name",
+        "phone": "Phone",
+        "product": "Card product",
+        "score": "Churn score",
+        "riskLevel": "Risk level",
+        "reason": "Main reason",
+        "idleDays": "Days inactive"
+      },
+      "idleDays_one": "{{count}} day",
+      "idleDays_other": "{{count}} days",
+      "empty": "No members match these filters. Try changing them."
+    },
+    "footer": {
+      "summary": "Showing {{shown}} of {{total}} · {{sort}}"
+    }
+  },
+  "memberDetail": {
+    "header": {
+      "eyebrow": "RISK TARGET · MEMBER DETAIL",
+      "title": "{{name}}",
+      "description": "{{id}} · {{product}}",
+      "back": {
+        "card": "Card details",
+        "list": "Members"
+      },
+      "cardLink": "{{product}} details"
+    },
+    "profile": {
+      "phone": "Phone",
+      "genderAge": "Gender · Age",
+      "genderAgeValue": "{{gender}} · {{age}}",
+      "joinedAt": "Joined",
+      "tenure": "{{years}} yrs",
+      "lastUse": "Last used",
+      "idleWarning_one": "Idle {{count}}d",
+      "idleWarning_other": "Idle {{count}}d",
+      "usedAgo_one": "Used {{count}} day ago",
+      "usedAgo_other": "Used {{count}} days ago",
+      "creditScore": "Credit score",
+      "creditValue": "{{score}}",
+      "creditDiff": "{{diff}} vs 3 mo ago",
+      "monthUsage": "{{month}} spend",
+      "monthUsageValue": "₩{{won}}",
+      "noUsageValue": "₩0",
+      "noPayment": "No payments in {{month}}",
+      "vsAverage": "{{pct}}% vs monthly avg"
+    },
+    "score": {
+      "title": "Churn score",
+      "deltaUnit": " pts",
+      "prev3": "{{score}} pts 3 mo ago",
+      "gauge": "{{level}} {{range}}"
+    },
+    "trend": {
+      "range": "{{count}} months",
+      "usage": {
+        "title": "Card spend",
+        "rangeLabel": "Card spend trend period",
+        "description": "Monthly (₩10K)",
+        "series": "Spend",
+        "value": "₩{{k}}K",
+        "average": "Avg {{value}}",
+        "minimum": "Min {{value}}"
+      },
+      "credit": {
+        "title": "Credit score",
+        "rangeLabel": "Credit score trend period",
+        "description": "NICE credit score",
+        "series": "Credit score",
+        "value": "{{value}}",
+        "stable": "Good standing: 700",
+        "minimum": "Min. to qualify: 621"
+      },
+      "churn": {
+        "title": "Churn score trend",
+        "description": "Last 4 months (past 3 + this month)",
+        "series": "Churn score",
+        "value": "{{value}} pts",
+        "riskBand": "High risk 70+"
+      }
+    },
+    "reasons": {
+      "title": "Top 5 churn reasons",
+      "description": "By contribution to churn score (0–100)"
+    },
+    "categories": {
+      "title": "Top categories",
+      "description": "By spend, last 3 mo"
+    },
+    "category": {
+      "cafe": "Cafe",
+      "delivery": "Delivery",
+      "convenienceStore": "Conv. store",
+      "fuel": "Fuel",
+      "onlineShopping": "Online shop",
+      "mart": "Grocery"
+    },
+    "payments": {
+      "title": "Recent payments",
+      "count": "Last 5",
+      "column": {
+        "date": "Date",
+        "store": "Merchant",
+        "amount": "Amount",
+        "method": "Type"
+      },
+      "amount": "₩{{amount}}",
+      "store": {
+        "starbucksGangnam": "Starbucks",
+        "baemin": "Baemin",
+        "gs25Yeoksam": "GS25 Yeoksam",
+        "skEnergySeocho": "SK Energy",
+        "coupang": "Coupang",
+        "emartSeongsu": "E-mart Seongsu"
+      },
+      "method": {
+        "lumpSum": "Full payment",
+        "installment3m": "3-mo installment"
+      }
+    },
+    "aiAction": {
+      "label": "AI recommendation",
+      "usageDrop": "Spend fell {{drop}}% over the last 3 months. A push notification offering a 10% statement credit on cafe and delivery, their most-used categories, is most likely to get a response.",
+      "stable": "Usage is stable. A KakaoTalk notice summarizing benefits used before next month's annual fee is billed should be enough."
+    }
+  },
+  "cards": {
+    "header": {
+      "eyebrow": "RISK TARGET · CARD PRODUCTS",
+      "title": "Churn risk by card product",
+      "description_one": "Compare churn rates across {{count}} product at a glance",
+      "description_other": "Compare churn rates across {{count}} products at a glance"
+    },
+    "kpi": {
+      "totalProducts": {
+        "label": "Card products",
+        "unit": "",
+        "sub": "Credit cards · currently offered"
+      },
+      "averageRate": {
+        "label": "Avg. churn rate",
+        "sub": "MoM ({{month}} {{rate}}%)"
+      },
+      "worstRate": {
+        "label": "Highest churn rate"
+      },
+      "worstRiskShare": {
+        "label": "Top at-risk share",
+        "sub": "{{name}} · High+Med"
+      }
+    },
+    "search": {
+      "label": "Search product name",
+      "placeholder": "Enter a product name",
+      "submit": "Search",
+      "reset": "Reset",
+      "chip": "Product · {{keyword}}",
+      "clear": "Clear search"
+    },
+    "filter": {
+      "brand": {
+        "label": "Brand",
+        "all": "All brands"
+      },
+      "category": {
+        "label": "Benefit category",
+        "all": "All benefit categories"
+      }
+    },
+    "sort": {
+      "label": "Sort",
+      "rate": "Highest churn rate",
+      "members": "Most members"
+    },
+    "table": {
+      "column": {
+        "rank": "Rank",
+        "name": "Product",
+        "category": "Benefit category",
+        "brand": "Brand",
+        "members": "Members",
+        "churnRate": "Churn rate"
+      },
+      "empty": "No card products match your filters",
+      "footer": "Showing {{count}} of {{total}}"
+    }
+  },
+  "cardDetail": {
+    "header": {
+      "eyebrow": "RISK TARGET · CARD DETAIL",
+      "backToMember": "Member detail",
+      "backToList": "Card list",
+      "viewMembers": "View members"
+    },
+    "summary": {
+      "imageAlt": "{{name}} card image",
+      "benefits": "Key benefits"
+    },
+    "kpi": {
+      "members": {
+        "label": "Members",
+        "unit": "",
+        "sub": "Active as of end of {{month}}"
+      },
+      "churnRate": {
+        "label": "Churn rate",
+        "sub": "vs last month"
+      },
+      "riskMembers": {
+        "label": "At-risk members",
+        "unit": "",
+        "sub": "High+Med · {{share}}%"
+      }
+    },
+    "riskMix": {
+      "title": "Member risk mix",
+      "description": "Members of this card by churn risk level",
+      "chartLabel": "Member risk mix: {{high}} {{highShare}}%, {{medium}} {{mediumShare}}%, {{low}} {{lowShare}}%",
+      "column": {
+        "level": "Risk",
+        "members": "Members",
+        "share": "Share"
+      },
+      "memberCount": "{{value}}",
+      "total": "Total"
+    },
+    "trend": {
+      "title": "Churn trend",
+      "averageSeries": "Avg.",
+      "range": {
+        "label": "Trend period",
+        "last6": "6 months",
+        "last12": "12 months"
+      }
+    },
+    "reasons": {
+      "title": "Top 5 churn reasons",
+      "description": "Avg. contribution score (0–100)"
+    },
+    "topRiskMembers": {
+      "title": "Top 3 at-risk members",
+      "badge": "Churn score",
+      "column": {
+        "rank": "#",
+        "member": "Name",
+        "memberId": "Member ID",
+        "score": "Churn score",
+        "level": "Risk",
+        "idle": "Idle",
+        "reason": "Main reason"
+      },
+      "empty": "No at-risk members to show for this card."
+    }
+  },
+  "marketingSend": {
+    "page": {
+      "eyebrow": "TARGET MARKETING",
+      "title": "Targeted send",
+      "description": "Export selected customers or send directly to CMO"
+    },
+    "unit": {
+      "people": ""
+    },
+    "step": {
+      "target": "Select targets",
+      "message": "Message",
+      "confirm": "Review and send"
+    },
+    "mode": {
+      "label": "Targeting method",
+      "ai": "AI segments",
+      "cond": "Custom conditions",
+      "rand": "Random sample"
+    },
+    "channel": {
+      "label": "Channel",
+      "tmNoMessage": "Agents call customers directly, so no message is needed",
+      "cost": {
+        "tm": "₩1,200 per send",
+        "kakao": "₩8 per send",
+        "sms": "₩27 per send",
+        "push": "Free · only customers who allow app notifications"
+      }
+    },
+    "ai": {
+      "title": "AI segments",
+      "description": "Based on churn risk, likely response and annual spend",
+      "badge": "AI insight",
+      "count": "Targets",
+      "averageScore": "Avg. churn score",
+      "emptyInsight": "Pick a segment and AI will analyze its traits",
+      "multiInsight": "Of the {{count}} selected, {{name}} has the highest expected response ({{rate}}%). By channel: {{channels}}.",
+      "channelCount": "{{channel}} {{count}}",
+      "multiHighlight": "Overall expected response {{rate}}% (weighted by size)"
+    },
+    "segment": {
+      "s1": {
+        "name": "High-value, spending down",
+        "benefit": "Benefit",
+        "condition": "₩10M+ per year · sharp spend drop",
+        "description": "Top 12% spenders whose spending dropped sharply churn 3.2x more often.",
+        "insight": "In this segment, a sharp drop in spending is the most common pattern.",
+        "recommendation": "Recommended: benefit × Telemarketing · expected response 42.9%"
+      },
+      "s2": {
+        "name": "Fee due soon · unused perks",
+        "benefit": "Annual fee",
+        "condition": "Fee due in 30 days · low benefit use",
+        "description": "Members who skipped benefits right before billing tend to cancel in the billing month.",
+        "insight": "Members who haven't used benefits before the annual fee often cancel right after billing.",
+        "recommendation": "Recommended: annual fee benefit reminder × Kakao · expected response 31.4%"
+      },
+      "s3": {
+        "name": "Switched cards · café/dining",
+        "benefit": "Category cashback",
+        "condition": "Switched to another card · mainly café/dining",
+        "description": "Café/dining is the biggest category moving to other cards.",
+        "insight": "The drop in café/dining payments coincides with new cards issued elsewhere.",
+        "recommendation": "Recommended: category cashback × Kakao · expected response 27.8%"
+      },
+      "s4": {
+        "name": "About to go dormant",
+        "benefit": "Benefit",
+        "condition": "Inactive 60+ days · 30 days before dormancy",
+        "description": "Only about 4% come back after going dormant, so reaching out beforehand works best.",
+        "insight": "Members 30 days from dormancy respond best to a first-purchase reward.",
+        "recommendation": "Recommended: first-purchase reward × SMS · expected response 18.6%"
+      }
+    },
+    "condition": {
+      "title": "Custom conditions",
+      "description": "Pick conditions to see the matching customer count instantly",
+      "pickedGroups_one": "{{count}} condition selected",
+      "pickedGroups_other": "{{count}} conditions selected",
+      "reset": "Reset",
+      "status": {
+        "picked": "{{count}} selected",
+        "none": "None"
+      },
+      "group": {
+        "risk": "Risk level",
+        "gender": "Gender",
+        "age": "Age group",
+        "reason": "Main churn reason",
+        "category": "Top category",
+        "spend": "Annual spend",
+        "idle": "Inactive period",
+        "fee": "Annual fee due"
+      },
+      "option": {
+        "age": {
+          "60plus": "60+"
+        },
+        "category": {
+          "cafeDining": "Café/dining",
+          "delivery": "Delivery",
+          "shopping": "Shopping",
+          "convenienceStore": "Convenience store",
+          "fuel": "Fuel"
+        },
+        "spend": {
+          "over10m": "₩10M or more",
+          "from5mTo10m": "₩5M–10M",
+          "under5m": "Under ₩5M"
+        },
+        "idle": {
+          "from30To59": "30–59 days",
+          "over60": "60+ days (near dormant)"
+        },
+        "fee": {
+          "within30": "Within 30 days",
+          "from31To60": "31–60 days"
+        }
+      }
+    },
+    "random": {
+      "title": "Random sample",
+      "description": "Randomly draw customers from a pool · optional control group for comparison",
+      "pool": {
+        "label": "Pool",
+        "risk": "High-risk members {{value}}",
+        "all": "High + Medium {{value}}"
+      },
+      "size": {
+        "label": "Sample size",
+        "value": "{{value}}"
+      },
+      "control": {
+        "label": "Control group",
+        "yes": "Match target group size",
+        "no": "No control group"
+      }
+    },
+    "summary": {
+      "chip": {
+        "segments_one": "{{count}} segment selected",
+        "segments_other": "{{count}} segments selected",
+        "conditions_one": "{{count}} condition applied",
+        "conditions_other": "{{count}} conditions applied",
+        "random": "Random sample",
+        "decided": "{{decided}} of {{total}} finalized"
+      },
+      "item": {
+        "channel": "Channel",
+        "pool": "Pool",
+        "size": "Sample",
+        "control": "Control"
+      },
+      "value": {
+        "notSelected": "Not selected",
+        "people": "{{value}}",
+        "controlPeople": "{{value}} (not sent)",
+        "none": "None"
+      },
+      "note": {
+        "empty": "Pick targets to calculate the count",
+        "overlap": "Customers in multiple segments are counted once",
+        "ready": "Choose what to do with the selected customers",
+        "pendingMessage": "Finalize the message to calculate the count"
+      },
+      "selectedTitle": "Selected targets",
+      "pendingMessages_one": "{{count}} target without a final message will be included once finalized",
+      "pendingMessages_other": "{{count}} targets without a final message will be included once finalized",
+      "emptyGuide": "No targets yet. Pick a segment or conditions above.",
+      "totalTitle": "Matching customers",
+      "extract": {
+        "button": "Export targets",
+        "help": "Download the matching customer list as an Excel file"
+      },
+      "cmo": {
+        "button": "Send to CMO now",
+        "help": "Send the targets to the card marketing system (CMO)"
+      },
+      "cmoNotice": "Message, channel and schedule are set in CMO"
+    },
+    "targetName": {
+      "cond": "Custom condition targets",
+      "rand": "Random sample targets"
+    },
+    "message": {
+      "status": {
+        "decided": "Final",
+        "pending": "Draft"
+      },
+      "collapsed": {
+        "notGenerated": "No message yet · expand and AI will write one",
+        "generating": "AI is writing the message"
+      },
+      "schedule": {
+        "label": "Schedule",
+        "date": "Send date",
+        "time": "Send time",
+        "aiBadge": "AI pick",
+        "recommended": "AI pick · {{time}}"
+      },
+      "variant": {
+        "recommended": "Message {{letter}} · Recommended",
+        "label": "Message {{letter}}",
+        "expectedResponse": "Expected response"
+      },
+      "rewrite": {
+        "button": "Refine with AI",
+        "requestLabel": "AI refine request",
+        "placeholder": "e.g. Make it shorter and friendlier",
+        "submit": "Refine",
+        "examples": "Examples",
+        "option": {
+          "short": "Shorter",
+          "friendly": "Friendlier",
+          "benefit": "Highlight benefit"
+        },
+        "friendlyPrefix": "Hi there! ",
+        "benefitPrefix": "[Benefit] "
+      },
+      "edit": {
+        "button": "Edit",
+        "textareaLabel": "{{name}} message"
+      },
+      "hint": "{{count}} chars · {name} becomes the recipient's name; double-check [ ] parts before sending",
+      "regenerate": "Regenerate",
+      "confirmedNote": "Message confirmed · edits will require re-confirmation",
+      "collapse": "Collapse",
+      "confirm": "Use this message"
+    },
+    "generating": {
+      "stage": {
+        "analyze": "Analyzing segment",
+        "tone": "Matching tone to past responses",
+        "polish": "Polishing message"
+      },
+      "headline": "AI is writing a {{theme}} message",
+      "rewriteHeadline": {
+        "short": "AI is making the message shorter",
+        "friendly": "AI is making the message friendlier",
+        "benefit": "AI is highlighting the benefit",
+        "custom": "AI is refining the message as requested"
+      },
+      "persona": "Personalizing for {{persona}} based on churn signals and response history",
+      "variant": "AI draft {{letter}}"
+    },
+    "template": {
+      "s2": {
+        "timeLabel": "Weekdays 10 AM",
+        "v1": "Don't miss out before your annual fee! {name}, use your unused [fuel & grocery] benefits to get back [up to ₩30,000] this month.",
+        "v2": "{name}, you still have [3] unused benefits. Use them by [Oct 31] and get [50%] of your annual fee back."
+      },
+      "s3": {
+        "timeLabel": "Weekdays 11:30 AM",
+        "v1": "{name}, get [10%] cashback on [café/dining] purchases. Earn [up to ₩10,000] this month.",
+        "v2": "[Café/dining] cashback just for {name}! Pay 3+ times by [Oct 31] and get [₩5,000] back."
+      },
+      "s4": {
+        "timeLabel": "Weekdays 7 PM",
+        "v1": "[Gwanak Lab Card] {name}, it's been a while! Get [₩5,000] cashback on your first purchase by [Oct 31].",
+        "v2": "[Gwanak Lab Card] {name}, your card will soon become dormant. Pay now and get a [₩10,000] reward."
+      },
+      "kakao": {
+        "timeLabel": "Weekdays 11:30 AM",
+        "v1": "{name}, pay with your [Gwanak Lab Card] this month and get [up to ₩20,000] back. Check your benefits now.",
+        "v2": "A [10%] statement discount just for {name}! Pay at your favorite places by [Oct 31]."
+      },
+      "sms": {
+        "timeLabel": "Weekdays 7 PM",
+        "v1": "[Gwanak Lab Card] {name}, get [₩5,000] cashback when you pay by [Oct 31].",
+        "v2": "[Gwanak Lab Card] A treat for {name}! Pay [3] or more times this month and get [₩10,000] back."
+      },
+      "push": {
+        "timeLabel": "Weekdays 6 PM",
+        "v1": "{name}, your personalized offer is here. Check out [10%] off at your favorite places.",
+        "v2": "{name}, pay with your [Gwanak Lab Card] this month and get [up to ₩20,000] back."
+      }
+    },
+    "complete": {
+      "title": "Sent to CMO",
+      "subtitle": "{{targets}} · {{total}} total{{dedupe}}",
+      "targetCount_one": "{{count}} target",
+      "targetCount_other": "{{count}} targets",
+      "dedupe": " (deduplicated)",
+      "tmSub": "Telemarketing · agents call in order · script is set in CMO",
+      "channelSub": "{{channel}} · {{schedule}}",
+      "count": "{{value}}",
+      "viewHistory": "View in contact history"
+    },
+    "extractDone": {
+      "title": "Target list downloaded",
+      "detail": "{{value}} customers · Excel file (member ID, name and churn score included)",
+      "viewHistory": "View contact history →"
+    },
+    "csv": {
+      "fileName": "send_targets",
+      "header": {
+        "id": "Member ID",
+        "name": "Name",
+        "product": "Card product",
+        "gender": "Gender",
+        "ageGroup": "Age group",
+        "riskLevel": "Risk level",
+        "score": "Churn score",
+        "reason": "Main churn reason"
+      }
+    }
+  },
+  "marketingHistory": {
+    "page": {
+      "eyebrow": "TARGET MARKETING",
+      "title": "Contact history",
+      "description": "Review sends and customer responses by campaign"
+    },
+    "kpi": {
+      "campaigns": {
+        "label": "Campaigns",
+        "unit": "",
+        "sub": "{{run}} running · {{done}} done · {{plan}} planned",
+        "chip": "{{count}} running"
+      },
+      "sent": {
+        "label": "Customers contacted",
+        "unit": "",
+        "sub": "Actual sends, deduplicated"
+      },
+      "responseRate": {
+        "label": "Avg. response rate",
+        "unit": "%",
+        "sub": "Used card within 7 days"
+      },
+      "returned": {
+        "label": "Reactivated",
+        "unit": "",
+        "sub": "2+ uses within 30 days"
+      }
+    },
+    "filter": {
+      "status": {
+        "label": "Campaign status",
+        "all": "All statuses"
+      },
+      "source": {
+        "label": "Targeting method",
+        "all": "All methods"
+      },
+      "channel": {
+        "label": "Channel",
+        "all": "All channels"
+      },
+      "reset": "Reset",
+      "period": "Sep 1 – Oct 2",
+      "count_one": "{{count}} campaign",
+      "count_other": "{{count}} campaigns",
+      "sort": {
+        "label": "Sort",
+        "date": "Newest first",
+        "response": "Highest response"
+      }
+    },
+    "table": {
+      "column": {
+        "campaign": "Campaign",
+        "channel": "Channel",
+        "date": "Sent",
+        "count": "Targets",
+        "responseRate": "Response rate",
+        "returned": "Reactivated",
+        "status": "Status"
+      },
+      "tip": {
+        "responseRateLabel": "How response rate is measured",
+        "responseRate": "Share of recipients who used their card within 7 days.",
+        "returnedLabel": "How reactivation is measured",
+        "returned": "Customers who used their card 2+ times within 30 days of the send."
+      },
+      "notSent": "Not sent",
+      "people": "{{value}}",
+      "empty": "No campaigns match these filters."
+    },
+    "status": {
+      "run": "Running",
+      "done": "Completed",
+      "plan": "Planned"
+    },
+    "source": {
+      "ai": {
+        "label": "AI",
+        "filter": "AI segments"
+      },
+      "cond": {
+        "label": "Conditions",
+        "filter": "Custom conditions"
+      },
+      "rand": {
+        "label": "Random",
+        "filter": "Random sample"
+      }
+    },
+    "detail": {
+      "label": "{{name}} details",
+      "message": "Message sent",
+      "sender": {
+        "kakao": "Gwanak Lab Card KakaoTalk",
+        "sms": "SMS · 1588-2588",
+        "push": "i-ONE app push",
+        "tm": "Agent script"
+      }
+    },
+    "campaigns": {
+      "cp-0924": {
+        "name": "Sep café & delivery 10% off",
+        "message": "{name}, get a 10% statement discount on café and delivery purchases. Up to ₩10,000 until Sep 30!",
+        "segment": "Sharp spend drop · mainly café/delivery"
+      },
+      "cp-0917": {
+        "name": "First-purchase reward",
+        "message": "{name}, make your first Gwanak Lab Card purchase and get ₩5,000 cashback. Pay at least once by Sep 30 and it's credited automatically.",
+        "segment": "No spend 3 mo after issue"
+      },
+      "cp-0910": {
+        "name": "Pre-fee benefit reminder",
+        "message": "Don't miss out before your annual fee! {name}, use your unused fuel & grocery benefits to get back up to ₩30,000 this month.",
+        "segment": "Annual fee due soon · unused benefits"
+      },
+      "cp-0905": {
+        "name": "Fuel benefit is back",
+        "message": "[Gwanak Lab Card] {name}, the ₩100/L fuel discount is back this month. Use it by Sep 30.",
+        "segment": "Less fuel spending"
+      },
+      "cp-0920": {
+        "name": "High-value outreach",
+        "message": "Hello, this is Gwanak Lab Card. We noticed you've been using your card less and wanted to check if anything has been inconvenient. May we tell you about benefits that suit you?",
+        "segment": "₩10M+ per year · sharp spend drop"
+      },
+      "cp-0902": {
+        "name": "Overseas spending cashback",
+        "message": "{name}, 3% cashback on overseas purchases is back. Pay at overseas merchants by Oct 31.",
+        "segment": "Stopped overseas spending"
+      },
+      "cp-1002": {
+        "name": "Oct re-engagement after revolving exit",
+        "message": "{name}, spend ₩300,000 or more with your Gwanak Lab Card this month and get ₩10,000 back. Check it out now.",
+        "segment": "Spend down after revolving exit"
+      }
+    }
+  },
+  "performance": {
+    "kpi": {
+      "returned": {
+        "label": "Churn prevented",
+        "sub": "Resumed use after Sep campaigns",
+        "unit": ""
+      },
+      "churnGap": {
+        "label": "Churn rate gap",
+        "unit": "%p",
+        "sub": "{{target}}% · ctrl {{control}}%"
+      },
+      "amount": {
+        "label": "Spend retained",
+        "unit": "B KRW",
+        "sub": "12-mo spend of reactivated customers"
+      },
+      "roi": {
+        "label": "Marketing ROI",
+        "unit": "x",
+        "sub": "vs Sep spend of ₩{{spend}}B"
+      }
+    },
+    "chart": {
+      "title": "Monthly churn rate: target vs control",
+      "description": "Customers with the same profile were split and only one group got marketing (control: not sent) · Numbers show campaigns sent that month; hover to see them",
+      "series": {
+        "target": "Target",
+        "control": "Control"
+      },
+      "campaignStart": "Campaigns start in {{month}}",
+      "tooltipCount_one": "{{count}} campaign",
+      "tooltipCount_other": "{{count}} campaigns"
+    },
+    "channel": {
+      "title": "Response rate by channel",
+      "description": "Sep sends · card used within 7 days of receiving"
+    },
+    "campaign": {
+      "title": "Campaign performance",
+      "description": "Sep campaigns · most reactivations first · click for details",
+      "viewHistory": "View contact history",
+      "column": {
+        "rank": "Rank",
+        "campaign": "Campaign",
+        "channel": "Channel",
+        "responseRate": "Response",
+        "returned": "Reactivated",
+        "amount": "Spend retained"
+      },
+      "returned": "{{value}}",
+      "amount": "₩{{value}}B"
+    },
+    "pastCampaigns": {
+      "p03-high-value": "High-value, spending down",
+      "p03-random-a": "Random sample A · High risk",
+      "p04-annual-fee": "Fee due soon · unused perks",
+      "p04-high-30s-female-cafe": "High · 30s female · café/dining",
+      "p04-medium-50s-fuel": "Medium · 50s · fuel",
+      "p04-random-b": "Random sample B · High & Medium",
+      "p05-other-card-cafe": "Switched cards · café/dining",
+      "p05-high-20s-delivery": "High · 20s · delivery",
+      "p06-dormant": "About to go dormant",
+      "p06-high-40s-male-shopping": "High · 40s male · shopping",
+      "p07-annual-fee-60s": "Annual fee due within 30 days · 60s",
+      "p08-high-value-2": "High-value, spending down (2nd)"
+    }
+  },
+  "chat": {
+    "launcher": {
+      "title": "AI assistant",
+      "open": "Open AI assistant",
+      "close": "Close AI assistant",
+      "closeShort": "Close",
+      "expand": "Expand",
+      "shrink": "Collapse",
+      "reset": "Reset chat",
+      "scrollTop": "Back to top",
+      "send": "Send",
+      "placeholder": "Ask me anything...",
+      "preparing": "Thinking…"
+    },
+    "greeting": "Hi! Ask me anything about customer churn risk.\n\nI can quickly show you at-risk customers, customer profiles, campaign results, and more.",
+    "thinking": {
+      "check": "Reading your question",
+      "lookup": "Looking up the latest data",
+      "write": "Writing the answer"
+    },
+    "suggestions": {
+      "overview": "Churn risk overview this month",
+      "age": "Show churn risk by age group",
+      "members": "Which members have high risk scores?",
+      "cards": "Which cards have high churn rates?",
+      "campaign": "What was the Sep campaign response rate?",
+      "performance": "Show churn prevention results"
+    },
+    "fallback": "I can't answer that question yet. Try one of the questions below and I'll answer right away.",
+    "answers": {
+      "overview": {
+        "summary": "As of {{month}}, **{{risk}} ({{ratio}})** of the **{{total}}** customers active in the last 2 months are predicted to be at churn risk. The risk share is up **{{delta}}%p** from last month.",
+        "column": {
+          "reason": "Churn reason (largest MoM increase)"
+        },
+        "increase": "{{value}} (+{{diff}})"
+      },
+      "age": {
+        "summary": "Among age groups, **{{group}}** has the highest risk share at **{{ratio}}**, **{{delta}}%p** above the overall average ({{average}}).",
+        "column": {
+          "group": "Age group",
+          "ratio": "Risk share",
+          "count": "At-risk customers"
+        }
+      },
+      "members": {
+        "summary": "Of the {{all}} members analyzed, **{{high}} are High risk (70+ pts)** and {{medium}} are Medium risk. These members have the highest churn scores:",
+        "column": {
+          "member": "Member",
+          "score": "Score",
+          "reason": "Main churn reason"
+        }
+      },
+      "cards": {
+        "summary": "**{{card}}** has the highest churn rate ({{rate}}). The average churn rate across all {{count}} products is {{average}}.",
+        "column": {
+          "card": "Card",
+          "rate": "Churn rate",
+          "delta": "MoM"
+        }
+      },
+      "campaign": {
+        "summary_one": "In September, **{{count}} campaign** went out to {{people}} customers, with an average response rate of **{{rate}}** and **{{returned}}** reactivated.",
+        "summary_other": "In September, **{{count}} campaigns** went out to {{people}} customers, with an average response rate of **{{rate}}** and **{{returned}}** reactivated.",
+        "column": {
+          "campaign": "Campaign",
+          "rate": "Response rate",
+          "returned": "Reactivated"
+        }
+      },
+      "performance": {
+        "summary": "September campaigns brought **{{returned}} customers** back to using their cards. The target group's churn rate is **{{gap}}%p** lower than the control group's.",
+        "column": {
+          "metric": "Metric",
+          "value": "Value"
+        },
+        "row": {
+          "churnRate": "Churn rate (target / control)",
+          "roiValue": "{{value}}x"
+        },
+        "best": "The campaign with the most reactivations is **{{name}}** ({{returned}} reactivated)."
+      }
+    },
+    "links": {
+      "overview": "View in Dashboard",
+      "customerAnalysis": "View in Customer Analysis",
+      "members": "View in Member List",
+      "cards": "View in Card Analysis",
+      "marketingHistory": "View in Contact History",
+      "performance": "View in Campaign Results"
+    }
+  }
+}
