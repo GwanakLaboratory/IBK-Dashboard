@@ -10,8 +10,9 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { useTranslation } from 'react-i18next';
 import { CHART_COLOR } from '@/components/charts/chartColors';
-import { formatNumber } from '@/data/overview';
+import { formatMonthTick, formatNumber } from '@/i18n/format';
 
 type RiskTrendComboChartProps = {
   months: string[];
@@ -56,9 +57,10 @@ export function RiskTrendComboChart({
   ratios,
   focus = 'count',
 }: RiskTrendComboChartProps) {
+  const { t } = useTranslation();
   const data = months.map((month, index) => ({
-    // 월은 두 자리로 (예: 09월)
-    month: `${month.slice(3)}월`,
+    // 월은 두 자리로 (예: 09월 / Sep)
+    month: formatMonthTick(month),
     count: counts[index],
     ratio: ratios[index],
   }));
@@ -120,7 +122,7 @@ export function RiskTrendComboChart({
             tickLine={false}
             width={60}
             tick={{ fill: COLOR.axis, className: 'text-2xs' }}
-            tickFormatter={formatNumber}
+            tickFormatter={(value: number) => formatNumber(value)}
           />
           <YAxis
             yAxisId="ratio"
@@ -178,7 +180,9 @@ export function RiskTrendComboChart({
                 if (index !== lastIndex) {
                   return null;
                 }
-                const text = `전월 대비 ${lastDiff >= 0 ? '+' : ''}${formatNumber(lastDiff)}명`;
+                const text = t('overview.trend.chart.vsLastMonth', {
+                  diff: `${lastDiff >= 0 ? '+' : ''}${formatNumber(lastDiff)}`,
+                });
                 const boxWidth = text.length * 7 + 16;
                 const centerX = Number(x) + Number(width) / 2;
                 return (
@@ -255,6 +259,7 @@ export function RiskTrendComboChart({
 
 /** 차트 제목 줄에 붙는 범례 */
 export function RiskTrendLegend() {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center gap-5 text-xs text-slate-600">
       <span className="inline-flex items-center gap-2">
@@ -262,7 +267,7 @@ export function RiskTrendLegend() {
           <span className="h-2 w-1.5 rounded-sm bg-blue-100" />
           <span className="h-3 w-1.5 rounded-sm bg-red-500" />
         </span>
-        이탈 위험 고객 수 (좌측)
+        {t('overview.trend.legend.count')}
       </span>
       <span className="inline-flex items-center gap-2">
         <span
@@ -272,7 +277,7 @@ export function RiskTrendLegend() {
           <span className="h-0.5 w-6 rounded-sm bg-blue-700" />
           <span className="absolute left-2 top-0 size-2.5 rounded-full border-2 border-blue-700 bg-white" />
         </span>
-        이탈 위험 비중 (우측)
+        {t('overview.trend.legend.ratio')}
       </span>
     </div>
   );

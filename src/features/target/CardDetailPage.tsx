@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Users } from 'lucide-react';
 import {
   Link,
@@ -22,19 +23,30 @@ import { Card } from '@/components/molecules/Card';
 import { Dropdown } from '@/components/molecules/Dropdown';
 import { RankedBarList } from '@/components/molecules/RankedBarList';
 import { CARD_IMAGE_URLS } from '@/data/cardImages';
-import { getCardRateTrend, getCardReasonScores } from '@/data/cards';
+import {
+  CARD_TREND_MONTHS,
+  getCardRateTrend,
+  getCardReasonScores,
+} from '@/data/cards';
 import {
   CARD_PRODUCTS,
   TARGET_MEMBERS,
   findCardProduct,
   type CardDetailLinkState,
 } from '@/data/target';
+import {
+  brandLabel,
+  cardName,
+  cardSummary,
+  churnReasonLabel,
+  memberNameLabel,
+  riskLevelLabel,
+} from '@/i18n/domain';
+import { formatMonth, formatNumber } from '@/i18n/format';
 import type { RiskLevel } from '@/types/churn';
 import { RISK_LEVEL_META, getRiskLevelFromScore } from '@/utils/risk';
 import { CardImage } from './CardImage';
 import { CardTag } from './CardTag';
-
-const formatNumber = (value: number) => value.toLocaleString('ko-KR');
 
 // 열 너비는 내용 폭에 맞추고, 남는 폭은 justify-between 으로 열 사이 간격에 나눈다
 const MEMBER_GRID =
@@ -50,24 +62,21 @@ const DONUT_STROKE_CLASS_NAME: Record<RiskLevel, string> = {
 };
 
 export function CardDetailPage() {
-  const { cardName } = useParams();
+  const { t } = useTranslation();
+  const { cardId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const fromMemberId = (location.state as CardDetailLinkState | null)
     ?.fromMemberId;
   const [trendRange, setTrendRange] = useState('12');
-  const card = findCardProduct(cardName);
+  const card = findCardProduct(cardId);
 
   if (!card) {
-    return (
-      <Navigate
-        to={`/target/cards/${encodeURIComponent(CARD_PRODUCTS[0].name)}`}
-        replace
-      />
-    );
+    return <Navigate to={`/target/cards/${CARD_PRODUCTS[0].id}`} replace />;
   }
 
-  const membersPath = `/target/members?product=${encodeURIComponent(card.name)}`;
+  const membersPath = `/target/members?product=${card.id}`;
+  const name = cardName(card.id);
   const lowShare = +(100 - card.highShare - card.mediumShare).toFixed(1);
   const riskShare = card.highShare + card.mediumShare;
   const mix: { level: RiskLevel; share: number }[] = [
@@ -76,22 +85,24 @@ export function CardDetailPage() {
     { level: 'low', share: lowShare },
   ];
   const topMembers = TARGET_MEMBERS.filter(
-    (member) => member.product === card.name,
+    (member) => member.productId === card.id,
   )
     .sort((a, b) => b.score - a.score)
     .slice(0, 3);
   const reasons = getCardReasonScores(card);
-  const trendData = getCardRateTrend(card).slice(-Number(trendRange));
+  const trendData = getCardRateTrend(card)
+    .slice(-Number(trendRange))
+    .map(({ month, ...values }) => ({ ...values, label: formatMonth(month) }));
   const trendSeries: TrendSeries[] = [
     {
       key: 'card',
-      label: card.name,
+      label: name,
       color: CHART_COLOR.primary,
       labelBelow: card.churnRate < 2.6,
     },
     {
       key: 'average',
-      label: '전체 카드 평균',
+      label: t('cardDetail.trend.averageSeries'),
       color: CHART_COLOR.muted,
       dashed: true,
       labelBelow: card.churnRate >= 2.6,
@@ -100,26 +111,33 @@ export function CardDetailPage() {
 
   const kpis = [
     {
-      label: '보유 회원',
+      key: 'members',
+      label: t('cardDetail.kpi.members.label'),
       labelClassName: 'text-blue-700',
       value: formatNumber(card.members),
-      unit: '명',
-      sub: '9월 말 유효 회원',
+      unit: t('cardDetail.kpi.members.unit'),
+      sub: t('cardDetail.kpi.members.sub', {
+        month: formatMonth(CARD_TREND_MONTHS[CARD_TREND_MONTHS.length - 1]),
+      }),
     },
     {
-      label: '이탈률',
+      key: 'churnRate',
+      label: t('cardDetail.kpi.churnRate.label'),
       labelClassName: 'text-red-700',
       value: card.churnRate.toFixed(1),
       unit: '%',
       badge: <DeltaBadge delta={card.churnRateDelta} size="md" />,
-      sub: '전월 대비',
+      sub: t('cardDetail.kpi.churnRate.sub'),
     },
     {
-      label: '이탈 위험 회원',
+      key: 'riskMembers',
+      label: t('cardDetail.kpi.riskMembers.label'),
       labelClassName: 'text-red-700',
       value: formatNumber(Math.round((card.members * riskShare) / 100)),
-      unit: '명',
-      sub: `위험 + 중위험 · 보유 회원의 ${riskShare.toFixed(1)}%`,
+      unit: t('cardDetail.kpi.riskMembers.unit'),
+      sub: t('cardDetail.kpi.riskMembers.sub', {
+        share: riskShare.toFixed(1),
+      }),
     },
   ];
 
@@ -137,53 +155,61 @@ export function CardDetailPage() {
       <PageHeader
         section="target"
         titleSize="lg"
-        eyebrow="RISK TARGET · 카드 상세"
-        title={card.name}
-        description={card.brands.join(' · ')}
+        eyebrow={t('cardDetail.header.eyebrow')}
+        title={name}
+        description={card.brands.map(brandLabel).join(' · ')}
         back={
           fromMemberId
-            ? { label: '회원 상세', to: `/target/members/${fromMemberId}` }
-            : { label: '카드 목록', to: '/target/cards' }
+            ? {
+                label: t('cardDetail.header.backToMember'),
+                to: `/target/members/${fromMemberId}`,
+              }
+            : {
+                label: t('cardDetail.header.backToList'),
+                to: '/target/cards',
+              }
         }
         actions={
           <Button variant="outline" onClick={() => navigate(membersPath)}>
             <Users className="h-4 w-4" />
-            보유 회원 보기
+            {t('cardDetail.header.viewMembers')}
           </Button>
         }
       />
 
       <div className="grid grid-cols-[minmax(0,4fr)_repeat(3,minmax(0,3fr))] divide-x divide-slate-100 rounded-2xl border border-slate-200 bg-white">
         <div className="flex items-center gap-4 px-6 py-5">
-          {CARD_IMAGE_URLS[card.name] ? (
+          {CARD_IMAGE_URLS[card.id] ? (
             <CardImage
-              key={card.name}
-              src={CARD_IMAGE_URLS[card.name]}
-              alt={`${card.name} 카드 이미지`}
+              key={card.id}
+              src={CARD_IMAGE_URLS[card.id]}
+              alt={t('cardDetail.summary.imageAlt', { name })}
             />
           ) : (
             <div className="flex h-20 w-32 shrink-0 flex-col justify-between rounded-lg bg-sidebar px-3 py-2.5">
               <span className="h-3.5 w-5 rounded-sm bg-yellow-600" />
               <span className="self-end text-2xs font-bold tracking-widest text-white">
-                {card.brands[0]}
+                {brandLabel(card.brands[0])}
               </span>
             </div>
           )}
           <div className="flex min-w-0 flex-col gap-2">
-            <span className="text-xs font-bold text-blue-700">주요 혜택</span>
+            <span className="text-xs font-bold text-blue-700">
+              {t('cardDetail.summary.benefits')}
+            </span>
             <span className="text-sm font-semibold leading-snug">
-              {card.summary}
+              {cardSummary(card.id)}
             </span>
             <div className="flex flex-wrap gap-1">
               {card.tags.map((tag) => (
-                <CardTag key={tag} label={tag} size="sm" />
+                <CardTag key={tag} category={tag} size="sm" />
               ))}
             </div>
           </div>
         </div>
         {kpis.map((kpi) => (
           <div
-            key={kpi.label}
+            key={kpi.key}
             className="flex min-w-0 flex-col justify-center gap-3 px-6 py-5"
           >
             <span className={`text-lg font-bold ${kpi.labelClassName}`}>
@@ -205,9 +231,9 @@ export function CardDetailPage() {
 
       <div className="grid grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-4">
         <Card
-          title="보유 회원 위험도 구성"
+          title={t('cardDetail.riskMix.title')}
           titleSize="lg"
-          description="이 카드를 쓰는 회원의 이탈 예측 등급별 분포"
+          description={t('cardDetail.riskMix.description')}
           gapClassName="gap-3.5"
         >
           <div className="flex items-center gap-6">
@@ -215,7 +241,14 @@ export function CardDetailPage() {
               <svg
                 viewBox="0 0 160 160"
                 role="img"
-                aria-label={`보유 회원 위험도 구성: 위험 ${card.highShare}%, 중위험 ${card.mediumShare}%, 저위험 ${lowShare}%`}
+                aria-label={t('cardDetail.riskMix.chartLabel', {
+                  high: riskLevelLabel('high'),
+                  highShare: card.highShare,
+                  medium: riskLevelLabel('medium'),
+                  mediumShare: card.mediumShare,
+                  low: riskLevelLabel('low'),
+                  lowShare,
+                })}
                 className="size-40 -rotate-90"
               >
                 {donutSlices.map((slice) => (
@@ -234,7 +267,9 @@ export function CardDetailPage() {
                 ))}
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
-                <span className="text-xs text-slate-500">위험</span>
+                <span className="text-xs text-slate-500">
+                  {riskLevelLabel('high')}
+                </span>
                 <span className="text-2xl font-bold leading-tight text-red-600">
                   {card.highShare}%
                 </span>
@@ -242,9 +277,13 @@ export function CardDetailPage() {
             </div>
             <div className="flex min-w-0 grow flex-col text-xs">
               <div className="grid h-8 grid-cols-[minmax(0,1fr)_110px_70px] items-center gap-2 border-b border-slate-200 font-semibold text-slate-500">
-                <span>위험도</span>
-                <span className="text-right">회원 수</span>
-                <span className="text-right">비율</span>
+                <span>{t('cardDetail.riskMix.column.level')}</span>
+                <span className="text-right">
+                  {t('cardDetail.riskMix.column.members')}
+                </span>
+                <span className="text-right">
+                  {t('cardDetail.riskMix.column.share')}
+                </span>
               </div>
               {mix.map((item) => (
                 <div
@@ -255,10 +294,11 @@ export function CardDetailPage() {
                     <RiskBadge riskLevel={item.level} />
                   </span>
                   <span className="text-right font-bold">
-                    {formatNumber(
-                      Math.round((card.members * item.share) / 100),
-                    )}
-                    명
+                    {t('cardDetail.riskMix.memberCount', {
+                      value: formatNumber(
+                        Math.round((card.members * item.share) / 100),
+                      ),
+                    })}
                   </span>
                   <span className="text-right text-slate-600">
                     {item.share}%
@@ -266,9 +306,11 @@ export function CardDetailPage() {
                 </div>
               ))}
               <div className="grid h-10 grid-cols-[minmax(0,1fr)_110px_70px] items-center gap-2 font-bold">
-                <span>전체</span>
+                <span>{t('cardDetail.riskMix.total')}</span>
                 <span className="text-right">
-                  {formatNumber(card.members)}명
+                  {t('cardDetail.riskMix.memberCount', {
+                    value: formatNumber(card.members),
+                  })}
                 </span>
                 <span className="text-right text-slate-600">100%</span>
               </div>
@@ -277,7 +319,7 @@ export function CardDetailPage() {
         </Card>
 
         <Card
-          title="월별 이탈률 추이"
+          title={t('cardDetail.trend.title')}
           titleSize="lg"
           gapClassName="gap-2.5"
           className="pb-3"
@@ -285,15 +327,15 @@ export function CardDetailPage() {
             <div className="flex items-center gap-5">
               <LineLegend series={trendSeries} />
               <Dropdown
-                label="추이 기간"
+                label={t('cardDetail.trend.range.label')}
                 size="sm"
                 align="right"
                 className="w-32"
                 value={trendRange}
                 onChange={setTrendRange}
                 options={[
-                  { value: '6', label: '최근 6개월' },
-                  { value: '12', label: '최근 12개월' },
+                  { value: '6', label: t('cardDetail.trend.range.last6') },
+                  { value: '12', label: t('cardDetail.trend.range.last12') },
                 ]}
               />
             </div>
@@ -313,14 +355,14 @@ export function CardDetailPage() {
 
       <div className="grid grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-4">
         <Card
-          title="보유 회원 이탈 이유 TOP 5"
+          title={t('cardDetail.reasons.title')}
           titleSize="lg"
-          description="이 카드 회원의 사유별 평균 기여 점수 (0–100)"
+          description={t('cardDetail.reasons.description')}
         >
           <RankedBarList
             valueClassName="w-8"
             items={reasons.map((reason) => ({
-              label: reason.label,
+              label: churnReasonLabel(reason.reason),
               barPercent: reason.score,
               display: String(reason.score),
             }))}
@@ -328,11 +370,11 @@ export function CardDetailPage() {
         </Card>
 
         <Card
-          title="이 카드의 이탈 위험 회원 TOP3"
+          title={t('cardDetail.topRiskMembers.title')}
           titleSize="lg"
           titleAddon={
             <span className="inline-flex h-6 items-center rounded-full bg-slate-100 px-2.5 text-xs font-semibold text-slate-600">
-              이탈 예측 점수
+              {t('cardDetail.topRiskMembers.badge')}
             </span>
           }
         >
@@ -340,52 +382,53 @@ export function CardDetailPage() {
             <div
               className={`${MEMBER_GRID} h-8 border-b border-slate-200 font-semibold text-slate-500`}
             >
-              <span>순위</span>
-              <span>회원</span>
-              <span>회원번호</span>
-              <span>이탈 예측 점수</span>
-              <span>위험도</span>
-              <span>미이용</span>
-              <span>주요 이탈 사유</span>
+              <span>{t('cardDetail.topRiskMembers.column.rank')}</span>
+              <span>{t('cardDetail.topRiskMembers.column.member')}</span>
+              <span>{t('cardDetail.topRiskMembers.column.memberId')}</span>
+              <span>{t('cardDetail.topRiskMembers.column.score')}</span>
+              <span>{t('cardDetail.topRiskMembers.column.level')}</span>
+              <span>{t('cardDetail.topRiskMembers.column.idle')}</span>
+              <span>{t('cardDetail.topRiskMembers.column.reason')}</span>
             </div>
             {topMembers.map((member, index) => {
               const level = getRiskLevelFromScore(member.score);
+              const memberName = memberNameLabel(member.name);
+              const reason = churnReasonLabel(member.reason);
               return (
                 <Link
                   key={member.id}
                   to={`/target/members/${member.id}`}
                   state={{ from: 'card' }}
-                  aria-label={`${member.name} 상세 보기`}
+                  aria-label={t('common.action.viewDetail', {
+                    name: memberName,
+                  })}
                   className={`${MEMBER_GRID} min-h-11 flex-1 border-b border-slate-100 last:border-b-0 hover:bg-blue-50/40`}
                 >
                   <RankBadge rank={index + 1} highlight="dark" size="md" />
                   <span className="truncate font-semibold text-slate-900">
-                    {member.name}
+                    {memberName}
                   </span>
                   <span className="text-slate-500">{member.id}</span>
                   <span
                     className={`font-bold ${RISK_LEVEL_META[level].textClassName}`}
                   >
-                    {member.score}점
+                    {t('common.unit.points', { count: member.score })}
                   </span>
                   <span>
                     <RiskBadge riskLevel={level} />
                   </span>
                   <span className="font-semibold text-slate-900">
-                    {member.idleDays}일
+                    {t('common.unit.days', { count: member.idleDays })}
                   </span>
-                  <span
-                    className="truncate text-slate-700"
-                    title={member.reason}
-                  >
-                    {member.reason}
+                  <span className="truncate text-slate-700" title={reason}>
+                    {reason}
                   </span>
                 </Link>
               );
             })}
             {topMembers.length === 0 && (
               <div className="flex h-28 items-center justify-center text-slate-500">
-                이 카드에는 표시할 위험 회원이 없어요.
+                {t('cardDetail.topRiskMembers.empty')}
               </div>
             )}
           </div>

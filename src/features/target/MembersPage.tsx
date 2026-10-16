@@ -1,5 +1,6 @@
 import { Download, X } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { Button } from '@/components/atoms/Button';
 import { SearchInput } from '@/components/atoms/SearchInput';
@@ -14,6 +15,7 @@ import {
   downloadTargetCsv,
   memberCsvRow,
 } from '@/features/marketing/campaign/targetCsv';
+import { ALL_FILTER } from '@/data/cards';
 import {
   CARD_PRODUCTS,
   MEMBER_COUNT_BY_LEVEL,
@@ -21,53 +23,37 @@ import {
   getMemberPhone,
   type TargetMember,
 } from '@/data/target';
-import type { RiskLevel } from '@/types/churn';
+import {
+  cardName,
+  churnReasonLabel,
+  memberNameLabel,
+  riskLevelLabel,
+} from '@/i18n/domain';
+import { formatNumber } from '@/i18n/format';
+import type { CardId, RiskLevel } from '@/types/churn';
 import { RISK_LEVEL_META, getRiskLevelFromScore } from '@/utils/risk';
 
 type LevelFilter = 'all' | RiskLevel;
 type QueryMode = 'name' | 'phone' | 'id';
 type SortKey = 'id' | 'score' | 'idle';
 
-const ALL_PRODUCTS = '전체 카드상품';
+/** 카드상품 필터: 'all' 또는 카드 상품 id */
+type ProductFilter = typeof ALL_FILTER | CardId;
+
 const PAGE_SIZE = 10;
 // 열 너비는 내용 폭에 맞춰 두고(카드상품·주요 이유는 최대 너비까지만 늘어남),
 // 화면이 넓을 때 남는 폭은 justify-between 으로 열 사이 간격에 고르게 나눈다.
 const GRID_COLUMNS =
-  'grid-cols-[84px_60px_112px_minmax(120px,200px)_112px_96px_minmax(120px,170px)_44px] justify-between';
+  'grid-cols-[84px_60px_112px_minmax(120px,200px)_112px_96px_minmax(120px,170px)_56px] justify-between';
 
-const LEVEL_CARDS: { key: LevelFilter; label: string; sub: string }[] = [
-  { key: 'all', label: '분석 대상 전체', sub: '최근 2개월 신용카드 이용 고객' },
-  { key: 'high', label: '위험', sub: '이탈 예측 70점 이상 · 우선 대응' },
-  { key: 'medium', label: '중위험', sub: '40 – 69점 · 이용 독려 대상' },
-  { key: 'low', label: '저위험', sub: '40점 미만 · 모니터링' },
-];
+// 문구는 화면에서 members.summary.<key> 로 바꾼다
+const LEVEL_CARDS: LevelFilter[] = ['all', 'high', 'medium', 'low'];
 
-const QUERY_MODES: { key: QueryMode; label: string; placeholder: string }[] = [
-  { key: 'name', label: '이름', placeholder: '회원 이름을 입력하세요' },
-  {
-    key: 'phone',
-    label: '전화번호',
-    placeholder: '전화번호 뒤 4자리를 입력하세요',
-  },
-  {
-    key: 'id',
-    label: '회원번호',
-    placeholder: '회원번호를 입력하세요 (예: C-001024)',
-  },
-];
+const QUERY_MODES: QueryMode[] = ['name', 'phone', 'id'];
 
-const LEVEL_OPTIONS: { value: LevelFilter; label: string }[] = [
-  { value: 'all', label: '전체 위험도' },
-  { value: 'high', label: '위험' },
-  { value: 'medium', label: '중위험' },
-  { value: 'low', label: '저위험' },
-];
+const RISK_LEVELS: RiskLevel[] = ['high', 'medium', 'low'];
 
-const SORT_TABS: { key: SortKey; label: string }[] = [
-  { key: 'id', label: '회원번호 순' },
-  { key: 'score', label: '이탈 예측 점수 높은 순' },
-  { key: 'idle', label: '미이용 기간 긴 순' },
-];
+const SORT_KEYS: SortKey[] = ['id', 'score', 'idle'];
 
 const DEFAULT_SORT: SortKey = 'id';
 
@@ -88,7 +74,12 @@ const SORT_COMPARE: Record<
     memberNumber(a) - memberNumber(b),
 };
 
-const PRODUCT_OPTIONS = [ALL_PRODUCTS, ...CARD_PRODUCTS.map((c) => c.name)];
+const isCardId = (value: string | null): value is CardId =>
+  CARD_PRODUCTS.some((card) => card.id === value);
+
+/** 이름 비교용: 마스킹(*)과 공백을 빼고 소문자로 */
+const normalizeName = (value: string) =>
+  value.replace(/[*\s]/g, '').toLowerCase();
 
 function matchQuery(member: TargetMember, mode: QueryMode, query: string) {
   if (!query) return true;
@@ -102,22 +93,24 @@ function matchQuery(member: TargetMember, mode: QueryMode, query: string) {
   }
   if (mode === 'id')
     return member.id.toUpperCase().includes(query.toUpperCase());
+  // 화면에 보이는 (현재 언어) 이름으로 찾고, 회원번호로도 찾을 수 있게 한다
+  const name = memberNameLabel(member.name);
   return (
-    member.name.replace('*', '').includes(query.replace('*', '')) ||
-    member.name.includes(query)
+    normalizeName(name).includes(normalizeName(query)) ||
+    name.includes(query) ||
+    member.id.toUpperCase().includes(query.toUpperCase())
   );
 }
 
 export function MembersPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialProduct = searchParams.get('product');
 
   const [level, setLevel] = useState<LevelFilter>('all');
-  const [product, setProduct] = useState(
-    initialProduct && PRODUCT_OPTIONS.includes(initialProduct)
-      ? initialProduct
-      : ALL_PRODUCTS,
+  const [product, setProduct] = useState<ProductFilter>(
+    isCardId(initialProduct) ? initialProduct : ALL_FILTER,
   );
   const [queryMode, setQueryMode] = useState<QueryMode>('name');
   const [draft, setDraft] = useState('');
@@ -128,16 +121,13 @@ export function MembersPage() {
   const [sort, setSort] = useState<SortKey>(DEFAULT_SORT);
   const [page, setPage] = useState(1);
 
-  const filtered = useMemo(
-    () =>
-      TARGET_MEMBERS.filter(
-        (member) =>
-          (level === 'all' || getRiskLevelFromScore(member.score) === level) &&
-          (product === ALL_PRODUCTS || member.product === product) &&
-          matchQuery(member, applied.mode, applied.query),
-      ).sort(SORT_COMPARE[sort]),
-    [level, product, applied, sort],
-  );
+  // 이름 검색은 현재 언어 이름으로 하므로 언어가 바뀌어도 맞도록 렌더마다 거른다 (회원 수가 적어 가볍다)
+  const filtered = TARGET_MEMBERS.filter(
+    (member) =>
+      (level === 'all' || getRiskLevelFromScore(member.score) === level) &&
+      (product === ALL_FILTER || member.productId === product) &&
+      matchQuery(member, applied.mode, applied.query),
+  ).sort(SORT_COMPARE[sort]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -145,10 +135,8 @@ export function MembersPage() {
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE,
   );
-  const currentMode = QUERY_MODES.find((m) => m.key === queryMode)!;
-  const appliedModeLabel = QUERY_MODES.find(
-    (m) => m.key === applied.mode,
-  )!.label;
+  const currentModeLabel = t(`members.search.mode.${queryMode}.label`);
+  const appliedModeLabel = t(`members.search.mode.${applied.mode}.label`);
 
   // 필터가 바뀌면 첫 페이지로
   const withFirstPage =
@@ -167,7 +155,7 @@ export function MembersPage() {
   // 모든 조건이 처음 상태면 초기화할 게 없다
   const isDefaultFilter =
     level === 'all' &&
-    product === ALL_PRODUCTS &&
+    product === ALL_FILTER &&
     queryMode === 'name' &&
     draft === '' &&
     applied.query === '' &&
@@ -180,7 +168,7 @@ export function MembersPage() {
 
   const resetFilter = () => {
     setLevel('all');
-    setProduct(ALL_PRODUCTS);
+    setProduct(ALL_FILTER);
     setQueryMode('name');
     setDraft('');
     setApplied({ mode: 'name', query: '' });
@@ -192,11 +180,11 @@ export function MembersPage() {
     <div className="flex flex-col gap-4">
       <PageHeader
         section="target"
-        eyebrow="RISK TARGET · 회원"
+        eyebrow={t('members.header.eyebrow')}
         titleSize="lg"
-        title="회원 목록"
-        description="회원을 눌러 상세 이력을 확인할 수 있어요"
-        back={{ label: '고객 분석', to: '/target' }}
+        title={t('members.header.title')}
+        description={t('members.header.description')}
+        back={{ label: t('members.header.back'), to: '/target' }}
         // 데이터 기준일·기준 월 표시는 이 화면에서 쓰지 않는다
         actions={false}
       />
@@ -205,16 +193,15 @@ export function MembersPage() {
         {LEVEL_CARDS.map((card) => {
           // 카드상품으로 걸러 보고 있으면 '분석 대상 전체'가 아니므로 전체 카드는 선택 표시를 하지 않는다
           const selected =
-            card.key === level &&
-            !(card.key === 'all' && product !== ALL_PRODUCTS);
-          const count = MEMBER_COUNT_BY_LEVEL[card.key];
-          const meta = card.key === 'all' ? null : RISK_LEVEL_META[card.key];
+            card === level && !(card === 'all' && product !== ALL_FILTER);
+          const count = MEMBER_COUNT_BY_LEVEL[card];
+          const meta = card === 'all' ? null : RISK_LEVEL_META[card];
           return (
             <button
-              key={card.key}
+              key={card}
               type="button"
               aria-pressed={selected}
-              onClick={() => withFirstPage(setLevel)(card.key)}
+              onClick={() => withFirstPage(setLevel)(card)}
               className={`flex flex-col items-start gap-2.5 rounded-2xl border bg-white px-6 py-[18px] text-left ${
                 selected
                   ? 'border-blue-700 ring-1 ring-inset ring-blue-700'
@@ -230,7 +217,9 @@ export function MembersPage() {
                       className={`size-2 rounded-full ${meta.dotColorClassName}`}
                     />
                   )}
-                  {card.label}
+                  {card === 'all'
+                    ? t('members.summary.all.label')
+                    : riskLevelLabel(card)}
                 </span>
                 <span className="inline-flex h-[26px] items-center rounded-full bg-slate-100 px-2.5 text-xs font-bold text-slate-600">
                   {meta
@@ -242,11 +231,15 @@ export function MembersPage() {
                 <span
                   className={`text-5xl font-bold leading-none tracking-tight ${meta ? meta.textClassName : 'text-slate-900'}`}
                 >
-                  {count.toLocaleString('ko-KR')}
+                  {formatNumber(count)}
                 </span>
-                <span className="text-xl font-bold text-slate-900">명</span>
+                <span className="text-xl font-bold text-slate-900">
+                  {t('members.summary.unit')}
+                </span>
               </span>
-              <span className="text-xs text-gray-600">{card.sub}</span>
+              <span className="text-xs text-gray-600">
+                {t(`members.summary.${card}.sub`)}
+              </span>
             </button>
           );
         })}
@@ -257,32 +250,34 @@ export function MembersPage() {
           <div className="flex items-center gap-2.5">
             <div
               role="tablist"
-              aria-label="검색 기준"
+              aria-label={t('members.search.modeLabel')}
               className="flex shrink-0 rounded-lg bg-slate-100 p-0.5"
             >
               {QUERY_MODES.map((mode) => {
-                const selected = mode.key === queryMode;
+                const selected = mode === queryMode;
                 return (
                   <button
-                    key={mode.key}
+                    key={mode}
                     type="button"
                     role="tab"
                     aria-selected={selected}
-                    onClick={() => setQueryMode(mode.key)}
+                    onClick={() => setQueryMode(mode)}
                     className={`h-9 whitespace-nowrap rounded-md px-4 text-sm ${
                       selected
                         ? 'bg-white font-bold text-blue-700'
                         : 'font-medium text-gray-600'
                     }`}
                   >
-                    {mode.label}
+                    {t(`members.search.mode.${mode}.label`)}
                   </button>
                 );
               })}
             </div>
             <SearchInput
-              aria-label={`${currentMode.label}(으)로 회원 검색`}
-              placeholder={currentMode.placeholder}
+              aria-label={t('members.search.inputLabel', {
+                mode: currentModeLabel,
+              })}
+              placeholder={t(`members.search.mode.${queryMode}.placeholder`)}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={(e) => {
@@ -294,43 +289,57 @@ export function MembersPage() {
               disabled={!isQueryChanged}
               onClick={applyQuery}
             >
-              조회
+              {t('members.search.submit')}
             </Button>
             <Button
               variant="outline"
               disabled={isDefaultFilter}
               onClick={resetFilter}
             >
-              초기화
+              {t('members.search.reset')}
             </Button>
           </div>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2.5">
               <Dropdown
-                label="위험도"
+                label={t('members.filter.level.label')}
                 className="min-w-36"
                 value={level}
                 onChange={(value) =>
                   withFirstPage(setLevel)(value as LevelFilter)
                 }
-                options={LEVEL_OPTIONS}
+                options={[
+                  { value: 'all', label: t('members.filter.level.all') },
+                  ...RISK_LEVELS.map((value) => ({
+                    value,
+                    label: riskLevelLabel(value),
+                  })),
+                ]}
               />
               <Dropdown
-                label="카드상품"
+                label={t('members.filter.product.label')}
                 className="min-w-56 max-w-72"
                 value={product}
-                onChange={(value) => withFirstPage(setProduct)(value)}
-                options={PRODUCT_OPTIONS.map((option) => ({
-                  value: option,
-                  label: option,
-                }))}
+                onChange={(value) =>
+                  withFirstPage(setProduct)(value as ProductFilter)
+                }
+                options={[
+                  { value: ALL_FILTER, label: t('members.filter.product.all') },
+                  ...CARD_PRODUCTS.map((card) => ({
+                    value: card.id,
+                    label: cardName(card.id),
+                  })),
+                ]}
               />
               {applied.query && (
                 <span className="inline-flex h-8 items-center gap-1 rounded-full bg-blue-50 pl-3 pr-1.5 text-xs font-semibold text-blue-700">
-                  {appliedModeLabel} · {applied.query}
+                  {t('members.search.applied', {
+                    mode: appliedModeLabel,
+                    query: applied.query,
+                  })}
                   <button
                     type="button"
-                    aria-label="검색어 지우기"
+                    aria-label={t('members.search.clear')}
                     onClick={() => {
                       setApplied((prev) => ({ ...prev, query: '' }));
                       setDraft('');
@@ -345,19 +354,25 @@ export function MembersPage() {
             </div>
             <div className="flex items-center gap-2">
               <Tabs
-                label="정렬"
-                tabs={SORT_TABS}
+                label={t('members.sort.label')}
+                tabs={SORT_KEYS.map((key) => ({
+                  key,
+                  label: t(`members.sort.${key}`),
+                }))}
                 value={sort}
                 onChange={withFirstPage(setSort)}
               />
               <Button
                 variant="outline"
                 onClick={() =>
-                  downloadTargetCsv(filtered.map(memberCsvRow), '회원목록')
+                  downloadTargetCsv(
+                    filtered.map(memberCsvRow),
+                    t('members.download.fileName'),
+                  )
                 }
               >
                 <Download className="size-4" strokeWidth={2} />
-                엑셀 받기
+                {t('members.download.button')}
               </Button>
             </div>
           </div>
@@ -366,17 +381,21 @@ export function MembersPage() {
         <div
           className={`grid h-10 items-center gap-3 border-b border-slate-200 bg-slate-50 px-6 text-xs font-semibold text-slate-500 ${GRID_COLUMNS}`}
         >
-          <span>회원번호</span>
-          <span>이름</span>
-          <span>전화번호</span>
-          <span>카드상품</span>
-          <span>이탈 예측 점수</span>
-          <span>위험도</span>
-          <span>주요 이유</span>
-          <span className="text-right">미이용</span>
+          <span>{t('members.table.column.id')}</span>
+          <span>{t('members.table.column.name')}</span>
+          <span>{t('members.table.column.phone')}</span>
+          <span>{t('members.table.column.product')}</span>
+          <span>{t('members.table.column.score')}</span>
+          <span>{t('members.table.column.riskLevel')}</span>
+          <span>{t('members.table.column.reason')}</span>
+          <span className="text-right">
+            {t('members.table.column.idleDays')}
+          </span>
         </div>
         {rows.map((member) => {
           const detailPath = `/target/members/${member.id}`;
+          const product = cardName(member.productId);
+          const reason = churnReasonLabel(member.reason);
           return (
             <div
               key={member.id}
@@ -389,38 +408,40 @@ export function MembersPage() {
                 onClick={(e) => e.stopPropagation()}
                 className="max-w-full justify-self-start truncate text-sm font-bold text-slate-900 hover:text-blue-700"
               >
-                {member.name}
+                {memberNameLabel(member.name)}
               </Link>
               <span className="truncate text-slate-600">
                 {getMemberPhone(member)}
               </span>
-              <span className="truncate text-slate-700" title={member.product}>
-                {member.product}
+              <span className="truncate text-slate-700" title={product}>
+                {product}
               </span>
               <ScoreBar score={member.score} />
               <span>
                 <RiskBadge riskLevel={getRiskLevelFromScore(member.score)} />
               </span>
-              <span className="truncate text-slate-700" title={member.reason}>
-                {member.reason}
+              <span className="truncate text-slate-700" title={reason}>
+                {reason}
               </span>
-              <span className="text-right font-semibold text-slate-900">
-                {member.idleDays}일
+              <span className="whitespace-nowrap text-right font-semibold text-slate-900">
+                {t('members.table.idleDays', { count: member.idleDays })}
               </span>
             </div>
           );
         })}
         {rows.length === 0 && (
           <div className="flex h-40 items-center justify-center text-sm text-slate-500">
-            조건에 맞는 회원이 없어요. 필터를 바꿔 보세요.
+            {t('members.table.empty')}
           </div>
         )}
 
         <div className="flex items-center justify-between gap-3 px-5 py-3.5">
           <span className="text-xs text-slate-500">
-            {MEMBER_COUNT_BY_LEVEL[level].toLocaleString('ko-KR')}명 중{' '}
-            {filtered.length}명 표시 ·{' '}
-            {SORT_TABS.find((tab) => tab.key === sort)!.label}
+            {t('members.footer.summary', {
+              total: formatNumber(MEMBER_COUNT_BY_LEVEL[level]),
+              shown: formatNumber(filtered.length),
+              sort: t(`members.sort.${sort}`),
+            })}
           </span>
           <Pagination
             currentPage={currentPage}

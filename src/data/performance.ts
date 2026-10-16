@@ -1,39 +1,51 @@
-import { CAMPAIGNS, type Campaign, type CampaignSource } from '@/data/campaign';
+import {
+  CAMPAIGNS,
+  campaignName,
+  type Campaign,
+  type CampaignId,
+  type CampaignSource,
+} from '@/data/campaign';
 import { SEND_CHANNELS, type SendChannelKey } from '@/data/marketing';
+import i18n from '@/i18n';
+import type ko from '@/i18n/locales/ko.json';
 
 // 관리 및 성과 목데이터
 
-// 타겟군(발송) · 대조군(미발송) 월별 이탈률 (%)
-const MONTH_LABELS = [
-  '10월',
-  '11월',
-  '12월',
-  '1월',
-  '2월',
-  '3월',
-  '4월',
-  '5월',
-  '6월',
-  '7월',
-  '8월',
-  '9월',
+// 타겟군(발송) · 대조군(미발송) 월별 이탈률 (%). 월은 'YY.MM' — 화면에서 formatMonth 로 바꾼다
+const MONTHS = [
+  '25.10',
+  '25.11',
+  '25.12',
+  '26.01',
+  '26.02',
+  '26.03',
+  '26.04',
+  '26.05',
+  '26.06',
+  '26.07',
+  '26.08',
+  '26.09',
 ];
 const TARGET = [2.1, 2.3, 2.6, 2.8, 3.1, 3.4, 3.2, 2.9, 2.6, 2.4, 2.2, 2.1];
 const CONTROL = [2.1, 2.3, 2.6, 2.8, 3.1, 3.4, 3.4, 3.3, 3.3, 3.2, 3.2, 3.2];
 
-export const CHURN_COMPARISON = MONTH_LABELS.map((label, index) => ({
-  label,
+export const CHURN_COMPARISON = MONTHS.map((month, index) => ({
+  month,
   target: TARGET[index],
   control: CONTROL[index],
 }));
 
-export const CAMPAIGN_START_MONTH = '3월';
+export const CAMPAIGN_START_MONTH = '26.03';
+
+/** 예전 성과 리포트의 발송 로그 id. 이름은 performance.pastCampaigns.<id> */
+export type PastCampaignId = keyof (typeof ko)['performance']['pastCampaigns'];
 
 /** 그래프 월별 마커·툴팁에 쓰는 캠페인 발송 로그 */
 export type CampaignLogEntry = {
+  /** 예전 발송 로그 id 또는 접촉 이력 캠페인 id */
+  id: PastCampaignId | CampaignId;
   source: CampaignSource;
-  name: string;
-  /** 차트 x 라벨 (예: '3월') */
+  /** 발송 월 ('YY.MM') */
   month: string;
   channel: SendChannelKey;
   /** 반응률 % */
@@ -41,92 +53,105 @@ export type CampaignLogEntry = {
 };
 
 // 3~8월은 예전 성과 리포트의 발송 로그, 9월은 접촉 이력 캠페인
-const PAST_CAMPAIGN_LOG: CampaignLogEntry[] = [
+const PAST_CAMPAIGN_LOG: (CampaignLogEntry & { id: PastCampaignId })[] = [
   {
+    id: 'p03-high-value',
     source: 'ai',
-    name: '고가치 회원 이용 급감',
-    month: '3월',
+    month: '26.03',
     channel: 'tm',
     responseRate: 42.0,
   },
   {
+    id: 'p03-random-a',
     source: 'rand',
-    name: '무작위 추출 A · 위험 그룹',
-    month: '3월',
+    month: '26.03',
     channel: 'kakao',
     responseRate: 18.0,
   },
   {
+    id: 'p04-annual-fee',
     source: 'ai',
-    name: '연회비 청구 D-30 · 혜택 미사용',
-    month: '4월',
+    month: '26.04',
     channel: 'kakao',
     responseRate: 38.5,
   },
   {
+    id: 'p04-high-30s-female-cafe',
     source: 'cond',
-    name: '위험 · 30대 여성 · 카페/외식',
-    month: '4월',
+    month: '26.04',
     channel: 'sms',
     responseRate: 27.1,
   },
   {
+    id: 'p04-medium-50s-fuel',
     source: 'cond',
-    name: '중위험 · 50대 · 주유',
-    month: '4월',
+    month: '26.04',
     channel: 'kakao',
     responseRate: 26.0,
   },
   {
+    id: 'p04-random-b',
     source: 'rand',
-    name: '무작위 추출 B · 위험·중위험',
-    month: '4월',
+    month: '26.04',
     channel: 'sms',
     responseRate: 15.0,
   },
   {
+    id: 'p05-other-card-cafe',
     source: 'ai',
-    name: '타사 카드 전환 추정 · 카페/외식',
-    month: '5월',
+    month: '26.05',
     channel: 'kakao',
     responseRate: 33.0,
   },
   {
+    id: 'p05-high-20s-delivery',
     source: 'cond',
-    name: '위험 · 20대 · 배달',
-    month: '5월',
+    month: '26.05',
     channel: 'kakao',
     responseRate: 23.1,
   },
   {
+    id: 'p06-dormant',
     source: 'ai',
-    name: '휴면 전환 직전',
-    month: '6월',
+    month: '26.06',
     channel: 'sms',
     responseRate: 24.7,
   },
   {
+    id: 'p06-high-40s-male-shopping',
     source: 'cond',
-    name: '위험 · 40대 남성 · 쇼핑',
-    month: '6월',
+    month: '26.06',
     channel: 'sms',
     responseRate: 22.1,
   },
   {
+    id: 'p07-annual-fee-60s',
     source: 'cond',
-    name: '연회비 청구 30일 이내 · 60대',
-    month: '7월',
+    month: '26.07',
     channel: 'tm',
     responseRate: 32.9,
   },
   {
+    id: 'p08-high-value-2',
     source: 'ai',
-    name: '고가치 회원 이용 급감 (2차)',
-    month: '8월',
+    month: '26.08',
     channel: 'tm',
     responseRate: 45.0,
   },
 ];
+
+const PAST_CAMPAIGN_IDS = new Set<string>(
+  PAST_CAMPAIGN_LOG.map((entry) => entry.id),
+);
+
+const isPastCampaignId = (id: string): id is PastCampaignId =>
+  PAST_CAMPAIGN_IDS.has(id);
+
+/** 발송 로그 캠페인 이름 (현재 언어) */
+export const campaignLogName = (entry: CampaignLogEntry) =>
+  isPastCampaignId(entry.id)
+    ? i18n.t(`performance.pastCampaigns.${entry.id}`)
+    : campaignName(entry.id);
 
 export const CAMPAIGN_LOG: CampaignLogEntry[] = [
   ...PAST_CAMPAIGN_LOG,
@@ -134,9 +159,9 @@ export const CAMPAIGN_LOG: CampaignLogEntry[] = [
     (campaign) =>
       campaign.responseRate != null && campaign.date.startsWith('09.'),
   ).map((campaign) => ({
+    id: campaign.id,
     source: campaign.source,
-    name: campaign.name,
-    month: '9월',
+    month: '26.09',
     channel: campaign.channel,
     responseRate: campaign.responseRate ?? 0,
   })),
@@ -273,7 +298,7 @@ export const PERFORMANCE_KPIS = {
   roi: totalAmount / SPEND,
 };
 
-/** 채널별 반응률 (%) — 발송 인원으로 가중한 평균, 높은 순 */
+/** 채널별 반응률 (%) — 발송 인원으로 가중한 평균, 높은 순. 이름은 channelShortLabel(channel) */
 export const CHANNEL_RESPONSE = SEND_CHANNELS.map((channel) => {
   const campaigns = PERFORMANCE_CAMPAIGNS.filter(
     (campaign) => campaign.channel === channel.key,
@@ -285,7 +310,7 @@ export const CHANNEL_RESPONSE = SEND_CHANNELS.map((channel) => {
         0,
       ) / count
     : 0;
-  return { label: channel.shortLabel, rate };
+  return { channel: channel.key, rate };
 })
   .filter((item) => item.rate > 0)
   .sort((a, b) => b.rate - a.rate);

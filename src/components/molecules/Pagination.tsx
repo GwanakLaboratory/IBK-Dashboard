@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/atoms/Button';
 
 type PaginationProps = {
@@ -34,6 +35,7 @@ export function Pagination({
   totalPages,
   onPageChange,
 }: PaginationProps) {
+  const { t } = useTranslation();
   if (totalPages <= 1) {
     return null;
   }
@@ -48,7 +50,7 @@ export function Pagination({
         className="border-slate-200 text-slate-600"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        aria-label="이전 페이지"
+        aria-label={t('common.pagination.previous')}
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
@@ -87,7 +89,7 @@ export function Pagination({
         className="border-slate-200 text-slate-600"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        aria-label="다음 페이지"
+        aria-label={t('common.pagination.next')}
       >
         <ChevronRight className="h-4 w-4" />
       </Button>

@@ -1,11 +1,9 @@
 import { Check, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-const GENERATING_STAGES = [
-  '세그먼트 특성 분석',
-  '반응 이력으로 톤 맞추기',
-  '문구 다듬기',
-];
+/** 로딩 단계. 문구는 marketingSend.generating.stage.<key> */
+const GENERATING_STAGES = ['analyze', 'tone', 'polish'] as const;
 
 const SHIMMER_CLASS_NAME =
   'rounded-full bg-gradient-to-r from-violet-100 via-violet-50 to-violet-100 bg-[length:200%_100%] motion-safe:animate-ai-shimmer';
@@ -26,6 +24,7 @@ export function AiGeneratingState({
   themeLabel,
   headline,
 }: AiGeneratingStateProps) {
+  const { t } = useTranslation();
   const [stageIndex, setStageIndex] = useState(0);
 
   useEffect(() => {
@@ -53,7 +52,10 @@ export function AiGeneratingState({
           </span>
           <div className="flex flex-col gap-0.5">
             <span className="flex items-center gap-1 text-sm font-bold text-violet-900">
-              {headline ?? `AI가 ${themeLabel} 문구를 만들고 있어요`}
+              {headline ??
+                t('marketingSend.generating.headline', {
+                  theme: themeLabel,
+                })}
               <span className="inline-flex gap-0.5" aria-hidden>
                 {[
                   '[animation-delay:0ms]',
@@ -68,7 +70,9 @@ export function AiGeneratingState({
               </span>
             </span>
             <span className="text-xs text-slate-500">
-              {personaLabel} 세그먼트의 이탈 사유와 반응 이력을 참고해요
+              {t('marketingSend.generating.persona', {
+                persona: personaLabel,
+              })}
             </span>
           </div>
         </div>
@@ -99,7 +103,7 @@ export function AiGeneratingState({
                       }`}
                     />
                   )}
-                  {stage}
+                  {t(`marketingSend.generating.stage.${stage}`)}
                 </span>
                 {index < GENERATING_STAGES.length - 1 && (
                   <span
@@ -120,7 +124,7 @@ export function AiGeneratingState({
             >
               <div className="flex items-center justify-between">
                 <span className="inline-flex h-5 items-center rounded-full bg-violet-100 px-2 text-2xs font-bold text-violet-400">
-                  AI 생성 {variant}
+                  {t('marketingSend.generating.variant', { letter: variant })}
                 </span>
                 <span className={`h-3 w-20 ${SHIMMER_CLASS_NAME}`} />
               </div>

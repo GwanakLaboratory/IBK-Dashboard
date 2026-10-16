@@ -1,16 +1,17 @@
 import { CalendarDays, ChevronLeft } from 'lucide-react';
 import { type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { useDemoNotice } from '@/components/molecules/DemoNotice';
 import {
-  DATA_BASE_MONTH_LABEL,
+  DATA_BASE_MONTH,
   DATA_UPDATED_AT,
-  PAGE_HEADS,
   type NavSectionKey,
 } from '@/config/navigation';
+import { formatFullMonth } from '@/i18n/format';
 
 type PageHeaderProps = {
-  /** 섹션 기본 제목(PAGE_HEADS)을 가져올 섹션 */
+  /** 섹션 기본 제목(layout.pageHead.<섹션>)을 가져올 섹션 */
   section: NavSectionKey;
   eyebrow?: string;
   title?: string;
@@ -36,7 +37,7 @@ export function PageHeader({
   actions,
   titleSize = 'md',
 }: PageHeaderProps) {
-  const head = PAGE_HEADS[section];
+  const { t } = useTranslation();
 
   return (
     <div className="flex flex-col gap-2.5">
@@ -52,17 +53,17 @@ export function PageHeader({
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div className="flex min-w-0 flex-col gap-1.5">
           <span className="text-2xs font-bold tracking-widest text-blue-700">
-            {eyebrow ?? head.eyebrow}
+            {eyebrow ?? t(`layout.pageHead.${section}.eyebrow`)}
           </span>
           <div className="flex flex-wrap items-center gap-3.5">
             <h1
               className={`whitespace-nowrap font-bold tracking-tight ${titleSize === 'lg' ? 'text-3xl' : 'text-2xl'}`}
             >
-              {title ?? head.title}
+              {title ?? t(`layout.pageHead.${section}.title`)}
             </h1>
             {titleAddon}
             <span className="text-sm text-slate-500">
-              {description ?? head.description}
+              {description ?? t(`layout.pageHead.${section}.description`)}
             </span>
           </div>
         </div>
@@ -84,16 +85,17 @@ export function DataBaseInfo({ monthControl }: { monthControl?: ReactNode }) {
 
 /** 기준 월 표시. 데모 버전은 9월 데이터만 있어 누르면 안내 문구를 띄운다 */
 function BaseMonthButton() {
+  const { t } = useTranslation();
   const { show, notice } = useDemoNotice();
   return (
     <>
       <button
         type="button"
-        onClick={() => show('데모 버전에서는 기준 월 변경을 지원하지 않아요')}
+        onClick={() => show(t('common.demoNotice.baseMonth'))}
         className="inline-flex h-10 items-center gap-2.5 rounded-lg border border-slate-300 bg-white px-3.5 text-sm font-bold hover:bg-slate-50"
       >
         <CalendarDays className="size-4 text-slate-500" />
-        {DATA_BASE_MONTH_LABEL}
+        {formatFullMonth(DATA_BASE_MONTH)}
       </button>
       {notice}
     </>
@@ -101,10 +103,11 @@ function BaseMonthButton() {
 }
 
 export function UpdatedAtLabel({ date = DATA_UPDATED_AT }: { date?: string }) {
+  const { t } = useTranslation();
   return (
     <span className="inline-flex items-center gap-1.5 text-xs text-slate-500">
       <span className="size-1.5 rounded-full bg-green-500" />
-      {date} 기준 · 매월 1일 갱신
+      {t('common.dataBase.updatedAt', { date })}
     </span>
   );
 }

@@ -11,6 +11,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 import { Button } from '@/components/atoms/Button';
 import { PageHeader } from '@/components/layout/PageHeader';
@@ -32,7 +33,10 @@ import {
   type DimensionKey,
   type MarkTone,
 } from '@/data/customerAnalysis';
+import { ALL_FILTER } from '@/data/cards';
 import { CARD_PRODUCTS } from '@/data/target';
+import { cardName } from '@/i18n/domain';
+import { formatFullMonth, formatNumber } from '@/i18n/format';
 
 type Unit = 'ratio' | 'count';
 
@@ -73,11 +77,9 @@ const TONE_CLASS_NAME: Record<
   },
 };
 
-const formatNumber = (value: number) => value.toLocaleString('ko-KR');
-const fullMonthLabel = (month: string) =>
-  `20${month.slice(0, 2)}년 ${Number(month.slice(3))}월`;
-
 type DimensionRow = {
+  /** 구간 코드 또는 카드 상품 id */
+  id: string;
   label: string;
   ratio: number;
   count: number;
@@ -89,7 +91,8 @@ type DimensionView = {
   key: DimensionKey;
   title: string;
   rows: DimensionRow[];
-  mark?: { label: string; tone: MarkTone };
+  /** 강조할 행 id 와 색 */
+  mark?: { id: string; tone: MarkTone };
   hasMore?: boolean;
 };
 
@@ -100,6 +103,7 @@ function isSameFilter(a: AnalysisFilter, b: AnalysisFilter) {
 }
 
 export function CustomerAnalysisPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [draft, setDraft] = useState<AnalysisFilter>(DEFAULT_ANALYSIS_FILTER);
   const [applied, setApplied] = useState<AnalysisFilter>(
@@ -132,23 +136,32 @@ export function CustomerAnalysisPage() {
   const dimensions: DimensionView[] = [
     {
       key: 'product',
-      title: '상품별 이탈 위험',
+      title: t('customerAnalysis.dimension.title.product'),
       rows: topProducts.map((product) => ({
-        label: product.name,
+        id: product.id,
+        label: cardName(product.id),
         ratio: product.ratio,
         count: Math.round((product.total * product.ratio) / 100),
-        to: `/target/cards/${encodeURIComponent(product.name)}`,
+        to: `/target/cards/${product.id}`,
       })),
-      mark: { label: topProduct.name, tone: 'blue' },
+      mark: { id: topProduct.id, tone: 'blue' },
       hasMore: true,
     },
     ...STATIC_DIMENSIONS.map((dimension) => ({
       key: dimension.key,
-      title: dimension.title,
-      mark: dimension.mark,
-      rows: dimension.rows.map(([label, baseRatio, total]) => {
+      title: t(`customerAnalysis.dimension.title.${dimension.key}`),
+      mark: dimension.mark && {
+        id: dimension.mark.segment,
+        tone: dimension.mark.tone,
+      },
+      rows: dimension.rows.map(([segment, baseRatio, total]) => {
         const ratio = adjustRatio(baseRatio, offset);
-        return { label, ratio, count: Math.round((total * ratio) / 100) };
+        return {
+          id: segment,
+          label: t(`customerAnalysis.segment.${segment}`),
+          ratio,
+          count: Math.round((total * ratio) / 100),
+        };
       }),
     })),
   ];
@@ -178,35 +191,43 @@ export function CustomerAnalysisPage() {
     dimension: DimensionKey;
   }[] = [
     {
-      kind: '위험비중 최고',
-      subject: '거래 기간 6개월 미만',
+      kind: t('customerAnalysis.picks.highestRatio.kind'),
+      subject: t('customerAnalysis.picks.highestRatio.subject'),
       value: tenureRatio.toFixed(1),
       unit: '%',
-      badge: `▲ 전체 평균 대비 +${(tenureRatio - AVERAGE_RISK_RATIO).toFixed(1)}%p`,
+      badge: t('customerAnalysis.picks.highestRatio.badge', {
+        diff: (tenureRatio - AVERAGE_RISK_RATIO).toFixed(1),
+      }),
       tone: 'red',
       Icon: Users,
       KindIcon: AlertTriangle,
       dimension: 'tenure',
     },
     {
-      kind: '위험 고객 최다',
-      subject: `${topProduct.name} 이용 고객`,
+      kind: t('customerAnalysis.picks.mostCustomers.kind'),
+      subject: t('customerAnalysis.picks.mostCustomers.subject', {
+        product: cardName(topProduct.id),
+      }),
       value: formatNumber(
         Math.round((topProduct.total * topProduct.ratio) / 100),
       ),
-      unit: '명',
-      badge: `상품 안 위험비중 ${topProduct.ratio.toFixed(1)}%`,
+      unit: t('customerAnalysis.picks.mostCustomers.unit'),
+      badge: t('customerAnalysis.picks.mostCustomers.badge', {
+        ratio: topProduct.ratio.toFixed(1),
+      }),
       tone: 'blue',
       Icon: CreditCard,
       KindIcon: User,
       dimension: 'product',
     },
     {
-      kind: '위험 증가 최대',
-      subject: '외부 제휴 채널 발급 고객',
+      kind: t('customerAnalysis.picks.largestIncrease.kind'),
+      subject: t('customerAnalysis.picks.largestIncrease.subject'),
       value: `+${CHANNEL_RISK_INCREASE.toFixed(1)}`,
       unit: '%p',
-      badge: `전월 대비 · 현재 위험비중 ${channelRatio.toFixed(1)}%`,
+      badge: t('customerAnalysis.picks.largestIncrease.badge', {
+        ratio: channelRatio.toFixed(1),
+      }),
       tone: 'amber',
       Icon: Handshake,
       KindIcon: BarChart3,
@@ -225,7 +246,7 @@ export function CustomerAnalysisPage() {
             className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-slate-300 bg-white pl-4 pr-3 text-sm font-semibold text-slate-900 hover:bg-slate-50"
           >
             <Users className="size-4 text-slate-500" strokeWidth={2} />
-            이탈 위험 회원 목록
+            {t('customerAnalysis.membersLink')}
             <ChevronRight
               className="size-3.5 text-slate-400"
               strokeWidth={2.4}
@@ -236,42 +257,59 @@ export function CustomerAnalysisPage() {
 
       {/* 필터 */}
       <div className="flex flex-wrap items-center gap-3.5 rounded-2xl border border-slate-200 bg-white px-6 py-3.5">
-        <FilterField label="기준월">
+        <FilterField label={t('customerAnalysis.filter.month')}>
           <MonthSelect
             align="left"
             value={draft.month}
             onChange={(month) => setDraft({ ...draft, month })}
             options={ANALYSIS_MONTHS.map((month) => ({
               value: month,
-              label: fullMonthLabel(month),
+              label: formatFullMonth(month),
             }))}
           />
         </FilterField>
         <FilterDivider />
-        <FilterField label="카드상품">
+        <FilterField label={t('customerAnalysis.filter.product')}>
           <Dropdown
-            label="카드상품"
+            label={t('customerAnalysis.filter.product')}
             size="md"
             // 고른 상품 이름 길이에 따라 필터 줄이 밀리지 않도록 너비를 고정한다 (긴 이름은 말줄임)
             className="w-60"
             value={draft.product}
-            onChange={(value) => setDraft({ ...draft, product: value })}
-            options={['전체', ...CARD_PRODUCTS.map((card) => card.name)].map(
-              (name) => ({ value: name, label: name }),
-            )}
+            onChange={(value) =>
+              setDraft({
+                ...draft,
+                product: value as AnalysisFilter['product'],
+              })
+            }
+            options={[
+              { value: ALL_FILTER, label: t('common.all') },
+              ...CARD_PRODUCTS.map((card) => ({
+                value: card.id,
+                label: cardName(card.id),
+              })),
+            ]}
           />
         </FilterField>
         <FilterDivider />
-        <FilterField label="발급채널">
+        <FilterField label={t('customerAnalysis.filter.channel')}>
           <Dropdown
-            label="발급채널"
+            label={t('customerAnalysis.filter.channel')}
             size="md"
             className="min-w-40"
             value={draft.channel}
-            onChange={(value) => setDraft({ ...draft, channel: value })}
+            onChange={(value) =>
+              setDraft({
+                ...draft,
+                channel: value as AnalysisFilter['channel'],
+              })
+            }
             options={ISSUE_CHANNELS.map((channel) => ({
               value: channel,
-              label: channel,
+              label:
+                channel === ALL_FILTER
+                  ? t('common.all')
+                  : t(`customerAnalysis.segment.${channel}`),
             }))}
           />
         </FilterField>
@@ -280,7 +318,7 @@ export function CustomerAnalysisPage() {
           disabled={!isFilterChanged}
           onClick={() => setApplied(draft)}
         >
-          조회
+          {t('customerAnalysis.filter.search')}
         </Button>
         <Button
           variant="outline"
@@ -290,21 +328,21 @@ export function CustomerAnalysisPage() {
             setApplied(DEFAULT_ANALYSIS_FILTER);
           }}
         >
-          초기화
+          {t('customerAnalysis.filter.reset')}
         </Button>
         <span className="ml-auto inline-flex items-center gap-1.5 text-xs text-slate-500">
           <span className="size-1.5 rounded-full bg-green-500" />
-          직전 2개월 연속 이용 고객 기준
+          {t('customerAnalysis.filter.basis')}
         </span>
       </div>
 
       {/* 우선 관리 고객군 */}
       <section className="flex flex-col gap-2">
         <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <h2 className="text-lg font-bold">우선 관리가 필요한 고객군</h2>
-          <Note>
-            각 기준별 선정 · 고객군 간 중복 가능 · 최소 고객 수 기준 적용
-          </Note>
+          <h2 className="text-lg font-bold">
+            {t('customerAnalysis.picks.title')}
+          </h2>
+          <Note>{t('customerAnalysis.picks.note')}</Note>
         </div>
         <div className="grid grid-cols-3 gap-4">
           {picks.map((pick) => {
@@ -315,7 +353,10 @@ export function CustomerAnalysisPage() {
               <button
                 key={pick.kind}
                 type="button"
-                aria-label={`${pick.kind} ${pick.subject} 그래프로 이동`}
+                aria-label={t('customerAnalysis.picks.goToChart', {
+                  kind: pick.kind,
+                  subject: pick.subject,
+                })}
                 onClick={() => focusDimension(pick.dimension)}
                 className="flex flex-col justify-center gap-4 rounded-2xl border border-slate-200 bg-white px-6 py-5 text-left transition-colors hover:border-slate-300 hover:bg-slate-50/60"
               >
@@ -362,12 +403,20 @@ export function CustomerAnalysisPage() {
       {/* 특성별 이탈 위험 */}
       <section className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-lg font-bold">특성별 이탈 위험</h2>
+          <h2 className="text-lg font-bold">
+            {t('customerAnalysis.dimensions.title')}
+          </h2>
           <Tabs
-            label="그래프 표시 단위"
+            label={t('customerAnalysis.dimensions.unitTabs.label')}
             tabs={[
-              { key: 'ratio', label: '위험비중' },
-              { key: 'count', label: '고객 수' },
+              {
+                key: 'ratio',
+                label: t('customerAnalysis.dimensions.unitTabs.ratio'),
+              },
+              {
+                key: 'count',
+                label: t('customerAnalysis.dimensions.unitTabs.count'),
+              },
             ]}
             value={unit}
             onChange={setUnit}
@@ -391,9 +440,7 @@ export function CustomerAnalysisPage() {
             />
           ))}
         </div>
-        <Note>
-          위험비중 = 해당 구간 이탈 위험 고객 ÷ 해당 구간 예측 대상 고객
-        </Note>
+        <Note>{t('customerAnalysis.dimensions.note')}</Note>
       </section>
     </>
   );
@@ -416,6 +463,7 @@ function DimensionCard({
   onMore: () => void;
   cardRef: (element: HTMLElement | null) => void;
 }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const valueOf = (row: DimensionRow) =>
     unit === 'ratio' ? row.ratio : row.count;
@@ -428,8 +476,14 @@ function DimensionCard({
   );
   const insight =
     unit === 'ratio'
-      ? `‘${topRow.label}’ 위험비중이 평균보다 ${(topRow.ratio - AVERAGE_RISK_RATIO).toFixed(1)}%p 높아요`
-      : `‘${topRow.label}’ 위험 고객이 ${formatNumber(topRow.count)}명으로 가장 많아요`;
+      ? t('customerAnalysis.dimension.insight.ratio', {
+          label: topRow.label,
+          diff: (topRow.ratio - AVERAGE_RISK_RATIO).toFixed(1),
+        })
+      : t('customerAnalysis.dimension.insight.count', {
+          label: topRow.label,
+          value: formatNumber(topRow.count),
+        });
   const focusTone = TONE_CLASS_NAME[dimension.mark?.tone ?? 'blue'];
 
   return (
@@ -447,7 +501,9 @@ function DimensionCard({
           <button
             type="button"
             aria-expanded={tipOpen}
-            aria-label={`${dimension.title} 요약 보기`}
+            aria-label={t('customerAnalysis.dimension.showInsight', {
+              title: dimension.title,
+            })}
             onClick={onToggleTip}
             className={`inline-flex size-6 items-center justify-center rounded-full ${
               tipOpen ? 'bg-blue-50 text-blue-700' : 'text-slate-400'
@@ -467,11 +523,11 @@ function DimensionCard({
         {dimension.hasMore && (
           <button
             type="button"
-            aria-label="카드 상품 전체 보기"
+            aria-label={t('customerAnalysis.dimension.viewAllCards')}
             onClick={onMore}
             className="inline-flex h-7 shrink-0 items-center rounded-md pl-2 pr-1 text-xs font-bold text-blue-700 hover:bg-blue-50"
           >
-            전체
+            {t('customerAnalysis.dimension.viewAll')}
             <ChevronRight className="size-3.5" strokeWidth={2.4} />
           </button>
         )}
@@ -479,7 +535,7 @@ function DimensionCard({
       <div className="flex flex-col gap-1">
         {dimension.rows.map((row) => {
           const tone =
-            dimension.mark?.label === row.label
+            dimension.mark?.id === row.id
               ? TONE_CLASS_NAME[dimension.mark.tone]
               : null;
           const isTop = row === topRow;
@@ -487,15 +543,24 @@ function DimensionCard({
           const display =
             unit === 'ratio'
               ? `${Math.round(row.ratio)}%`
-              : `${formatNumber(row.count)}명`;
+              : t('customerAnalysis.dimension.countValue', {
+                  value: formatNumber(row.count),
+                });
           const to = row.to;
           return (
             <button
-              key={row.label}
+              key={row.id}
               type="button"
               disabled={!to}
               aria-label={
-                to ? `${row.label} 카드 상세 보기` : `${row.label} ${display}`
+                to
+                  ? t('customerAnalysis.dimension.viewCardDetail', {
+                      label: row.label,
+                    })
+                  : t('customerAnalysis.dimension.rowValue', {
+                      label: row.label,
+                      value: display,
+                    })
               }
               onClick={to ? () => navigate(to) : undefined}
               className={`grid h-9 w-full grid-cols-[96px_minmax(0,1fr)_76px] items-center gap-3 rounded-lg border px-2.5 text-left disabled:cursor-default ${

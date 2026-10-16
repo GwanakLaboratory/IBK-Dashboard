@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 import { Button } from '@/components/atoms/Button';
 import { SearchInput } from '@/components/atoms/SearchInput';
@@ -10,16 +11,22 @@ import { Card } from '@/components/molecules/Card';
 import { Dropdown } from '@/components/molecules/Dropdown';
 import { KpiStrip, type KpiItem } from '@/components/molecules/KpiStrip';
 import { Tabs } from '@/components/molecules/Tabs';
-import { CARD_BENEFIT_CATEGORIES, CARD_BRANDS } from '@/data/cards';
+import {
+  ALL_FILTER,
+  CARD_BENEFIT_CATEGORIES,
+  CARD_BRANDS,
+  CARD_TREND_MONTHS,
+} from '@/data/cards';
 import { CARD_PRODUCTS, type CardProduct } from '@/data/target';
+import { brandLabel, benefitCategoryLabel, cardName } from '@/i18n/domain';
+import { formatMonth, formatNumber } from '@/i18n/format';
+import type { BenefitCategory, CardBrand, CardId } from '@/types/churn';
 import { CardTag } from './CardTag';
 
 type SortKey = 'rate' | 'members';
 
-const SORT_TABS: { key: SortKey; label: string }[] = [
-  { key: 'rate', label: '이탈률 높은 순' },
-  { key: 'members', label: '보유 회원 많은 순' },
-];
+/** 정렬 탭 (문구는 cards.sort.<key>) */
+const SORT_KEYS: SortKey[] = ['rate', 'members'];
 
 // 혜택 카테고리는 긴 배지 2개 + '+N'이 잘리지 않을 만큼 최소 너비를 둔다
 const ROW_GRID =
@@ -28,8 +35,7 @@ const ROW_GRID =
 // 혜택 카테고리 칸에 색 배지로 보여줄 개수 (나머지는 +N)
 const SHOWN_TAG_COUNT = 2;
 
-const toCardPath = (name: string) =>
-  `/target/cards/${encodeURIComponent(name)}`;
+const toCardPath = (id: CardId) => `/target/cards/${id}`;
 
 /** 전체 카드 평균 이탈률 % */
 const averageRate =
@@ -42,46 +48,16 @@ const worstMix = [...CARD_PRODUCTS].sort(
   (a, b) => b.highShare + b.mediumShare - (a.highShare + a.mediumShare),
 )[0];
 
-const CARD_KPIS: KpiItem[] = [
-  {
-    label: '전체 카드 상품',
-    labelClassName: 'text-blue-700',
-    value: String(CARD_PRODUCTS.length),
-    unit: '개',
-    sub: '신용카드 · 판매 중 상품 기준',
-  },
-  {
-    label: '평균 이탈률',
-    value: averageRate.toFixed(1),
-    unit: '%',
-    badge: <DeltaBadge delta={0.1} size="md" />,
-    sub: `전월 대비 (8월 ${(averageRate - 0.1).toFixed(1)}%)`,
-  },
-  {
-    label: '이탈률 가장 높은 상품',
-    labelClassName: 'text-red-700',
-    value: worstRate.churnRate.toFixed(1),
-    unit: '%',
-    badge: <DeltaBadge delta={worstRate.churnRateDelta} size="md" />,
-    sub: worstRate.name,
-    to: toCardPath(worstRate.name),
-  },
-  {
-    label: '위험 회원 비중 가장 높은 상품',
-    labelClassName: 'text-red-700',
-    value: (worstMix.highShare + worstMix.mediumShare).toFixed(1),
-    unit: '%',
-    sub: `${worstMix.name} · 위험 + 중위험 회원`,
-    to: toCardPath(worstMix.name),
-  },
-];
+/** 전월 ('YY.MM') */
+const PREVIOUS_MONTH = CARD_TREND_MONTHS[CARD_TREND_MONTHS.length - 2];
 
 export function CardsPage() {
+  const { t } = useTranslation();
   // 검색어는 입력(draft)과 조회 적용(query)을 나눈다 (회원 검색과 같은 방식)
   const [draft, setDraft] = useState('');
   const [query, setQuery] = useState('');
-  const [brand, setBrand] = useState('전체');
-  const [category, setCategory] = useState('전체');
+  const [brand, setBrand] = useState<string>(ALL_FILTER);
+  const [category, setCategory] = useState<string>(ALL_FILTER);
   const [sortKey, setSortKey] = useState<SortKey>('rate');
 
   const keyword = query.trim();
@@ -89,16 +65,55 @@ export function CardsPage() {
   const resetFilter = () => {
     setDraft('');
     setQuery('');
-    setBrand('전체');
-    setCategory('전체');
+    setBrand(ALL_FILTER);
+    setCategory(ALL_FILTER);
     setSortKey('rate');
   };
 
+  const kpis: KpiItem[] = [
+    {
+      label: t('cards.kpi.totalProducts.label'),
+      labelClassName: 'text-blue-700',
+      value: String(CARD_PRODUCTS.length),
+      unit: t('cards.kpi.totalProducts.unit'),
+      sub: t('cards.kpi.totalProducts.sub'),
+    },
+    {
+      label: t('cards.kpi.averageRate.label'),
+      value: averageRate.toFixed(1),
+      unit: '%',
+      badge: <DeltaBadge delta={0.1} size="md" />,
+      sub: t('cards.kpi.averageRate.sub', {
+        month: formatMonth(PREVIOUS_MONTH),
+        rate: (averageRate - 0.1).toFixed(1),
+      }),
+    },
+    {
+      label: t('cards.kpi.worstRate.label'),
+      labelClassName: 'text-red-700',
+      value: worstRate.churnRate.toFixed(1),
+      unit: '%',
+      badge: <DeltaBadge delta={worstRate.churnRateDelta} size="md" />,
+      sub: cardName(worstRate.id),
+      to: toCardPath(worstRate.id),
+    },
+    {
+      label: t('cards.kpi.worstRiskShare.label'),
+      labelClassName: 'text-red-700',
+      value: (worstMix.highShare + worstMix.mediumShare).toFixed(1),
+      unit: '%',
+      sub: t('cards.kpi.worstRiskShare.sub', { name: cardName(worstMix.id) }),
+      to: toCardPath(worstMix.id),
+    },
+  ];
+
+  const lowerKeyword = keyword.toLowerCase();
   const rows = CARD_PRODUCTS.filter(
     (card) =>
-      (category === '전체' || card.tags.includes(category)) &&
-      (brand === '전체' || card.brands.includes(brand)) &&
-      (!keyword || card.name.includes(keyword)),
+      (category === ALL_FILTER ||
+        card.tags.includes(category as BenefitCategory)) &&
+      (brand === ALL_FILTER || card.brands.includes(brand as CardBrand)) &&
+      (!keyword || cardName(card.id).toLowerCase().includes(lowerKeyword)),
   ).sort((a, b) =>
     sortKey === 'rate' ? b.churnRate - a.churnRate : b.members - a.members,
   );
@@ -108,21 +123,23 @@ export function CardsPage() {
       <PageHeader
         section="target"
         titleSize="lg"
-        eyebrow="RISK TARGET · 카드 상품"
-        title="카드 상품별 이탈 위험"
-        description={`${CARD_PRODUCTS.length}개 상품의 이탈률을 한눈에 비교해요`}
-        back={{ label: '고객 분석', to: '/target' }}
+        eyebrow={t('cards.header.eyebrow')}
+        title={t('cards.header.title')}
+        description={t('cards.header.description', {
+          count: CARD_PRODUCTS.length,
+        })}
+        back={{ label: t('layout.sidebar.nav.target'), to: '/target' }}
         // 데이터 기준일·기준 월 표시는 이 화면에서 쓰지 않는다
         actions={false}
       />
-      <KpiStrip size="xl" items={CARD_KPIS} />
+      <KpiStrip size="xl" items={kpis} />
 
       <Card flush>
         <div className="flex flex-col gap-3 border-b border-slate-100 px-6 py-5">
           <div className="flex items-center gap-2.5">
             <SearchInput
-              aria-label="상품명 검색"
-              placeholder="상품명을 입력하세요"
+              aria-label={t('cards.search.label')}
+              placeholder={t('cards.search.placeholder')}
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
               onKeyDown={(event) => {
@@ -130,38 +147,44 @@ export function CardsPage() {
               }}
             />
             <Button className="px-6" onClick={applyQuery}>
-              조회
+              {t('cards.search.submit')}
             </Button>
             <Button variant="outline" onClick={resetFilter}>
-              초기화
+              {t('cards.search.reset')}
             </Button>
           </div>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2">
               <Dropdown
-                label="브랜드"
+                label={t('cards.filter.brand.label')}
                 value={brand}
                 onChange={setBrand}
-                options={CARD_BRANDS.map((item) => ({
-                  value: item,
-                  label: item === '전체' ? '전체 브랜드' : item,
-                }))}
+                options={[
+                  { value: ALL_FILTER, label: t('cards.filter.brand.all') },
+                  ...CARD_BRANDS.map((item) => ({
+                    value: item,
+                    label: brandLabel(item),
+                  })),
+                ]}
               />
               <Dropdown
-                label="혜택 카테고리"
+                label={t('cards.filter.category.label')}
                 value={category}
                 onChange={setCategory}
-                options={CARD_BENEFIT_CATEGORIES.map((item) => ({
-                  value: item,
-                  label: item === '전체' ? '전체 혜택 카테고리' : item,
-                }))}
+                options={[
+                  { value: ALL_FILTER, label: t('cards.filter.category.all') },
+                  ...CARD_BENEFIT_CATEGORIES.map((item) => ({
+                    value: item,
+                    label: benefitCategoryLabel(item),
+                  })),
+                ]}
               />
               {keyword && (
                 <span className="inline-flex h-8 items-center gap-1 rounded-full bg-blue-50 pl-3 pr-1.5 text-xs font-semibold text-blue-700">
-                  상품명 · {keyword}
+                  {t('cards.search.chip', { keyword })}
                   <button
                     type="button"
-                    aria-label="검색어 지우기"
+                    aria-label={t('cards.search.clear')}
                     onClick={() => {
                       setQuery('');
                       setDraft('');
@@ -174,8 +197,11 @@ export function CardsPage() {
               )}
             </div>
             <Tabs
-              label="정렬"
-              tabs={SORT_TABS}
+              label={t('cards.sort.label')}
+              tabs={SORT_KEYS.map((key) => ({
+                key,
+                label: t(`cards.sort.${key}`),
+              }))}
               value={sortKey}
               onChange={setSortKey}
             />
@@ -185,23 +211,28 @@ export function CardsPage() {
         <div
           className={`${ROW_GRID} h-11 border-b border-slate-200 bg-slate-50 text-xs font-semibold text-slate-500`}
         >
-          <span>순위</span>
-          <span>상품명</span>
-          <span>혜택 카테고리</span>
-          <span>브랜드</span>
-          <span className="text-right">보유 회원</span>
-          <span className="text-right">이탈률</span>
+          <span>{t('cards.table.column.rank')}</span>
+          <span>{t('cards.table.column.name')}</span>
+          <span>{t('cards.table.column.category')}</span>
+          <span>{t('cards.table.column.brand')}</span>
+          <span className="text-right">{t('cards.table.column.members')}</span>
+          <span className="text-right">
+            {t('cards.table.column.churnRate')}
+          </span>
         </div>
         {rows.map((card, index) => (
-          <CardRow key={card.name} card={card} rank={index + 1} />
+          <CardRow key={card.id} card={card} rank={index + 1} />
         ))}
         {rows.length === 0 && (
           <div className="flex h-36 items-center justify-center text-sm text-slate-500">
-            조건에 맞는 카드 상품이 없어요
+            {t('cards.table.empty')}
           </div>
         )}
         <div className="px-6 py-3.5 text-xs text-slate-500">
-          전체 {CARD_PRODUCTS.length}개 중 {rows.length}개 표시
+          {t('cards.table.footer', {
+            total: CARD_PRODUCTS.length,
+            count: rows.length,
+          })}
         </div>
       </Card>
     </>
@@ -209,7 +240,9 @@ export function CardsPage() {
 }
 
 function CardRow({ card, rank }: { card: CardProduct; rank: number }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+  const name = cardName(card.id);
   const delta = card.churnRateDelta;
   const deltaLabel =
     delta === 0 ? '–' : `${delta > 0 ? '▲' : '▼'}${Math.abs(delta).toFixed(1)}`;
@@ -224,25 +257,25 @@ function CardRow({ card, rank }: { card: CardProduct; rank: number }) {
 
   return (
     <div
-      onClick={() => navigate(toCardPath(card.name))}
+      onClick={() => navigate(toCardPath(card.id))}
       className={`${ROW_GRID} min-h-14 cursor-pointer border-b border-slate-100 py-2 text-xs hover:bg-slate-50`}
     >
       <RankBadge rank={rank} highlight="dark" size="md" />
       <Link
-        to={toCardPath(card.name)}
-        aria-label={`${card.name} 상세 보기`}
-        title={card.name}
+        to={toCardPath(card.id)}
+        aria-label={t('common.action.viewDetail', { name })}
+        title={name}
         className="truncate text-sm font-bold text-slate-900 hover:underline"
       >
-        {card.name}
+        {name}
       </Link>
       {/* 앞의 두 카테고리만 색 배지로, 나머지는 +N (전체는 툴팁) */}
       <span
         className="flex min-w-0 items-center gap-1"
-        title={card.tags.join(', ')}
+        title={card.tags.map(benefitCategoryLabel).join(', ')}
       >
         {shownTags.map((tag) => (
-          <CardTag key={tag} label={tag} />
+          <CardTag key={tag} category={tag} />
         ))}
         {restCount > 0 && (
           <span className="inline-flex h-7 shrink-0 items-center rounded-full border border-slate-200 px-2 text-xs font-bold text-slate-500">
@@ -251,10 +284,10 @@ function CardRow({ card, rank }: { card: CardProduct; rank: number }) {
         )}
       </span>
       <span className="leading-snug text-slate-700">
-        {card.brands.join(' · ')}
+        {card.brands.map(brandLabel).join(' · ')}
       </span>
       <span className="text-right font-bold text-slate-900">
-        {card.members.toLocaleString('ko-KR')}
+        {formatNumber(card.members)}
       </span>
       <span className="flex items-baseline justify-end gap-1.5">
         <span

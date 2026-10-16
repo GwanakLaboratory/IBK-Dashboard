@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+import { riskLevelLabel } from '@/i18n/domain';
 import { RISK_LEVEL_META } from '@/utils/risk';
 import type { RiskLevel } from '@/types/churn';
 
@@ -14,6 +16,7 @@ const SIZE_CLASS_NAME = {
 
 /** 위험 / 중위험 / 저위험 알약 배지 */
 export function RiskBadge({ riskLevel, size = 'md' }: RiskBadgeProps) {
+  useTranslation();
   const riskLevelMeta = RISK_LEVEL_META[riskLevel];
 
   return (
@@ -23,7 +26,7 @@ export function RiskBadge({ riskLevel, size = 'md' }: RiskBadgeProps) {
       <span
         className={`size-2 shrink-0 rounded-full ${riskLevelMeta.dotColorClassName}`}
       />
-      {riskLevelMeta.label}
+      {riskLevelLabel(riskLevel)}
     </span>
   );
 }

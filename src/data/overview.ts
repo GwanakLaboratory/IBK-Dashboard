@@ -1,5 +1,6 @@
 /* version2 전체 현황 시안 데이터 (디자인 캔버스 OverviewV2 값 그대로) */
 import { CHURN_REASONS } from '@/data/target';
+import type { ChurnReason } from '@/types/churn';
 
 export const MONTHS = [
   '25.10',
@@ -37,7 +38,7 @@ export const RISK_RATIOS = RISK_COUNTS.map(
  * 이탈 사유별 위험 고객 수 [사유, 8월, 9월]. 9월 합계 = RISK_COUNTS 9월, 8월 합계 = 8월.
  * CHURN_REASONS 순서(회원이 많은 순)대로 고객 수와 증가 폭이 크다.
  */
-export const REASON_RISK_CHANGES: [string, number, number][] = [
+export const REASON_RISK_CHANGES: [ChurnReason, number, number][] = [
   [CHURN_REASONS[0], 90035, 90623],
   [CHURN_REASONS[1], 64341, 64731],
   [CHURN_REASONS[2], 51525, 51785],
@@ -45,7 +46,4 @@ export const REASON_RISK_CHANGES: [string, number, number][] = [
   [CHURN_REASONS[4], 12897, 12946],
 ];
 
-export const formatNumber = (value: number) => value.toLocaleString('ko-KR');
-export const monthLabel = (month: string) => `${Number(month.slice(3))}월`;
-export const fullMonthLabel = (month: string) =>
-  `20${month.slice(0, 2)}년 ${Number(month.slice(3))}월`;
+// 숫자 · 월 표시는 언어에 맞춰 @/i18n/format 의 formatNumber · formatMonth · formatFullMonth 를 쓴다
