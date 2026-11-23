@@ -207,15 +207,15 @@
         "summary": "0.5% off at all merchants + postpaid Climate Commute pass"
       },
       "point-3-8-toss": {
-        "name": "Gwanak Lab Point 3.8 Toss Card",
+        "name": "IBK Point 3.8 Toss Card",
         "summary": "1.5% points at all merchants and up to 6.5% overseas"
       },
       "point": {
-        "name": "Gwanak Lab Point",
+        "name": "IBK Point",
         "summary": "0.6%–3.3% points by transaction amount"
       },
       "point-3-8": {
-        "name": "Gwanak Lab Point 3.8",
+        "name": "IBK Point 3.8",
         "summary": "1.5% points at all merchants and up to 6.5% overseas"
       },
       "kapa-the-value": {
@@ -227,7 +227,7 @@
         "summary": "Built for professionals' work and life, specialized in travel, meetings and leisure"
       },
       "kapick": {
-        "name": "Gwanak Lab KaPick",
+        "name": "IBK KaPick",
         "summary": "Kakao Pay PICK — meet the adorable Choonsik card!"
       },
       "i-anywhere-green": {
@@ -259,7 +259,7 @@
         "summary": "For every part of my day, a card made for me"
       },
       "wellix": {
-        "name": "Gwanak Lab Wellix Card",
+        "name": "IBK Wellix Card",
         "summary": "Save by auto-paying your Wellix rental fees!"
       },
       "mobile-yearly-excitement": {
@@ -287,7 +287,7 @@
         "summary": "A must-have for budget travel!"
       },
       "hybrid": {
-        "name": "Gwanak Lab Hybrid Card",
+        "name": "IBK Hybrid Card",
         "summary": "One card, two ways to pay"
       },
       "cham-good-daiso": {
@@ -315,7 +315,7 @@
         "summary": "Discounts at public facilities in Yongin"
       },
       "syrup": {
-        "name": "Gwanak Lab Syrup Card",
+        "name": "IBK Syrup Card",
         "summary": "Sweet benefits on top of smart finance!"
       },
       "national-happiness": {
@@ -335,11 +335,11 @@
         "summary": "7% statement credit on Natural Dream purchases"
       },
       "hi": {
-        "name": "Gwanak Lab hi Card",
+        "name": "IBK hi Card",
         "summary": "Transit discount card"
       },
       "hipass": {
-        "name": "Gwanak Lab Hi-pass (Personal)",
+        "name": "IBK Hi-pass (Personal)",
         "summary": "Hi-pass-only card inserted into an in-vehicle unit, for highway tolls only"
       },
       "asiana-club": {
@@ -1083,23 +1083,23 @@
       },
       "s4": {
         "timeLabel": "Weekdays 7 PM",
-        "v1": "[Gwanak Lab Card] {name}, it's been a while! Get [₩5,000] cashback on your first purchase by [Oct 31].",
-        "v2": "[Gwanak Lab Card] {name}, your card will soon become dormant. Pay now and get a [₩10,000] reward."
+        "v1": "[IBK Card] {name}, it's been a while! Get [₩5,000] cashback on your first purchase by [Oct 31].",
+        "v2": "[IBK Card] {name}, your card will soon become dormant. Pay now and get a [₩10,000] reward."
       },
       "kakao": {
         "timeLabel": "Weekdays 11:30 AM",
-        "v1": "{name}, pay with your [Gwanak Lab Card] this month and get [up to ₩20,000] back. Check your benefits now.",
+        "v1": "{name}, pay with your [IBK Card] this month and get [up to ₩20,000] back. Check your benefits now.",
         "v2": "A [10%] statement discount just for {name}! Pay at your favorite places by [Oct 31]."
       },
       "sms": {
         "timeLabel": "Weekdays 7 PM",
-        "v1": "[Gwanak Lab Card] {name}, get [₩5,000] cashback when you pay by [Oct 31].",
-        "v2": "[Gwanak Lab Card] A treat for {name}! Pay [3] or more times this month and get [₩10,000] back."
+        "v1": "[IBK Card] {name}, get [₩5,000] cashback when you pay by [Oct 31].",
+        "v2": "[IBK Card] A treat for {name}! Pay [3] or more times this month and get [₩10,000] back."
       },
       "push": {
         "timeLabel": "Weekdays 6 PM",
         "v1": "{name}, your personalized offer is here. Check out [10%] off at your favorite places.",
-        "v2": "{name}, pay with your [Gwanak Lab Card] this month and get [up to ₩20,000] back."
+        "v2": "{name}, pay with your [IBK Card] this month and get [up to ₩20,000] back."
       }
     },
     "complete": {
@@ -1227,7 +1227,7 @@
       "label": "{{name}} details",
       "message": "Message sent",
       "sender": {
-        "kakao": "Gwanak Lab Card KakaoTalk",
+        "kakao": "IBK Card KakaoTalk",
         "sms": "SMS · 1588-2588",
         "push": "i-ONE app push",
         "tm": "Agent script"
@@ -1241,7 +1241,7 @@
       },
       "cp-0917": {
         "name": "First-purchase reward",
-        "message": "{name}, make your first Gwanak Lab Card purchase and get ₩5,000 cashback. Pay at least once by Sep 30 and it's credited automatically.",
+        "message": "{name}, make your first IBK Card purchase and get ₩5,000 cashback. Pay at least once by Sep 30 and it's credited automatically.",
         "segment": "No spend 3 mo after issue"
       },
       "cp-0910": {
@@ -1251,12 +1251,12 @@
       },
       "cp-0905": {
         "name": "Fuel benefit is back",
-        "message": "[Gwanak Lab Card] {name}, the ₩100/L fuel discount is back this month. Use it by Sep 30.",
+        "message": "[IBK Card] {name}, the ₩100/L fuel discount is back this month. Use it by Sep 30.",
         "segment": "Less fuel spending"
       },
       "cp-0920": {
         "name": "High-value outreach",
-        "message": "Hello, this is Gwanak Lab Card. We noticed you've been using your card less and wanted to check if anything has been inconvenient. May we tell you about benefits that suit you?",
+        "message": "Hello, this is IBK Card. We noticed you've been using your card less and wanted to check if anything has been inconvenient. May we tell you about benefits that suit you?",
         "segment": "₩10M+ per year · sharp spend drop"
       },
       "cp-0902": {
@@ -1266,7 +1266,7 @@
       },
       "cp-1002": {
         "name": "Oct re-engagement after revolving exit",
-        "message": "{name}, spend ₩300,000 or more with your Gwanak Lab Card this month and get ₩10,000 back. Check it out now.",
+        "message": "{name}, spend ₩300,000 or more with your IBK Card this month and get ₩10,000 back. Check it out now.",
         "segment": "Spend down after revolving exit"
       }
     }
